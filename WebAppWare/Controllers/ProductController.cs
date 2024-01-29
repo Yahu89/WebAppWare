@@ -11,7 +11,7 @@ namespace WebAppWare.Controllers
         {
 			_productRepo = productRepo;
         }
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult<List<ProductModel>>> Index()
 		{
 			var products = await _productRepo.GetAll();
 			return View(products);
