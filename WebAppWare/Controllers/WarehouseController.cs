@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAppWare.Application.Services;
-using WebAppWare.Infrastructure;
+using WebAppWare.Models;
+using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
 	public class WarehouseController : Controller
 	{
-		private readonly IWarehouseService _warehouseService;
-		public WarehouseController(IWarehouseService warehouseService)
+		private readonly IWarehouseRepo _warehouseRepo;
+		public WarehouseController(IWarehouseRepo warehouseRepo)
         {
-			_warehouseService = warehouseService;
+			_warehouseRepo = warehouseRepo;
         }
         public async Task<IActionResult> Index()
 		{
-			var result = await _warehouseService.GetAll();
-			return View(result);
+			//var result = await _warehouseRepo.GetAll();
+			return View();
 		}
 
 		public IActionResult Create()
@@ -23,11 +23,11 @@ namespace WebAppWare.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(Warehouse warehouse)
+		public async Task<IActionResult> Create(WarehouseModel warehouse)
 		{
 			if (ModelState.IsValid)
 			{
-                await _warehouseService.Add(warehouse);
+                await _warehouseRepo.Add(warehouse);
                 return RedirectToAction("Index");
             }
 
@@ -36,16 +36,16 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Edit(int id)
 		{
-			Warehouse warehouse = await _warehouseService.GetById(id);
+			var warehouse = await _warehouseRepo.GetById(id);
 			return View(warehouse);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(Warehouse warehouse)
+		public async Task<IActionResult> Edit(WarehouseModel warehouse)
 		{
 			if (ModelState.IsValid)
 			{
-                await _warehouseService.Update(warehouse);
+                await _warehouseRepo.Update(warehouse);
                 return RedirectToAction("Index");
             }
 
@@ -54,14 +54,14 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Delete(int id)
 		{
-			var warehouse = await _warehouseService.GetById(id);
+			var warehouse = await _warehouseRepo.GetById(id);
 			return View(warehouse);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Delete(Warehouse warehouse)
+		public async Task<IActionResult> Delete(WarehouseModel warehouse)
 		{
-			await _warehouseService.Delete(warehouse);
+			await _warehouseRepo.Delete(warehouse);
 			return RedirectToAction("Index");
 		}
 	}

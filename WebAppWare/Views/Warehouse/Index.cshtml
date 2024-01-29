@@ -1,5 +1,4 @@
-﻿@using WebAppWare.Infrastructure
-@model List<Warehouse>
+﻿@model List<WarehouseModel>
 
 <h4>Lista magazynów: </h4>
 
@@ -24,7 +23,7 @@
 		@foreach (var item in Model)
 		{
 			<tr>
-				<td>
+				@* <td>
 					@item.Name
 				</td>
 				<td>
@@ -35,7 +34,7 @@
 					</td>
 					<td>
 						<a class="btn btn-danger" asp-controller="Warehouse" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
-					</td>
+					</td> *@
 			</tr>
 		}
 	</tbody>

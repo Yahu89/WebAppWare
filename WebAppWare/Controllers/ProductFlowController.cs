@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAppWare.Application.Services;
+using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
     public class ProductFlowController : Controller
     {
-        private readonly IProductFlowService _productFlowService;
-        public ProductFlowController(IProductFlowService productFlowService)
+        private readonly IProductFlowRepo _productFlowRepo;
+        public ProductFlowController(IProductFlowRepo productFlowRepo)
         {
-            _productFlowService = productFlowService;
+            _productFlowRepo = productFlowRepo;
         }
         public async Task<IActionResult> Index()
         {
-            var prodFlowlist = await _productFlowService.GetAll();
-            return View(prodFlowlist);
+            //var prodFlowlist = await _productFlowRepo.GetAll();
+            return View();
         }
     }
 }

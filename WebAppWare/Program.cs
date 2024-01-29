@@ -1,12 +1,23 @@
-using WebAppWare.Infrastructure.Extentions;
-using WebAppWare.Application.Extentions;
+
+using WebAppWare.Repositories.Interfaces;
+using WebAppWare.Repositories;
+using WebAppWare.Database;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Database
+builder.Services.AddDbContext<WarehouseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("WarehouseDbContext")));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplication();
+
+// Repos
+builder.Services.AddScoped<IWarehouseRepo, WarehouseRepo>();
+builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddScoped<ISupplierRepo, SupplierRepo>();
+builder.Services.AddScoped<IProductFlowRepo, ProductFlowRepo>();
+builder.Services.AddScoped<IMovementRepo, MovementRepo>();
 
 var app = builder.Build();
 

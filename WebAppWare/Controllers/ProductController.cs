@@ -1,20 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAppWare.Application.Services;
-using WebAppWare.Domain.Interfaces;
-using WebAppWare.Infrastructure;
+using WebAppWare.Models;
+using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
 	public class ProductController : Controller
 	{
-		private readonly IProductService _productService;
-		public ProductController(IProductService productService)
+		private readonly IProductRepo _productRepo;
+		public ProductController(IProductRepo productRepo)
         {
-			_productService = productService;
+			_productRepo = productRepo;
         }
         public async Task<IActionResult> Index()
 		{
-			var products = await _productService.GetAll();
+			var products = await _productRepo.GetAll();
 			return View(products);
 		}
 
@@ -24,11 +23,11 @@ namespace WebAppWare.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(Product product)
+		public async Task<IActionResult> Create(ProductModel product)
 		{
 			if (ModelState.IsValid)
 			{
-                await _productService.Add(product);
+                await _productRepo.Add(product);
                 return RedirectToAction("Index");
             }
 			
@@ -37,16 +36,16 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Edit(int id)
 		{
-			var product = await _productService.GetById(id);
+			var product = await _productRepo.GetById(id);
 			return View(product);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(Product product)
+		public async Task<IActionResult> Edit(ProductModel product)
 		{
 			if (ModelState.IsValid)
 			{
-                await _productService.Update(product);
+                await _productRepo.Update(product);
                 return RedirectToAction("Index");
             }
 
@@ -55,14 +54,14 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Delete(int id)
 		{
-			var product = await _productService.GetById(id);
+			var product = await _productRepo.GetById(id);
 			return View(product);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Delete(Product product)
+		public async Task<IActionResult> Delete(ProductModel product)
 		{
-			await _productService.Delete(product);
+			await _productRepo.Delete(product);
 			return RedirectToAction("Index");
 		}
 	}

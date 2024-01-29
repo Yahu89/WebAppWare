@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAppWare.Application.Services;
-using WebAppWare.Infrastructure;
+using WebAppWare.Models;
+using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
     public class SupplierController : Controller
     {
-        private readonly ISupplierService _supplierService;
-        public SupplierController(ISupplierService supplierService)
+        private readonly ISupplierRepo _supplierRepo;
+        public SupplierController(ISupplierRepo supplierRepo)
         {
-            _supplierService = supplierService;
+            _supplierRepo = supplierRepo;
         }
         public async Task<IActionResult> Index()
         {
-            var suppliers = await _supplierService.GetAll();
+            var suppliers = await _supplierRepo.GetAll();
             return View(suppliers);
         }
 
@@ -23,11 +23,11 @@ namespace WebAppWare.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Supplier suplier)
+        public async Task<IActionResult> Create(SupplierModel suplier)
         {
             if (ModelState.IsValid)
             {
-                await _supplierService.Create(suplier);
+                await _supplierRepo.Create(suplier);
                 return RedirectToAction("Index");
             }
             
@@ -36,16 +36,16 @@ namespace WebAppWare.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var supplier = await _supplierService.GetById(id);
+            var supplier = await _supplierRepo.GetById(id);
             return View(supplier);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Supplier supplier)
+        public async Task<IActionResult> Edit(SupplierModel supplier)
         {
             if (ModelState.IsValid)
             {
-                await _supplierService.Update(supplier);
+                await _supplierRepo.Update(supplier);
                 return RedirectToAction("Index");
             }
 
@@ -54,14 +54,14 @@ namespace WebAppWare.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var supplier = await _supplierService.GetById(id);
+            var supplier = await _supplierRepo.GetById(id);
             return View(supplier);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Supplier supplier)
+        public async Task<IActionResult> Delete(SupplierModel supplier)
         {
-            await _supplierService.Delete(supplier);
+            await _supplierRepo.Delete(supplier);
             return RedirectToAction("Index");
         }
     }

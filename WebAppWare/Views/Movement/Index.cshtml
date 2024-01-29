@@ -1,6 +1,4 @@
-﻿@using WebAppWare.Infrastructure
-@model List<WarehouseMovement>
-
+﻿@model List<WarehouseMovementModel>
 
 	<div class="col-2 row">
 	<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreatePz">Dodaj PZ</a>
@@ -33,7 +31,7 @@
 		</thead>
 
 		<tbody>
-			@foreach (var movement in Model)
+			@* @foreach (var movement in Model)
 			{
 				<tr>
 					<td>
@@ -52,7 +50,7 @@
 						<a class="btn btn-danger" asp-controller="Movement" asp-action="Delete" asp-route-id="@movement.Id">Usuń</a>
 					</td>
 				</tr>
-			}
+			} *@
 		</tbody>
 
 

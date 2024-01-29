@@ -1,5 +1,4 @@
-﻿@using WebAppWare.Infrastructure
-@model List<ProductFlowModel>
+﻿@model List<ProductFlowModel>
 
 <h4 class="pb-2">Przepływ produktów we wszystkich magazynach</h4>
 
@@ -45,7 +44,7 @@
 			@foreach (var item in Model)
 			{
 				<tr>
-					<td>
+					@* <td>
 						@item.Id
 					</td>
 					<td>
@@ -71,7 +70,7 @@
 					</td>
 					<td>
 						<a class="btn btn-danger mb-2" asp-controller="ProductsFlow" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
-					</td>
+					</td> *@
 				</tr>
 			}
 
