@@ -1,0 +1,70 @@
+﻿@using WebAppWare.Infrastructure
+@model List<WarehouseMovement>
+
+
+	<div class="col-2 row">
+	<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreatePz">Dodaj PZ</a>
+	<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreateWz">Dodaj WZ</a>
+</div>
+
+<div class="col-10 row">
+	<h4 class="mb-2">Lista ruchów magazynowych: </h4>
+
+	<table class="table table-bordered table-striped" style="width: 70%">
+		<thead>
+		<th>
+			ID
+		</th>
+		<th>
+			Nr dokumentu
+		</th>
+		<th>
+			Typ
+		</th>
+		<th>
+			Data utworzenia
+		</th>
+		<th>
+
+		</th>
+			@*		<th>
+
+		</th>*@
+		</thead>
+
+		<tbody>
+			@foreach (var movement in Model)
+			{
+				<tr>
+					<td>
+						@movement.Id
+					</td>
+					<td>
+						@movement.Document
+					</td>
+					<td>
+						@movement.MovementType
+					</td>
+					<td>
+						@movement.CreationDate
+					</td>
+					<td>
+						<a class="btn btn-danger" asp-controller="Movement" asp-action="Delete" asp-route-id="@movement.Id">Usuń</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+
+
+	</table>
+
+	<br />
+
+	@*	<div class="col-3">
+	<a class="btn btn-secondary" asp-controller="Product" asp-action="Add">Dodaj Produkt</a>
+	</div>*@
+
+
+
+
+</div>

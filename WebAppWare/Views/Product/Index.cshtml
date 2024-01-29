@@ -1,0 +1,67 @@
+﻿@using WebAppWare.Infrastructure
+@model List<Product>
+
+<div class="col-10 row">
+	<h4 class="mb-2">Lista produktów: </h4>
+
+	<table class="table table-bordered table-striped" style="width: 50%">
+		<thead>
+		<th>
+			ID
+		</th>
+		<th>
+			Index
+		</th>
+		<th>
+			Opis
+		</th>
+		<th>
+			Zdjęcie
+		</th>
+		<th>
+
+		</th>
+		<th>
+
+		</th>
+		</thead>
+
+		<tbody>
+			@foreach (var product in Model)
+			{
+				<tr>
+					<td>
+						@product.Id
+					</td>
+					<td>
+						@product.ItemCode
+					</td>
+					<td>
+						@product.Description
+					</td>
+					<td>
+						@product.ImgUrl
+					</td>
+					<td>
+						<a class="btn btn-secondary" asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id">Edytuj</a>
+					</td>
+					<td>
+						<a class="btn btn-danger" asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id">Usuń</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+
+
+	</table>
+
+	<br />
+
+	<div class="col-3">
+		<a class="btn btn-success mb-2" asp-controller="Product" asp-action="Create">Dodaj Produkt</a>
+	</div>
+
+
+
+
+</div>

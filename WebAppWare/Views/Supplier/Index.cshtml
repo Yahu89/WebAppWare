@@ -1,0 +1,61 @@
+﻿@using WebAppWare.Infrastructure
+@model List<Supplier>
+
+<div class="col-10 row">
+	<h4 class="mb-2">Lista Dostawców: </h4>
+
+	<table class="table table-bordered table-striped" style="width: 70%">
+		<thead>
+		<th>
+			ID
+		</th>
+		<th>
+			Nazwa
+		</th>
+		<th>
+			Adres e-mail
+		</th>
+		<th>
+
+		</th>
+		<th>
+
+		</th>
+		</thead>
+
+		<tbody>
+			@foreach (var supplier in Model)
+			{
+				<tr>
+					<td>
+						@supplier.Id
+					</td>
+					<td>
+						@supplier.Name
+					</td>
+					<td>
+						@supplier.Email
+					</td>
+					<td>
+						<a class="btn btn-secondary" asp-controller="Supplier" asp-action="Edit" asp-route-id="@supplier.Id">Edytuj</a>
+					</td>
+					<td>
+						<a class="btn btn-danger" asp-controller="Supplier" asp-action="Delete" asp-route-id="@supplier.Id">Usuń</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+
+
+	</table>
+
+	<br />
+
+	<div class="col-3">
+		<a class="btn btn-success" asp-controller="Supplier" asp-action="Create">Dodaj Dostawcę</a>
+	</div>
+
+
+
+
+</div>

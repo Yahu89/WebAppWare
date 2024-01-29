@@ -1,0 +1,117 @@
+﻿@using WebAppWare.Domain.DTO
+@model ProductFlowMovementModel
+
+
+<h4 class="pb-2">Dodawanie WZ</h4>
+<form method="post" class="row" asp-controller="Movement" asp-action="CreateWz">
+
+	<div class="col-12">
+		<label class="ms-2 pb-2" asp-for="@Model.WarehouseMovement.Document">Nr dokumentu:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.WarehouseMovement.Document" />
+	</div>
+
+
+	<div class="col-2 row form-group m-lg-2">
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[0].ProductId">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductsFlows[0].ProductId">
+			<option disabled selected>-- Wybierz towar --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[0].SupplierId">Odbiorca:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductsFlows[0].SupplierId">
+			<option disabled selected>-- Wybierz dostawcę --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[0].Quantity">Ilość:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductsFlows[0].Quantity" />
+
+	</div>
+
+
+	<div class="col-2 row form-group m-lg-2">
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[1].ProductId">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductsFlows[1].ProductId">
+			<option disabled selected>-- Wybierz towar --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[1].SupplierId">Odbiorca:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductsFlows[1].SupplierId">
+			<option disabled selected>-- Wybierz dostawcę --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[1].Quantity">Ilość:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductsFlows[1].Quantity" />
+
+	</div>
+
+
+	<div class="col-2 row form-group m-lg-2">
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[2].ProductId">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductsFlows[2].ProductId">
+			<option disabled selected>-- Wybierz towar --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[2].SupplierId">Odbiorca:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductsFlows[2].SupplierId">
+			<option disabled selected>-- Wybierz dostawcę --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[2].Quantity">Ilość:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductsFlows[2].Quantity" />
+
+	</div>
+
+
+	<div class="col-2 row form-group m-lg-2">
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[3].ProductId">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductsFlows[3].ProductId">
+			<option disabled selected>-- Wybierz towar --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[3].SupplierId">Odbiorca:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductsFlows[3].SupplierId">
+			<option disabled selected>-- Wybierz dostawcę --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[3].Quantity">Ilość:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductsFlows[3].Quantity" />
+
+	</div>
+
+	<div class="col-2 row form-group m-lg-2">
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[4].ProductId">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductsFlows[4].ProductId">
+			<option disabled selected>-- Wybierz towar --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[4].SupplierId">Odbiorca:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductsFlows[4].SupplierId">
+			<option disabled selected>-- Wybierz dostawcę --</option>
+		</select>
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductsFlows[4].Quantity">Ilość:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductsFlows[4].Quantity" />
+
+	</div>
+
+
+
+
+	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Magazyn:</label>
+	@* <select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.ProductsFlow.WarehouseId">
+		<option disabled selected>-- Wybierz magazyn --</option>
+	</select> *@
+	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.Warehouse.Id">
+		<option disabled selected>-- Wybierz magazyn --</option>
+	</select>
+
+
+	<button type="submit" class="btn btn-primary form-control mb-2">Dodaj</button>
+	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
+
+</form>

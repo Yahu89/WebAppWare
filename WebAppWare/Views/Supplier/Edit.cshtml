@@ -1,0 +1,18 @@
+﻿@using WebAppWare.Infrastructure
+@model Supplier
+
+<h4 class="pb-2">Edycja dostawcy</h4>
+
+<div class="col-4 row form-group">
+	<form method="post" class="row" asp-controller="Supplier" asp-action="Edit">
+		<label class="ms-2 pb-2" asp-for="Name"></label>
+		<input class="form-control border-0 shadow mb-2" asp-for="Name" />
+		<span class="text-bg-danger" asp-validation-for="Name"></span>
+
+		<label class="ms-2 pb-2" asp-for="Email"></label>
+		<input class="form-control border-0 shadow mb-2" asp-for="Email" />
+		<span class="text-bg-danger" asp-validation-for="Email"></span>
+		<button type="submit" class="btn btn-primary form-control mb-2">Aktualizuj</button>
+		<a class="btn btn-secondary" asp-controller="Supplier" asp-action="Index">Wróć do listy</a>
+	</form>
+</div>

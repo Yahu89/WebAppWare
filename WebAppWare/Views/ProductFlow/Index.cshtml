@@ -1,0 +1,82 @@
+﻿@using WebAppWare.Infrastructure
+@model List<ProductFlowModel>
+
+<h4 class="pb-2">Przepływ produktów we wszystkich magazynach</h4>
+
+
+
+<div class="col-9 row">
+
+	<table class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+			<tr>
+				<th>
+					Id
+				</th>
+				<th>
+					Typ
+				</th>
+				<th>
+					Id Ruchu
+				</th>
+				<th>
+					Magazyn
+				</th>
+				<th>
+					Index
+				</th>
+				<th>
+					Ilość
+				</th>
+				<th>
+					Dostawca
+				</th>
+				<th>
+					Data utworzenia
+				</th>
+				<th>
+
+				</th>
+			</tr>
+		</thead>
+
+		<tbody>
+
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@item.Id
+					</td>
+					<td>
+						@item.MoveId
+					</td>
+					<td>
+						@item.MovementType
+					</td>
+					<td>
+						@item.Warehouse
+					</td>
+					<td>
+						@item.ItemCode
+					</td>
+					<td>
+						@item.Quantity
+					</td>
+					<td>
+						@item.Supplier
+					</td>
+					<td>
+						@item.CreationDate
+					</td>
+					<td>
+						<a class="btn btn-danger mb-2" asp-controller="ProductsFlow" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+					</td>
+				</tr>
+			}
+
+		</tbody>
+	</table>
+
+</div>
+

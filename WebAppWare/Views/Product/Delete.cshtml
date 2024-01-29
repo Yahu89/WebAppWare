@@ -1,0 +1,15 @@
+﻿@using WebAppWare.Infrastructure
+@model Product
+
+<h4 class="pb-2">Usuwanie produktu</h4>
+
+<div class="col-4 row form-group">
+	<form method="post" class="row" asp-controller="Product" asp-action="Delete">
+		<label class="ms-2 pb-2" asp-for="@Model.ItemCode">Indeks:</label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.ItemCode" />
+		<label class="ms-2" asp-for="@Model.Description">Opis:</label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Description" />
+		<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
+		<a class="btn btn-secondary" asp-controller="Product" asp-action="Index">Wróć do listy</a>
+	</form>
+</div>

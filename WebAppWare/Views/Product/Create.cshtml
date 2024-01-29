@@ -1,0 +1,18 @@
+﻿@using WebAppWare.Infrastructure
+@model Product
+
+<h4 class="pb-2">Dodawanie produktu</h4>
+
+<div class="col-4 row form-group">
+	<form method="post" class="row" asp-controller="Product" asp-action="Create">
+		<label class="ms-2 pb-2" asp-for="ItemCode" >Indeks</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="ItemCode" />
+		<span class="text-bg-danger" asp-validation-for="ItemCode"></span>
+
+		<label class="ms-2 pb-2" asp-for="Description" >Opis</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="Description" />
+		<span class="text-bg-danger" asp-validation-for="Description"></span>
+		<button type="submit" class="btn btn-success form-control mb-2">Dodaj</button>
+		<a class="btn btn-secondary" asp-controller="Product" asp-action="Index">Wróć do listy</a>
+	</form>
+</div>

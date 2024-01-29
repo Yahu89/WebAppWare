@@ -1,0 +1,46 @@
+﻿@using WebAppWare.Infrastructure
+@model List<Warehouse>
+
+<h4>Lista magazynów: </h4>
+
+<div class="col-7">
+<table class="table table-bordered table-striped">
+	<thead>
+		<th>
+			Nazwa
+		</th>
+		<th>
+			Czy aktywny
+		</th>
+		<th>
+			
+		</th>
+		<th>
+			
+		</th>
+	</thead>
+
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@item.Name
+				</td>
+				<td>
+						<input class="ms-2 mb-2" disabled asp-for="@item.IsActive" />
+				</td>
+					<td>
+						<a class="btn btn-secondary" asp-controller="Warehouse" asp-action="Edit" asp-route-id="@item.Id">Edytuj</a>
+					</td>
+					<td>
+						<a class="btn btn-danger" asp-controller="Warehouse" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+					</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+</div>
+
+<a class="btn btn-success" asp-controller="Warehouse" asp-action="Create" asp-route-id="">Dodaj nowy</a>
