@@ -23,7 +23,7 @@
 		@foreach (var item in Model)
 		{
 			<tr>
-				@* <td>
+				<td>
 					@item.Name
 				</td>
 				<td>
@@ -34,7 +34,7 @@
 					</td>
 					<td>
 						<a class="btn btn-danger" asp-controller="Warehouse" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
-					</td> *@
+					</td>
 			</tr>
 		}
 	</tbody>
@@ -42,4 +42,4 @@
 
 </div>
 
-<a class="btn btn-success" asp-controller="Warehouse" asp-action="Create" asp-route-id="">Dodaj nowy</a>
+<a class="btn btn-success" asp-controller="Warehouse" asp-action="Create">Dodaj nowy</a>

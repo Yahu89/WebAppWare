@@ -1,24 +1,33 @@
-﻿using WebAppWare.Database.Entities;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using WebAppWare.Database.Entities;
 
-namespace WebAppWare.Models
+namespace WebAppWare.Models;
+
+
+public class ProductFlowMovementModel
 {
-	public class ProductFlowMovementModel
-	{
-		public int Id { get; set; }
+    public IEnumerable<SelectListItem> Products { get; set; }
+    public IEnumerable<SelectListItem> Suppliers { get; set; }
+    public IEnumerable<SelectListItem> Warehouses { get; set; }
+    public ProductFlowModel[] ProductFlowModels { get; set; } = new ProductFlowModel[]
+    {
+        new ProductFlowModel(),
+        new ProductFlowModel(),
+        new ProductFlowModel(),
+        new ProductFlowModel(),
+        new ProductFlowModel()
+    };
 
-		public int MoveId { get; set; }
+    //[Required(ErrorMessage = "Pole Nazwa magazynu jest wymagane")]
+    public string Warehouse { get; set; }
 
-		public MovementType MovementType { get; set; }
-
-		public string Warehouse { get; set; } = string.Empty;
-
-		public string ItemCode { get; set; } = string.Empty;
-
-		public int Quantity { get; set; }
-
-		public string Supplier { get; set; } = string.Empty;
-
-		public DateTime CreationDate { get; set; }
-		public int Cumulative { get; set; }
-	}
+    //[Required(ErrorMessage = "Pole Nr dokumentu jest wymagane")]
+    public string Document { get; set; }
 }

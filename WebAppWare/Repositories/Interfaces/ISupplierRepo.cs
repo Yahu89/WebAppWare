@@ -10,6 +10,7 @@ namespace WebAppWare.Repositories.Interfaces;
 public interface ISupplierRepo
 {
     Task<List<SupplierModel>> GetAll();
+    Task<int> GetSupplierIdByName(string supplierName);
     Task<SupplierModel> GetById(int id);
     Task Update(SupplierModel supplier);
     Task Create(SupplierModel supplier);

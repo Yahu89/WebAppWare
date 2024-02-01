@@ -1,213 +1,304 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using WebAppWare.Database.Entities;
+using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
 	public class MovementController : Controller
 	{
-		private readonly IMovementRepo _movementService;
-		public MovementController(IMovementRepo movementService)
+		private readonly IMovementRepo _movementRepo;
+		private readonly IProductRepo _productRepo;
+		private readonly IWarehouseRepo _warehouseRepo;
+		private readonly ISupplierRepo _supplierRepo;
+		private readonly IProductFlowRepo _productFlowRepo;
+		public MovementController(IMovementRepo movementRepo, IProductRepo productRepo, 
+			IWarehouseRepo warehouseRepo, ISupplierRepo supplierRepo, IProductFlowRepo productFlowRepo)
         {
-			_movementService = movementService;
+			_movementRepo = movementRepo;
+			_productRepo = productRepo;
+			_warehouseRepo = warehouseRepo;
+			_supplierRepo = supplierRepo;
+			_productFlowRepo = productFlowRepo;
         }
         public async Task<IActionResult> Index()
 		{
-			var movements = await _movementService.GetAll();
+			var movements = await _movementRepo.GetAll();
 			return View(movements);
 		}
 
-		//public async Task<ProductFlowMovementModel> SetComboBoxForMovement()
-		//{
-		//	List<Product> products = await _comboService.GetAllProducts();
-		//	List<Supplier> suppliers = await _comboService.GetAllSuppliers();
-		//	List<Warehouse> warehouses = await _comboService.GetAllWarehouses();
+		public async Task<ProductFlowMovementModel> SetComboBoxForMovement()
+		{
+			List<ProductModel> products = await _productRepo.GetAll();
+			List<SupplierModel> suppliers = await _supplierRepo.GetAll();
+			List<WarehouseModel> warehouses = await _warehouseRepo.GetAll();
 
-		//	IEnumerable<SelectListItem> productList = products.Select(x => new SelectListItem()
-		//	{
-		//		Text = x.ItemCode,
-		//		Value = x.Id.ToString()
-		//	});
+			IEnumerable<SelectListItem> productList = products.Select(x => new SelectListItem()
+			{
+				Text = x.ItemCode,
+				Value = x.ItemCode
+			});
 
-		//	IEnumerable<SelectListItem> supplierList = suppliers.Select(x => new SelectListItem()
-		//	{
-		//		Text = x.Name,
-		//		Value = x.Id.ToString()
-		//	});
+			IEnumerable<SelectListItem> supplierList = suppliers.Select(x => new SelectListItem()
+			{
+				Text = x.Name,
+				Value = x.Name
+			});
 
-		//	IEnumerable<SelectListItem> warehouseList = warehouses.Select(x => new SelectListItem()
-		//	{
-		//		Text = x.Name,
-		//		Value = x.Id.ToString()
-		//	});
+			IEnumerable<SelectListItem> warehouseList = warehouses.Select(x => new SelectListItem()
+			{
+				Text = x.Name,
+				Value = x.Name
+			});
 
-		//	ProductFlowMovementModel model = new ProductFlowMovementModel()
-		//	{
-		//		Products = productList,
-		//		Suppliers = supplierList,
-		//		Warehouses = warehouseList
-		//	};
+			ProductFlowMovementModel model = new ProductFlowMovementModel()
+			{
+				Products = productList,
+				Suppliers = supplierList,
+				Warehouses = warehouseList
+			};
 
-		//	return model;
-		//}
+			return model;
+		}
 
-		//public async Task<IActionResult> CreatePz()
-		//{
-		//	return View(await SetComboBoxForMovement());
-		//}
+		public async Task<IActionResult> CreatePz()
+		{
+			return View(await SetComboBoxForMovement());
+		}
 
-		//[HttpPost]
-		//public async Task<IActionResult> CreatePz(ProductFlowMovementModel obj)
-		//{
-		//	if (string.IsNullOrEmpty(obj.WarehouseMovement.Document) || obj.ProductsFlow.WarehouseId == null)
-		//	{
-		//		return RedirectToAction("CreatePz");
-		//	}
+		[HttpPost]
+		public async Task<IActionResult> CreatePz(ProductFlowMovementModel obj)
+		{
+			if (string.IsNullOrEmpty(obj.Document) || string.IsNullOrEmpty(obj.Warehouse))
+			{
+				return RedirectToAction("CreatePz");
+			}
+			else if (!await _movementRepo.IsDocumentNameUnique(obj.Document))
+			{
+				return RedirectToAction("CreatePz");
+			}
 
-		//	List<string> productItems = new List<string>();
+			List<string> productItems = new List<string>();
 
-		//	for (int i = 0; i < obj.ProductsFlows.Length; i++)
-		//	{
-		//		if (!string.IsNullOrEmpty(obj.ProductsFlows[i].ProductId.ToString()))
-		//		{
-		//			productItems.Add(obj.ProductsFlows[i].ProductId.ToString());
-		//		}				
-		//	}
+			for (int i = 0; i < obj.ProductFlowModels.Length; i++)
+			{
+				if (obj.ProductFlowModels[i] != null && obj.ProductFlowModels[i].ItemCode != null && obj.ProductFlowModels[i].Supplier != null)
+				{
+					productItems.Add(obj.ProductFlowModels[i].ItemCode);
+				}
+			}
 
-		//	int? itemsBeforeDistinct = productItems.Count();
-		//	int? itemsAfterDistinct = productItems.Distinct().Count();
+			int? itemsBeforeDistinct = productItems.Count();
+			int? itemsAfterDistinct = productItems.Distinct().Count();
 
-		//	if (itemsBeforeDistinct != itemsAfterDistinct)
-		//	{
-		//		return RedirectToAction("CreatePz");
-		//	}
+			if (itemsBeforeDistinct != itemsAfterDistinct)
+			{
+				return RedirectToAction("CreatePz");
+			}
 
-		//	for (int i = 0; i < productItems.Count(); i++)
-		//	{
-		//		if (obj.ProductsFlows[i].Quantity <= 0)
-		//		{
-		//			return RedirectToAction("CreatePz");
-		//		}
-		//	}
+			for (int i = 0; i < productItems.Count(); i++)
+			{
+				if (obj.ProductFlowModels[i].Quantity <= 0)
+				{
+					return RedirectToAction("CreatePz");
+				}
+			}
 
-		//	WarehouseMovement warMove = new WarehouseMovement()
-		//	{
-		//		Document = obj.WarehouseMovement.Document,
-		//		MovementType = MovementType.PZ
-		//	};
+			MovementModel warMove = new MovementModel()
+			{
+				Document = obj.Document,
+				MovementType = MovementType.PZ
+			};
 
-		//	await _comboService.CreateMovement(warMove);
-		//	var lastMovement = await _comboService.GetLastMovement();
+			await _movementRepo.Create(warMove);
+			var lastMovement = await _movementRepo.GetLastMovement();
 
-		//	int warehouse = (int)obj.ProductsFlow.WarehouseId;
-		//	int movement = lastMovement.Id;
+			int movement = lastMovement.Id;
 
-		//	for (int i = 0; i < productItems.Count(); i++)
-		//	{
-		//		ProductsFlow productFlowToAdd = new ProductsFlow()
-		//		{
-		//			Quantity = obj.ProductsFlows[i].Quantity,
-		//			WarehouseMovementId = movement,
-		//			WarehouseId = warehouse,
-		//			ProductId = obj.ProductsFlows[i].ProductId,
-		//			SupplierId = obj.ProductsFlows[i].SupplierId
-		//		};
+			List<ProductsFlow> products = new List<ProductsFlow>();
 
-		//		await _comboService.CreateProductFlow(productFlowToAdd);
-		//	}
+			int zm = productItems.Count;
 
-		//	return RedirectToAction("Index");
-		//}
+			for (int i = 0; i < productItems.Count(); i++)
+			{
+				products.Add(new ProductsFlow()
+				{
+					Quantity = obj.ProductFlowModels[i].Quantity,
+					WarehouseMovementId = movement,
+					WarehouseId = await _warehouseRepo.GetWarehouseIdByName(obj.Warehouse),
+					ProductId = await _productRepo.GetProductIdByCode(obj.ProductFlowModels[i].ItemCode),
+					SupplierId = await _supplierRepo.GetSupplierIdByName(obj.ProductFlowModels[i].Supplier)
+				});				
+			}
 
-		//public async Task<IActionResult> CreateWz()
-		//{
-		//	return View(await SetComboBoxForMovement());
-		//}
+			var zm2 = products;
 
-		//[HttpPost]
-		//public async Task<IActionResult> CreateWz(ProductFlowMovementModel obj)
-		//{
-		//	if (string.IsNullOrEmpty(obj.WarehouseMovement.Document) || obj.Warehouse.Id != null)
-		//	{
-		//		return RedirectToAction("CreateWz");
-		//	}
+			await _productFlowRepo.CreateRange(products);
 
-		//	List<string> productItems = new List<string>();
+			return RedirectToAction("Index");
+		}
 
-		//	for (int i = 0; i < obj.ProductsFlows.Length; i++)
-		//	{
-		//		if (obj.ProductsFlows[i].ProductId != null)
-		//		{
-		//			productItems.Add(obj.ProductsFlows[i].ProductId.ToString());
-		//		}
-		//	}
+		public async Task<IActionResult> CreateWz()
+		{
+			return View(await SetComboBoxForMovement());
+		}
 
-		//	int? itemsBeforeDistinct = productItems.Count();
-		//	int? itemsAfterDistinct = productItems.Distinct().Count();
+		[HttpPost]
+		public async Task<IActionResult> CreateWz(ProductFlowMovementModel obj)
+		{
+			if (string.IsNullOrEmpty(obj.Document) || string.IsNullOrEmpty(obj.Warehouse))
+			{
+				return RedirectToAction("CreateWz");
+			}
+			else if (!await _movementRepo.IsDocumentNameUnique(obj.Document))
+			{
+				return RedirectToAction("CreateWz");
+			}
 
-		//	if (itemsBeforeDistinct != itemsAfterDistinct)
-		//	{
-		//		return RedirectToAction("CreateWz");
-		//	}
+			List<string> productItems = new List<string>();
 
-		//	for (int i = 0; i < productItems.Count(); i++)
-		//	{
-		//		if (obj.ProductsFlows[i].Quantity <= 0)
-		//		{
-		//			return RedirectToAction("CreateWz");
-		//		}
-		//	}
+			for (int i = 0; i < obj.ProductFlowModels.Length; i++)
+			{
+				if (obj.ProductFlowModels[i] != null && obj.ProductFlowModels[i].ItemCode != null && obj.ProductFlowModels[i].Supplier != null)
+				{
+					productItems.Add(obj.ProductFlowModels[i].ItemCode);
+				}
+			}
 
-		//	WarehouseMovement warMove = new WarehouseMovement()
-		//	{
-		//		Document = obj.WarehouseMovement.Document,
-		//		MovementType = MovementType.WZ
-		//	};
+			int? itemsBeforeDistinct = productItems.Count();
+			int? itemsAfterDistinct = productItems.Distinct().Count();
 
-		//	var insertDate = DateTime.Now;
-		//	string warehouse = obj.Warehouse.Name;
-		//	List<ProductsFlow> productsFlowToAdd = new List<ProductsFlow>();
+			if (itemsBeforeDistinct != itemsAfterDistinct)
+			{
+				return RedirectToAction("CreateWz");
+			}
 
-		//	foreach (var item in obj.ProductsFlows)
-		//	{
-		//		if (item.Quantity > 0 && item.ProductId != null)
-		//		{
-		//			var productsFlow = await _comboService.GetAllProductFlowModel(item.Product.ItemCode, obj.Warehouse.Name);
-		//			productsFlow = productsFlow.Where(x => x.CreationDate > insertDate).ToList();
+			for (int i = 0; i < productItems.Count(); i++)
+			{
+				if (obj.ProductFlowModels[i].Quantity <= 0)
+				{
+					return RedirectToAction("CreateWz");
+				}
+			}
 
-		//			int howManyRecords = productsFlow.Count;
-		//			int minValue = (howManyRecords > 1) ? productsFlow.Min(x => x.Cumulative) : item.Quantity;
+			MovementModel warMove = new MovementModel()
+			{
+				Document = obj.Document,
+				MovementType = MovementType.WZ
+			};
 
-		//			if (minValue < item.Quantity)
-		//			{
-		//				return RedirectToAction("CreateWz");
-		//			}
+			var insertDate = DateTime.Now;
+			string warehouse = obj.Warehouse;
 
-		//			item.WarehouseId = obj.Warehouse.Id;
-		//			item.ProductId = obj.Product.Id;
-		//			item.SupplierId = obj.Supplier.Id;
-		//			item.Quantity = -item.Quantity;
+			List<ProductsFlow> productsFlowToAdd = new List<ProductsFlow>();
 
-		//			productsFlowToAdd.Add(item);
-		//		}				
-		//	}
+			for (int i = 0; i < productItems.Count; i++)
+			{
+				string itemCode = obj.ProductFlowModels[i].ItemCode;
+				int qty = obj.ProductFlowModels[i].Quantity;
+				string supplierName = obj.ProductFlowModels[i].Supplier;
 
-		//	await _comboService.CreateMovement(warMove);
+				if (qty > 0 && itemCode != null)
+				{
+					List<ProductFlowModel> cumList = await _productFlowRepo.GetAllCumulative(itemCode, warehouse);
 
-		//	var lastMovement = await _comboService.GetLastMovement();
-		//	string docNo = lastMovement.Document;
-		//	int lastMovementId = lastMovement.Id;
+					int actualAmount = cumList.Last().Cumulative;
 
-		//	foreach (var item in productsFlowToAdd)
-		//	{
-		//		item.WarehouseMovementId = lastMovementId;
-		//	}
+					if (actualAmount >= qty)
+					{
+						productsFlowToAdd.Add(new ProductsFlow()
+						{
+							ProductId = await _productRepo.GetProductIdByCode(itemCode),
+							Quantity = -qty,
+							WarehouseId = await _warehouseRepo.GetWarehouseIdByName(warehouse),
+							SupplierId = await _supplierRepo.GetSupplierIdByName(supplierName)
+						});
+					}
+					else
+					{
+						return RedirectToAction("CreateWz");
+					}
+				}
+			}
 
-		//	int? wareId = productsFlowToAdd[0].Warehouse.Id;
+			await _movementRepo.Create(warMove);
 
-		//	await _comboService.CreateProductFlowList(productsFlowToAdd);
+			var lastMovement = await _movementRepo.GetLastMovement();
+			int lastMovementId = lastMovement.Id;
 
-		//	return RedirectToAction("Index");
-		//}
+			foreach (var item in productsFlowToAdd)
+			{
+				item.WarehouseMovementId = lastMovementId;
+			}
+
+			await _productFlowRepo.CreateRange(productsFlowToAdd);
+
+			return RedirectToAction("Index");
+		}
+
+		public async Task<IActionResult> Delete(int id)
+		{
+			var movement = await _movementRepo.GetById(id);
+			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
+			string warehouse = productFlows.FirstOrDefault(x => x.MovementId == id).Warehouse;
+
+			ProductFlowMovementModel obj = new ProductFlowMovementModel()
+			{
+				Document = movement.Document,
+				Warehouse = warehouse
+			};
+
+			for (int i = 0; i < productFlows.Count; i++)
+			{
+				obj.ProductFlowModels[i] = productFlows[i];
+			}
+
+			return View(obj);
+		}
+
+		public async Task<IActionResult> DeletePost(int id)
+		{
+			var movement = await _movementRepo.GetById(id);
+			
+			if (movement.MovementType == MovementType.WZ)
+			{
+				await _movementRepo.DeleteById(id);
+				return RedirectToAction("Index");
+			}
+
+			var productFlowsWithinMove = await _productFlowRepo.GetProductFlowsByMoveId(id);
+			string warehouse = productFlowsWithinMove.FirstOrDefault().Warehouse;
+			DateTime insertDate = movement.CreationDate;
+
+			foreach (var item in productFlowsWithinMove)
+			{
+				string itemCode = item.ItemCode;
+				int qty = item.Quantity;
+				var prodFlows = await _productFlowRepo.GetAllCumulative(itemCode, warehouse);
+				var prodFlowsLimited = prodFlows.Where(x => x.CreationDate > insertDate).ToList();
+
+				int counter = prodFlowsLimited.Count;
+				int minValue = 0;
+
+				if (counter == 0)
+				{
+					minValue = item.Cumulative;
+				}
+				else
+				{
+					minValue = prodFlowsLimited.Min(x => x.Cumulative);
+				}
+
+				if (minValue < qty)
+				{
+					return BadRequest();
+				}
+			}
+
+			await _movementRepo.DeleteById(id);
+
+			return RedirectToAction("Index");
+		}
 	}
 }

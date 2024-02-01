@@ -11,10 +11,10 @@ namespace WebAppWare.Controllers
         {
 			_warehouseRepo = warehouseRepo;
         }
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult<List<WarehouseModel>>> Index()
 		{
-			//var result = await _warehouseRepo.GetAll();
-			return View();
+			var warehouses = await _warehouseRepo.GetAll();
+			return View(warehouses);
 		}
 
 		public IActionResult Create()
@@ -23,14 +23,14 @@ namespace WebAppWare.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(WarehouseModel warehouse)
+		public async Task<IActionResult> Create(WarehouseModel model)
 		{
 			if (ModelState.IsValid)
 			{
-                await _warehouseRepo.Add(warehouse);
-                return RedirectToAction("Index");
-            }
-
+				await _warehouseRepo.Add(model);
+				return RedirectToAction("Index");
+			}
+	
 			return View();
 		}
 
@@ -59,10 +59,16 @@ namespace WebAppWare.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Delete(WarehouseModel warehouse)
+		public async Task<IActionResult> Delete(WarehouseModel model)
 		{
-			await _warehouseRepo.Delete(warehouse);
+			await _warehouseRepo.Delete(model);
 			return RedirectToAction("Index");
+		}
+
+		public async Task<IActionResult> TotalAmount()
+		{
+			var totalAmount = await _warehouseRepo.GetProductsAmount();
+			return View(totalAmount);
 		}
 	}
 }

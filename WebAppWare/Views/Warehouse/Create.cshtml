@@ -1,21 +1,21 @@
-﻿@* @using WebAppWare.Infrastructure
-@model Warehouse
+﻿@model WarehouseModel
 
 <h4 class="pb-2">Dodawanie magazynu</h4>
 
 <div class="col-4 row form-group">
 	<form method="post" class="row" asp-controller="Warehouse" asp-action="Create">
-		<label class="ms-2 pb-2" asp-for="Name"></label>	
-		<input class="form-control border-0 shadow mb-2" name="Name" asp-for="Name" />
-		<span class="text-bg-danger" asp-validation-for="Name"></span>
+		<label class="ms-2 pb-2" asp-for="Name">Nazwa magazynu:</label>	
+		<input class="form-control border-0 shadow mb-2" asp-for="Name" />
+		<span class="text-danger" asp-validation-for="Name"></span>
 
 
 		<label class="ms-2 pb-2" asp-for="IsActive" >Czy aktywny?</label>
-		<input class="ms-2 mb-2" asp-for="IsActive" name="IsActive" type="checkbox" checked/>
-		<span class="text-bg-danger" asp-validation-for="IsActive"></span>
-		<button type="submit" class="btn btn-success form-control mb-2">Dodaj</button>
+		<input class="ms-2 mb-2" asp-for="IsActive" type="checkbox" checked/>
+		<span class="text-danger" asp-validation-for="IsActive"></span>
 		
+		<button type="submit" class="btn btn-success form-control mb-2">Dodaj</button>
+		<a class="btn btn-secondary" asp-controller="Warehouse" asp-action="Index">Wróć do listy</a>
 	</form>
-
-	<a class="btn btn-secondary" asp-controller="Warehouse" asp-action="Index">Wróć do listy</a>
-</div> *@
+	
+	
+</div>

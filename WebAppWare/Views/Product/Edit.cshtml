@@ -1,18 +1,17 @@
-﻿@* @using WebAppWare.Infrastructure
-@model Product
+﻿@model ProductModel
 
 <h4 class="pb-2">Edycja produktu</h4>
 
 <div class="col-4 row form-group">
 	<form method="post" class="row" asp-controller="Product" asp-action="Edit">
-		<label class="ms-2 pb-2" asp-for="ItemCode">Indeks</label>
+		<label class="ms-2 pb-2" asp-for="ItemCode">Indeks:</label>
 		<input class="form-control border-0 shadow mb-2" asp-for="ItemCode" />
 		<span class="text-bg-danger" asp-validation-for="ItemCode"></span>
 
-		<label class="ms-2" asp-for="Description">Opis</label>
+		<label class="ms-2" asp-for="Description">Opis:</label>
 		<input class="form-control border-0 shadow mb-2" asp-for="Description" />
 		<span class="text-bg-danger" asp-validation-for="Description"></span>
 		<button type="submit" class="btn btn-primary form-control mb-2">Aktualizuj</button>
 		<a class="btn btn-secondary" asp-controller="Product" asp-action="Index">Wróć do listy</a>
 	</form>
-</div> *@
+</div>

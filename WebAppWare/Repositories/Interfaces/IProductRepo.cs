@@ -10,6 +10,7 @@ namespace WebAppWare.Repositories.Interfaces;
 public interface IProductRepo
 {
 	Task<List<ProductModel>> GetAll();
+	Task<int> GetProductIdByCode(string itemCode);
 	Task Add(ProductModel product);
 	Task<ProductModel> GetById(int id);
 	Task Update(ProductModel product);

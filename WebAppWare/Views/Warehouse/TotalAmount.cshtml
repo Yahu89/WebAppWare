@@ -1,0 +1,37 @@
+﻿@model List<ProductsAmountModel>
+
+<div class="col-10 row">
+	<h4 class="mb-2">Podsumowanie produktów: </h4>
+
+	<table class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+		<th>
+			Index
+		</th>
+		<th>
+			Magazyn
+		</th>
+		<th>
+			Ilość
+		</th>
+		</thead>
+
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@item.ItemCode
+					</td>
+					<td>
+						@item.Warehouse
+					</td>
+					<td>
+						@item.TotalAmount
+					</td>
+				</tr>
+			}
+		</tbody>
+
+
+	</table>

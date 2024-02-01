@@ -1,15 +1,16 @@
-﻿@* @using WebAppWare.Infrastructure
-@model Supplier
+﻿@model SupplierModel
 
 <h4 class="pb-2">Usuwanie dostawcy</h4>
 
 <div class="col-4 row form-group">
 	<form method="post" class="row" asp-controller="Supplier" asp-action="Delete">
-		<label class="ms-2 mb-2" asp-for="@Model.Name">Nazwa:</label>
+		<label class="ms-2 mb-2" asp-for="@Model.Name">Nazwa dostawcy:</label>
 		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Name" />
+
 		<label class="ms-2 mb-2" asp-for="@Model.Email">Adres e-mail:</label>
 		<input class="form-control border-0 shadow mb-5" disabled asp-for="@Model.Email" />
+
 		<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
 		<a class="btn btn-secondary" asp-controller="Supplier" asp-action="Index">Wróć do listy</a>
 	</form>
-</div> *@
+</div>

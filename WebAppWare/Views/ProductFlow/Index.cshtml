@@ -44,11 +44,11 @@
 			@foreach (var item in Model)
 			{
 				<tr>
-					@* <td>
+					<td>
 						@item.Id
 					</td>
 					<td>
-						@item.MoveId
+						@item.MovementId
 					</td>
 					<td>
 						@item.MovementType
@@ -69,8 +69,8 @@
 						@item.CreationDate
 					</td>
 					<td>
-						<a class="btn btn-danger mb-2" asp-controller="ProductsFlow" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
-					</td> *@
+						<a class="btn btn-danger mb-2" asp-controller="ProductFlow" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+					</td>
 				</tr>
 			}
 
@@ -78,4 +78,11 @@
 	</table>
 
 </div>
-
+Wyświetl na stronie:
+<div class="col-1">
+<select class="form-select border-0 shadow mb-2">
+	<option selected>20</option>
+	<option>50</option>
+	<option>100</option>
+</select>
+</div>

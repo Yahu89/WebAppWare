@@ -7,15 +7,15 @@ namespace WebAppWare.Database.Entities;
 
 public partial class Warehouse
 {
-    public int? Id { get; set; } = null;
+    public int Id { get; set; }
 
-    [DisplayName("Nazwa")]
-    [Required(ErrorMessage = "Pole jest wymagane")]
-    [MaxLength(100)]
+    //[DisplayName("Nazwa")]
+    //[Required(ErrorMessage = "Pole jest wymagane")]
+    //[MaxLength(100)]
     
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; }
 
-    [DisplayName("Czy aktywny")]
+    //[DisplayName("Czy aktywny")]
     //[Required]
     public bool IsActive { get; set; } = true;
 

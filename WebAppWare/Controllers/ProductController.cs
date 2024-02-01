@@ -27,10 +27,10 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-                await _productRepo.Add(product);
-                return RedirectToAction("Index");
-            }
-			
+				await _productRepo.Add(product);
+				return RedirectToAction("Index");
+			}			
+
 			return View();
 		}
 

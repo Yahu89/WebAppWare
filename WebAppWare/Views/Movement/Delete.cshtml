@@ -1,0 +1,30 @@
+﻿@model ProductFlowMovementModel
+
+<h4 class="pb-2">Usuwaie ruchu (@Model.Document)</h4>
+
+<form method="post" class="row" asp-controller="Movement" asp-action="DeletePost" asp-route-id="@Model.ProductFlowModels[0].MovementId">
+
+@foreach (var item in Model.ProductFlowModels)
+	{
+		if (item.ItemCode != null && item.Quantity != 0)
+		{
+			<div class="col-2 row form-group m-lg-2">
+
+				<label class="ms-2 pb-2" asp-for="@item.ItemCode">Indeks:</label>
+				<input class="form-control border-0 shadow mb-2" disabled asp-for="@item.ItemCode" />
+
+				<label class="ms-2 pb-2" asp-for="@item.Supplier">Dostawca:</label>
+				<input class="form-control border-0 shadow mb-2" disabled asp-for="@item.Supplier" />
+
+				<label class="ms-2 pb-2" asp-for="@item.Quantity">Ilość:</label>
+				<input class="form-control border-0 shadow mb-2" disabled asp-for="@item.Quantity" />
+
+			</div>
+		}
+
+	}
+
+	<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
+	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
+
+</form>

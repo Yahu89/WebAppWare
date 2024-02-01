@@ -8,6 +8,10 @@ namespace WebAppWare.Repositories.Interfaces;
 
 public interface IMovementRepo
 {
-	Task<List<WarehouseMovementModel>> GetAll();
-
+	Task<List<MovementModel>> GetAll();
+	Task<MovementModel> GetById(int id);
+	Task<bool> IsDocumentNameUnique(string inputName);
+	Task Create(MovementModel model);
+	Task<MovementModel> GetLastMovement();
+	Task DeleteById(int id);
 }

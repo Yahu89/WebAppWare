@@ -1,0 +1,34 @@
+﻿@model ProductFlowModel
+
+<h4 class="pb-2">Usuwanie rekordu</h4>
+
+<div class="col-4 row form-group">
+	<form method="post" class="row" asp-controller="ProductFlow" asp-action="DeletePost" asp-route-id="@Model.Id">
+		<label class="ms-2 pb-2" asp-for="@Model.Id"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Id" />
+
+		<label class="ms-2 pb-2" asp-for="@Model.ItemCode"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.ItemCode" />
+
+		<label class="ms-2" asp-for="@Model.MovementType"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.MovementType" />
+
+		<label class="ms-2" asp-for="@Model.MovementId"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.MovementId" />
+
+		<label class="ms-2" asp-for="@Model.Warehouse"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Warehouse" />
+
+		<label class="ms-2" asp-for="@Model.Quantity"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Quantity" />
+
+		<label class="ms-2" asp-for="@Model.Supplier"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Supplier" />
+
+		<label class="ms-2" asp-for="@Model.CreationDate"></label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.CreationDate" />
+
+		<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
+		<a class="btn btn-secondary" asp-controller="ProductFlow" asp-action="Index">Wróć do listy</a>
+	</form>
+</div>

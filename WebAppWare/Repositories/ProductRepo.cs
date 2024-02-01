@@ -13,6 +13,7 @@ namespace WebAppWare.Repositories;
 public class ProductRepo : IProductRepo
 {
 	private readonly WarehouseDbContext _dbContext;
+
 	private Expression<Func<Product, ProductModel>> MapToModel = e => new ProductModel
 	{
 		Id = e.Id,
@@ -20,7 +21,7 @@ public class ProductRepo : IProductRepo
 		ImgUrl = e.ImgUrl,
 		ItemCode = e.ItemCode,
 	};
-	private Expression<Func<ProductModel, Product>> MapToEntity = e => new Product
+	private Expression<Func<ProductModel, Product>> MapToEntity = e => new Product()
 	{
 		Id = e.Id,
 		Description = e.Description,
@@ -35,7 +36,6 @@ public class ProductRepo : IProductRepo
 
 	public async Task Add(ProductModel model)
 	{
-		//			 MapToEntity          (model)
 		var entity = MapToEntity.Compile().Invoke(model);
 		_dbContext.Products.Add(entity);
 		await _dbContext.SaveChangesAsync();
@@ -67,6 +67,13 @@ public class ProductRepo : IProductRepo
 			throw new Exception("There is no product with id" + id);
 
 		return result;
+	}
+
+	public async Task<int> GetProductIdByCode(string itemCode)
+	{
+		var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.ItemCode == itemCode);
+		int id = product.Id;
+		return id;
 	}
 
 	public async Task Update(ProductModel model)
