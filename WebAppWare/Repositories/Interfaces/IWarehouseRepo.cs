@@ -9,7 +9,7 @@ namespace WebAppWare.Repositories.Interfaces;
 
 public interface IWarehouseRepo
 {
-	Task<List<WarehouseModel>> GetAll();
+	Task<IEnumerable<WarehouseModel>> GetAll();
 	Task<int> GetWarehouseIdByName(string name);
 	Task Add(WarehouseModel model);
 	Task Update(WarehouseModel warehouse);

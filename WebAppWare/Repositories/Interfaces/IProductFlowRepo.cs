@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebAppWare.Database.Entities;
-using WebAppWare.Models;
+﻿using WebAppWare.Models;
 
 namespace WebAppWare.Repositories.Interfaces;
 
 public interface IProductFlowRepo
 {
     Task<List<ProductFlowModel>> GetAll();
-    Task<List<ProductFlowModel>> GetAllCumulative(string itemCode, string warehouse);
+    Task<IEnumerable<ProductFlowModel>> GetAllCumulative(int prodId, int wareId);
     Task<ProductFlowModel> GetById(int id);
     Task<List<ProductFlowModel>> GetProductFlowsByMoveId(int id);
-    Task CreateRange(List<ProductsFlow> model);
-    Task DeleteById(int id);
+    Task<IEnumerable<ProductFlowModel>> GetBySearch(string warehouse, string itemCode, string supplier);
+    Task CreateRange(IEnumerable<ProductFlowModel> model, int id);
+	Task DeleteById(int id);
+    Task DeleteRange(IEnumerable<ProductFlowModel> model);
 }

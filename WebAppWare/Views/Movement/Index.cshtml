@@ -1,11 +1,20 @@
-﻿@model List<MovementModel>
+﻿@using WebAppWare.Database.Entities
+@model List<MovementModel>
 
-	<div class="col-2 row">
-	<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreatePz">Dodaj PZ</a>
-	<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreateWz">Dodaj WZ</a>
+<div class="row">
+	<div class="col-2">
+		<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreatePz">Dodaj PZ</a>
+	</div>
+	<div class="col-2">
+		<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreateWz">Dodaj WZ</a>
+	</div>
+	<div class="col-2">
+		<a class="btn btn-success mb-2" asp-controller="Movement" asp-action="CreateMm">Dodaj MM</a>
+	</div>
 </div>
 
-<div class="col-10 row">
+
+<div class="col-8 row">
 	<h4 class="mb-2">Lista ruchów magazynowych: </h4>
 
 	<table class="table table-bordered table-striped" style="width: 70%">
@@ -25,12 +34,22 @@
 		<th>
 
 		</th>
+		<th>
+
+		</th>
 
 		</thead>
 
 		<tbody>
 			@foreach (var movement in Model)
 			{
+				string action = "Delete";
+
+				if (movement.MovementType == MovementType.MM)
+				{
+					action = "DeleteMmM";
+				}
+
 				<tr>
 					<td>
 						@movement.Id
@@ -45,7 +64,11 @@
 						@movement.CreationDate
 					</td>
 					<td>
-						<a class="btn btn-danger" asp-controller="Movement" asp-action="Delete" asp-route-id="@movement.Id">Usuń</a>
+
+						<a class="btn btn-danger" asp-controller="Movement" asp-action="@action" asp-route-id="@movement.Id">Usuń</a>
+					</td>
+					<td>
+						<a class="btn btn-secondary" asp-controller="Movement" asp-action="PdfGenerate">PDF</a>
 					</td>
 				</tr>
 			}

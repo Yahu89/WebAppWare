@@ -50,7 +50,7 @@ public class ProductRepo : IProductRepo
 		await _dbContext.SaveChangesAsync();
 	}
 
-	public async Task<List<ProductModel>> GetAll()
+	public async Task<IEnumerable<ProductModel>> GetAll()
 	{
 		return await _dbContext.Products
 			.Select(MapToModel)

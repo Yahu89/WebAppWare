@@ -1,35 +1,33 @@
 ﻿@using WebAppWare.Database.Entities
-@* @model List<ProductFlowModel> *@
 @model ProductFlowSearchModel
 
 <h4 class="pb-2">Przepływ produktów we wszystkich magazynach</h4>
 
 <form method="post" class="row" asp-controller="ProductFlow" asp-action="Search">
-<div class="container">
-	<div class="row">
-		<div class="col-md-2">
-			<label class="ms-2">Magazyn:</label>
-			<input class="form-control border-0 shadow mb-4" asp-for="@Model.Warehouse" />
-		</div>
-		<div class="col-md-2">
-			<label class="ms-2">Index:</label>
-			<input class="form-control border-0 shadow mb-4" asp-for="@Model.ItemCode"/>
-		</div>
-		<div class="col-md-2">
-			<label class="ms-2">Dostawca:</label>
-			<input class="form-control border-0 shadow mb-4" asp-for="@Model.Supplier" />
-		</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-2">
+				<label class="ms-2">Magazyn:</label>
+				<input class="form-control border-0 shadow mb-4" asp-for="@Model.Warehouse" />
+			</div>
+			<div class="col-md-2">
+				<label class="ms-2">Index:</label>
+				<input class="form-control border-0 shadow mb-4" asp-for="@Model.ItemCode" />
+			</div>
+			<div class="col-md-2">
+				<label class="ms-2">Dostawca:</label>
+				<input class="form-control border-0 shadow mb-4" asp-for="@Model.Supplier" />
+			</div>
 
-		<div class="col-md-2">
+			<div class="col-md-2">
 				<button type="submit" class="btn btn-success form-control mb-2">Szukaj</button>
+			</div>
 
-		</div>
-
-		<div class="col-md-2">
-			<a class="btn btn-secondary mb-2" asp-controller="ProductFlow" asp-action="Index">Pokaż wszystkie</a>
+			<div class="col-md-2">
+				<a class="btn btn-secondary mb-2" asp-controller="ProductFlow" asp-action="Index">Pokaż wszystkie</a>
+			</div>
 		</div>
 	</div>
-</div>
 </form>
 
 

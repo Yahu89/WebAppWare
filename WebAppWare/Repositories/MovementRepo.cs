@@ -37,11 +37,14 @@ public class MovementRepo : IMovementRepo
         _dbContext = dbContext;
     }
 
-	public async Task Create(MovementModel model)
+	public async Task<int> Create(MovementModel model)
 	{
 		var movement = MapToEntity.Compile().Invoke(model);
 		_dbContext.WarehouseMovements.Add(movement);
+
 		await _dbContext.SaveChangesAsync();
+
+		return movement.Id;
 	}
 
 	public async Task DeleteById(int id)
@@ -81,6 +84,20 @@ public class MovementRepo : IMovementRepo
 	{
 		var isNotUnique = await _dbContext.WarehouseMovements.Select(MapToModel).AnyAsync(x => x.Document == inputName);
 		return !isNotUnique;
+	}
+
+	public async Task<string> SetMovementNumber(DateTime date, MovementType movementType)
+	{
+		var recordsPerDate = await _dbContext.WarehouseMovements.Select(MapToModel).Where(x => x.CreationDate.Date == date).ToListAsync();
+		string counter = (recordsPerDate.Count + 1).ToString();
+
+		if (counter.Length == 1)
+		{
+			counter = "0" + counter;
+		}
+
+		string docNumber = movementType.ToString() + date.Day.ToString("00") + date.Month.ToString("00") + date.Year.ToString().Substring(2) + counter;
+		return docNumber;
 	}
 
 

@@ -10,11 +10,31 @@
 		<span class="text-danger" asp-validation-for="@Model.Document"></span>
 	</div>
 
+	@* @for (var i = 0; i < Model.ProductFlowModels.Length; i++)
+	{
+		<div class="col-2 row form-group m-lg-2">
 
-	<div class="col-2 row form-group m-lg-2">
+			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].ProductId">Indeks:</label>
+			<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[i].ProductId">
+				<option disabled selected>-- Wybierz towar --</option>
+			</select>
 
-		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[0].ItemCode">Indeks:</label>
-		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[0].ItemCode">
+			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].Supplier">Dostawca:</label>
+			<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductFlowModels[i].SupplierId">
+				<option disabled selected>-- Wybierz dostawcę --</option>
+			</select>
+
+			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].Quantity">Ilość:</label>
+			<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductFlowModels[i].Quantity" />
+
+		</div>
+	} *@
+
+
+@* 	<div class="col-2 row form-group m-lg-2">
+
+		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[0].ProductItemCode">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[0].ProductId">
 			<option disabled selected>-- Wybierz towar --</option>
 		</select>
 
@@ -30,8 +50,8 @@
 
 	<div class="col-2 row form-group m-lg-2">
 
-		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[1].ItemCode">Indeks:</label>
-		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[1].ItemCode">
+		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[1].ProductItemCode">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[1].ProductId">
 			<option disabled selected>-- Wybierz towar --</option>
 		</select>
 
@@ -47,8 +67,8 @@
 
 	<div class="col-2 row form-group m-lg-2">
 
-		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[2].ItemCode">Indeks:</label>
-		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[2].ItemCode">
+		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[2].ProductItemCode">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[2].ProductId">
 			<option disabled selected>-- Wybierz towar --</option>
 		</select>
 
@@ -64,8 +84,8 @@
 
 	<div class="col-2 row form-group m-lg-2">
 
-		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[3].ItemCode">Indeks:</label>
-		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[3].ItemCode">
+		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[3].ProductItemCode">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[3].ProductId">
 			<option disabled selected>-- Wybierz towar --</option>
 		</select>
 
@@ -81,8 +101,8 @@
 
 	<div class="col-2 row form-group m-lg-2">
 
-		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[4].ItemCode">Indeks:</label>
-		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[4].ItemCode">
+		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[4].ProductItemCode">Indeks:</label>
+		<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[4].ProductId">
 			<option disabled selected>-- Wybierz towar --</option>
 		</select>
 
@@ -94,10 +114,10 @@
 		<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[4].Quantity">Ilość:</label>
 		<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductFlowModels[4].Quantity" />
 
-	</div>
+	</div> *@
 
 	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Magazyn:</label>
-	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.Warehouse">
+	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
 		<option disabled selected>-- Wybierz magazyn --</option>
 	</select>
 	<span class="text-danger" asp-validation-for="@Model.Warehouse"></span>

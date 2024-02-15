@@ -1,9 +1,8 @@
-﻿
-
-namespace WebAppWare.Database.Entities;
+﻿namespace WebAppWare.Database.Entities;
 
 public enum MovementType
 {
 	PZ = 1,
-	WZ = 2
+	WZ = 2,
+	MM = 3
 }

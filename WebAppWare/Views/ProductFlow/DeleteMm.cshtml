@@ -1,0 +1,28 @@
+﻿@model List<ProductFlowModel>
+
+<h4 class="pb-2">Usuwanie MM</h4>
+
+<div class="col-4 row form-group">
+	<form method="post" class="row" asp-controller="ProductFlow" asp-action="DeleteMmPost" asp-route-id="@Model[0].Id">
+		<label class="ms-2 pb-2" asp-for="@Model[0].DocumentNumber">Nr dokumentu</label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model[0].DocumentNumber" />
+
+		<label class="ms-2 pb-2" asp-for="@Model[0].ProductItemCode">Kod produktu</label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model[0].ProductItemCode" />
+
+		<label class="ms-2" asp-for="@Model[0].Warehouse">Z magazynu: </label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model[0].Warehouse" />
+
+		<label class="ms-2" asp-for="@Model[1].Warehouse">Do magazynu: </label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model[1].Warehouse" />
+
+		<label class="ms-2" asp-for="@Model[1].Quantity">Ilość</label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model[1].Quantity" />
+
+		<label class="ms-2" asp-for="@Model[0].CreationDate">Data utworzenia</label>
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model[0].CreationDate" />
+
+		<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
+		<a class="btn btn-secondary" asp-controller="ProductFlow" asp-action="Index">Wróć do listy</a>
+	</form>
+</div>

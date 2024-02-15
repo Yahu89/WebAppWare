@@ -3,7 +3,7 @@
 <div class="col-10 row">
 	<h4 class="mb-2">Lista produktów: </h4>
 
-	<table class="table table-bordered table-striped" style="width: 50%">
+	<table class="table table-bordered table-striped" style="width: 70%">
 		<thead>
 		<th>
 			ID
@@ -39,7 +39,12 @@
 						@product.Description
 					</td>
 					<td>
-						@product.ImgUrl
+
+						@if (!string.IsNullOrEmpty(product.ImgUrl))
+						{
+							<img src="@Url.Content(product.ImgUrl)" width="100" height="100" />
+						}
+						
 					</td>
 					<td>
 						<a class="btn btn-secondary" asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id">Edytuj</a>

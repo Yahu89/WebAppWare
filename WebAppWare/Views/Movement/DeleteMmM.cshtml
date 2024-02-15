@@ -2,9 +2,9 @@
 
 <h4 class="pb-2">Usuwaie ruchu (@Model.Document)</h4>
 
-@* <form method="post" class="row" asp-controller="Movement" asp-action="DeletePost" asp-route-id="@Model.ProductFlowModels[0].MovementId"> *@
+@* <form method="post" class="row" asp-controller="Movement" asp-action="DeletePost" asp-route-id="@Model.ProductFlowModels[0].MovementId">
 
-@* foreach (var item in Model.ProductFlowModels)
+	@foreach (var item in Model.ProductFlowModels)
 	{
 		if (item.ProductItemCode != null && item.Quantity != 0)
 		{
@@ -13,8 +13,6 @@
 				<label class="ms-2 pb-2" asp-for="@item.ProductItemCode">Indeks:</label>
 				<input class="form-control border-0 shadow mb-2" disabled asp-for="@item.ProductItemCode" />
 
-				<label class="ms-2 pb-2" asp-for="@item.Supplier">Dostawca:</label>
-				<input class="form-control border-0 shadow mb-2" disabled asp-for="@item.Supplier" />
 
 				<label class="ms-2 pb-2" asp-for="@item.Quantity">Ilość:</label>
 				<input class="form-control border-0 shadow mb-2" disabled asp-for="@item.Quantity" />
@@ -23,6 +21,12 @@
 		}
 
 	}
+
+	<label class="ms-2 pb-2" asp-for="@Model.Warehouse">Z magazynu:</label>
+	<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Warehouse" />
+
+	<label class="ms-2 pb-2" asp-for="@Model.WarehouseTo">Do magazynu:</label>
+	<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.WarehouseTo" />
 
 	<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
 	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>

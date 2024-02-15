@@ -16,11 +16,34 @@ namespace WebAppWare.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var result = await _productFlowRepo.GetAll();
-            return View(result);
+            var allProductFlows = await _productFlowRepo.GetAll();
+            ProductFlowSearchModel model = new ProductFlowSearchModel();
+            model.ProductsFlow = allProductFlows;
+            return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+		public async Task<IActionResult> Paging(PaginationResult obj)
+		{
+			int resultPerPage = obj.ResultsPerPage;
+			var allProductFlows = await _productFlowRepo.GetAll();
+
+			int recordsQty = allProductFlows.Count();
+            int pageNumber = obj.CurrentPageNumber;
+
+			decimal operationResult = ((decimal)recordsQty / resultPerPage);
+            int howManyPagesTotal = (int)Math.Ceiling(operationResult);
+
+			var takeResults = allProductFlows.Take(resultPerPage).ToList();
+
+			PaginationResult paginationResult = new PaginationResult();
+            paginationResult.ProductFlows = takeResults;
+            paginationResult.PagesQuantity = howManyPagesTotal;
+
+			return View(paginationResult);
+		}
+
+		public async Task<IActionResult> Delete(int id)
         {
             var result = await _productFlowRepo.GetById(id);
             return View(result);
@@ -48,17 +71,16 @@ namespace WebAppWare.Controllers
             }
 
             int qty = productFlowModel.Quantity;
-            string warehouse = productFlowModel.Warehouse;
-            string itemCode = productFlowModel.ItemCode;
             DateTime insertDate = productFlowModel.CreationDate;
 
-            List<ProductFlowModel> prodFlowCumulative = await _productFlowRepo.GetAllCumulative(itemCode, warehouse);
+            IEnumerable<ProductFlowModel> prodFlowCumulative = await _productFlowRepo.GetAllCumulative((int)productFlowModel.ProductId, 
+                (int)productFlowModel.WarehouseId);
 
             var prodFlowCumulativeLimited = prodFlowCumulative.Where(x => x.CreationDate > insertDate).ToList();
 
             int count = prodFlowCumulativeLimited.Count;
 
-            int minValue;
+            int minValue = 0;
 
             if (count > 0)
             {
@@ -66,7 +88,8 @@ namespace WebAppWare.Controllers
             }
             else
             {
-                minValue = prodFlowCumulative[0].Cumulative;
+                var list = (List<ProductFlowModel>)prodFlowCumulative;
+				minValue = list[0].Cumulative;
             }
 
             if (minValue >= qty)
@@ -82,6 +105,72 @@ namespace WebAppWare.Controllers
             }
 
             return BadRequest();
+        }
+
+        public async Task<IActionResult> DeleteMm(int id)
+        {
+            var productFlow = await _productFlowRepo.GetById(id);
+            int moveId = productFlow.MovementId;
+            int? productId = productFlow.ProductId;
+            var movement = await _movementRepo.GetById(moveId);
+            string docNumber = movement.Document;        
+
+            var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
+            var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();
+            pairProductFlows.ForEach(x => x.DocumentNumber = docNumber);
+
+            return View(pairProductFlows);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMmPost(int id)
+        {
+			var productFlow = await _productFlowRepo.GetById(id);
+			int moveId = productFlow.MovementId;
+			int productId = (int)productFlow.ProductId;
+            DateTime whenInserted = productFlow.CreationDate;
+
+			var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
+			var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();
+
+            int warehouseIdToCheck = (int)pairProductFlows[1].WarehouseId;
+            int qtyToCheck = pairProductFlows[1].Quantity;
+
+            var prodFlowsCumulative = await _productFlowRepo.GetAllCumulative(productId, warehouseIdToCheck);
+            var prodFlowsCumLimited = prodFlowsCumulative.Where(x => x.CreationDate > whenInserted).ToList();
+
+            int minValue = prodFlowsCumulative.FirstOrDefault(x => x.CreationDate == whenInserted).Cumulative;
+
+            if (prodFlowsCumLimited.Count > 0)
+            {
+                minValue = prodFlowsCumLimited.Min(x => x.Cumulative);
+            }
+
+            if (minValue < qtyToCheck)
+            {
+                return BadRequest();
+            }
+
+            if (productFlowsByMoveId.Count > 2)
+            {
+                await _productFlowRepo.DeleteRange(pairProductFlows);
+                return RedirectToAction(nameof(Index));
+			}
+            else if (productFlowsByMoveId.Count == 2)
+            {
+                await _movementRepo.DeleteById(moveId);
+                return RedirectToAction(nameof(Index));
+            }
+
+			return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Search(ProductFlowSearchModel model)
+        {
+            var results = await _productFlowRepo.GetBySearch(model.Warehouse, model.ItemCode, model.Supplier);
+            model.ProductsFlow = results;
+            return View(model);
         }
     }
 }

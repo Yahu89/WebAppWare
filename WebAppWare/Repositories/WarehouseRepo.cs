@@ -56,7 +56,7 @@ public class WarehouseRepo : IWarehouseRepo
 		await _dbContext.SaveChangesAsync();
 	}
 
-	public async Task<List<WarehouseModel>> GetAll()
+	public async Task<IEnumerable<WarehouseModel>> GetAll()
 	{
 		var entities = await _dbContext.Warehouses.Select(MapToModel).ToListAsync();
 		return entities;

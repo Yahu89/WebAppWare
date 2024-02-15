@@ -1,0 +1,104 @@
+﻿@* @model List<ProductFlowModel> *@
+@model PaginationResult
+
+<h4 class="pb-2">Przepływ produktów we wszystkich magazynach</h4>
+
+
+
+<div class="col-9 row">
+
+	<table class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+			<tr>
+				<th>
+					Id
+				</th>
+				<th>
+					Typ
+				</th>
+				<th>
+					Id Ruchu
+				</th>
+				<th>
+					Magazyn
+				</th>
+				<th>
+					Index
+				</th>
+				<th>
+					Ilość
+				</th>
+				<th>
+					Dostawca
+				</th>
+				<th>
+					Data utworzenia
+				</th>
+				<th>
+
+				</th>
+			</tr>
+		</thead>
+
+		<tbody>
+
+			@foreach (var item in Model.ProductFlows)
+			{
+				<tr>
+					<td>
+						@item.Id
+					</td>
+					<td>
+						@item.MovementId
+					</td>
+					<td>
+						@item.MovementType
+					</td>
+					<td>
+						@item.Warehouse
+					</td>
+					<td>
+						@item.ProductItemCode
+					</td>
+					<td>
+						@item.Quantity
+					</td>
+					<td>
+						@item.Supplier
+					</td>
+					<td>
+						@item.CreationDate
+					</td>
+					<td>
+						<a class="btn btn-danger mb-2" asp-controller="ProductFlow" asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+					</td>
+				</tr>
+			}
+
+		</tbody>
+	</table>
+
+</div>
+Wyświetl na stronie:
+<div class="col-1">
+
+	@using (Html.BeginForm("Paging", "ProductFlow", FormMethod.Post))
+	{
+		<select id="mojComboBox" onchange="this.form.submit()" asp-for="@Model.ResultsPerPage">
+			<option value="20">20</option>
+			<option value="50">50</option>
+			<option value="100">100</option>
+		</select>
+	}
+</div>
+
+<br />
+
+@if (Model.PagesQuantity > 1)
+{
+	for (int i = 1; i <= Model.PagesQuantity; i++)
+	{
+		@* <button class="btn btn-link">@i</button> *@
+		<a class="btn btn-link" value="@i" asp-route-obj="@Model.CurrentPageNumber" asp-controller="ProductFlow" asp-action="Paging">@i</a>
+	}
+}

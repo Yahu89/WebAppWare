@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using System.Web;
 
 namespace WebAppWare.Models
 {
@@ -12,5 +15,6 @@ namespace WebAppWare.Models
 		[Required(ErrorMessage = "Pole Opis jest wymagane")]
 		public string Description { get; set; }
 		public string ImgUrl { get; set; } = string.Empty;
-	}
+        public IFormFile ImageFile { get; set; }
+    }
 }

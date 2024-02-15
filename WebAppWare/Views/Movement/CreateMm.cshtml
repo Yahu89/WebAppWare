@@ -1,0 +1,42 @@
+﻿@model ProductFlowMovementModel
+
+<h4 class="pb-2">Dodawanie MM</h4>
+
+<form method="post" class="row" asp-controller="Movement" asp-action="CreateMm">
+
+	<div class="col-12">
+		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.Document" />
+		<span class="text-danger" asp-validation-for="@Model.Document"></span>
+	</div>
+
+	@* @for (var i = 0; i < Model.ProductFlowModels.Length; i++)
+	{
+		<div class="col-2 row form-group m-lg-2">
+
+			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].ProductId">Indeks:</label>
+			<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[i].ProductId">
+				<option disabled selected>-- Wybierz towar --</option>
+			</select>
+
+			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].Quantity">Ilość:</label>
+			<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductFlowModels[i].Quantity" />
+
+		</div>
+	} *@
+
+	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Z magazynu:</label>
+	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
+		<option disabled selected>-- Wybierz magazyn --</option>
+	</select>
+
+	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Do magazynu:</label>
+	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseToId">
+		<option disabled selected>-- Wybierz magazyn --</option>
+	</select>
+
+
+	<button type="submit" class="btn btn-success form-control mb-2">Dodaj</button>
+	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
+
+</form>

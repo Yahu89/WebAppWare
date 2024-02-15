@@ -22,27 +22,43 @@ public class ProductFlowRepo : IProductFlowRepo
         MovementId = x.WarehouseMovementId,
         MovementType = x.WarehouseMovement.MovementType,
         Warehouse = x.Warehouse.Name,
-        ItemCode = x.Product.ItemCode,
+        ProductItemCode = x.Product.ItemCode,
         Quantity = x.Quantity,
         Supplier = x.Supplier.Name,
-        CreationDate = x.WarehouseMovement.CreationDate
+        CreationDate = x.WarehouseMovement.CreationDate,
+        ProductId = x.Product.Id,
+        SupplierId = x.Supplier.Id,
+        WarehouseId = x.Warehouse.Id
     };
 
-    private Expression<Func<ProductFlowModel, ProductsFlow>> MapToEntity = x => new ProductsFlow()
-    {
-        Id = x.Id,
-        WarehouseMovementId = x.MovementId,
-        Quantity = x.Quantity,
-    };
+    //private Expression<Func<ProductFlowModel, ProductsFlow>> MapToEntity = x => new ProductsFlow()
+    //{
+    //    Id = x.Id,
+    //    WarehouseMovementId = x.MovementId,
+    //    Quantity = x.Quantity,
+    //    WarehouseId = x.WarehouseId,
+    //    ProductId = x.ProductId,
+    //    SupplierId = x.SupplierId
+    //};
 
     public ProductFlowRepo(WarehouseDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-	public async Task CreateRange(List<ProductsFlow> model)
+	public async Task CreateRange(IEnumerable<ProductFlowModel> model, int id)
 	{
-        _dbContext.ProductsFlows.AddRange(model);
+        var entities = model
+               .Select(x => new ProductsFlow()
+               {
+                   Quantity = x.Quantity,
+                   WarehouseMovementId = id,
+                   WarehouseId = x.WarehouseId,
+                   ProductId = x.ProductId,
+                   SupplierId = x.SupplierId,
+               });
+
+		_dbContext.ProductsFlows.AddRange(entities);
         await _dbContext.SaveChangesAsync();
 	}
 
@@ -57,6 +73,23 @@ public class ProductFlowRepo : IProductFlowRepo
 		}    
 	}
 
+	public async Task DeleteRange(IEnumerable<ProductFlowModel> model)
+	{
+        var result = model.Select(x => new ProductsFlow()
+        {
+            Id = x.Id,
+			Quantity = x.Quantity,
+			WarehouseMovementId = x.MovementId,
+			WarehouseId = x.WarehouseId,
+			ProductId = x.ProductId,
+			SupplierId = x.SupplierId
+		})
+                        .ToList();
+
+        _dbContext.ProductsFlows.RemoveRange(result);
+        await _dbContext.SaveChangesAsync();
+	}
+
 	public async Task<List<ProductFlowModel>> GetAll()
     {
         var result = await _dbContext.ProductsFlows.Select(MapToModel)
@@ -66,11 +99,11 @@ public class ProductFlowRepo : IProductFlowRepo
         return result;
     }
 
-	public async Task<List<ProductFlowModel>> GetAllCumulative(string itemCode, string warehouse)
+	public async Task<IEnumerable<ProductFlowModel>> GetAllCumulative(int prodId, int wareId)
 	{
 		var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
-                                                            .Where(x => x.ItemCode == itemCode)
-                                                            .Where(x => x.Warehouse == warehouse)
+                                                            .Where(x => x.ProductId == prodId)
+                                                            .Where(x => x.WarehouseId == wareId)
                                                             .OrderBy(x => x.CreationDate)
                                                             .ToListAsync();
 
@@ -96,9 +129,48 @@ public class ProductFlowRepo : IProductFlowRepo
         return productFlow;
 	}
 
+	public async Task<IEnumerable<ProductFlowModel>> GetBySearch(string warehouse, string itemCode, string supplier)
+	{
+        string[] content = new string[] { warehouse, itemCode, supplier };
+
+        var result = await _dbContext.ProductsFlows.Select(MapToModel).ToListAsync();
+
+        for (int i = 0; i < content.Length; i++)
+        {
+            if (!string.IsNullOrEmpty(content[i]))
+            {
+                switch (i)
+                {
+                    case 0:
+                        {
+                            result = result.Where(x => x.Warehouse.Contains(content[i])).ToList();
+                            break;
+                        }
+
+					case 1:
+						{
+							result = result.Where(x => x.ProductItemCode.Contains(content[i])).ToList();
+							break;
+						}
+
+					case 2:
+						{
+
+							result = result.Where(x => !string.IsNullOrEmpty(x.Supplier))
+                                            .Where(x => x.Supplier.Contains(content[i])).ToList();
+							break;
+						}
+				}
+            }
+        }
+
+        return result;
+	}
+
 	public async Task<List<ProductFlowModel>> GetProductFlowsByMoveId(int id)
 	{
 		var result = await _dbContext.ProductsFlows.Select(MapToModel).Where(x => x.MovementId == id).ToListAsync();
         return result;
 	}
+
 }

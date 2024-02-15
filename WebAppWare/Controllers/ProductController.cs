@@ -7,9 +7,12 @@ namespace WebAppWare.Controllers
 	public class ProductController : Controller
 	{
 		private readonly IProductRepo _productRepo;
-		public ProductController(IProductRepo productRepo)
+		private readonly IWebHostEnvironment _webHostEnvironment;
+		public ProductController(IProductRepo productRepo,
+								IWebHostEnvironment webHostEnvironment)
         {
 			_productRepo = productRepo;
+			_webHostEnvironment = webHostEnvironment;
         }
         public async Task<ActionResult<List<ProductModel>>> Index()
 		{
@@ -27,7 +30,18 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
+				string fileName = Path.GetFileNameWithoutExtension(product.ImageFile.FileName);
+				string extension = Path.GetExtension(product.ImageFile.FileName);
+				fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
+				fileName = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", fileName);
+
+				var stream = new FileStream(fileName, FileMode.Create);
+
+				await product.ImageFile.CopyToAsync(stream);
+				product.ImgUrl = fileName;
+
 				await _productRepo.Add(product);
+
 				return RedirectToAction("Index");
 			}			
 

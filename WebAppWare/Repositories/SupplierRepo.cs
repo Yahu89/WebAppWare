@@ -53,7 +53,7 @@ public class SupplierRepo : ISupplierRepo
 		await _dbContext.SaveChangesAsync();
 	}
 
-	public async Task<List<SupplierModel>> GetAll()
+	public async Task<IEnumerable<SupplierModel>> GetAll()
     {
 		var suppliers = await _dbContext.Suppliers.Select(MapToModel).ToListAsync();
 		return suppliers;
