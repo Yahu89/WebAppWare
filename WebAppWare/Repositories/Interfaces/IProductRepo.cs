@@ -15,4 +15,5 @@ public interface IProductRepo
 	Task<ProductModel> GetById(int id);
 	Task Update(ProductModel product);
 	Task Delete(ProductModel product);
+	Task<string> CreateProductImgUrl(ProductModel model);
 }

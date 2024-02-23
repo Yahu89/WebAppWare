@@ -18,6 +18,8 @@ builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<ISupplierRepo, SupplierRepo>();
 builder.Services.AddScoped<IProductFlowRepo, ProductFlowRepo>();
 builder.Services.AddScoped<IMovementRepo, MovementRepo>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IOrderDetailsRepo, OrderDetailsRepo>();
 
 var app = builder.Build();
 

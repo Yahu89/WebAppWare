@@ -1,0 +1,102 @@
+﻿@model OrderDetailsModelView
+
+
+<h4 class="pb-2">Edycja zamówienia</h4>
+
+<form method="post" class="row" asp-controller="Order" asp-action="ExecuteEditing">
+
+	<div class="row">
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
+			<input class="form-control border-0 shadow mb-2" value="@Model.Document" asp-for="@Model.Document" />
+			@* <span class="text-danger" asp-validation-for="@Model.Document"></span> *@
+		</div>
+
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.SupplierName">Dostawca:</label>
+			<select class="form-select border-0 shadow mb-2" asp-for="@Model.SupplierId">
+
+				@foreach (var item in Model.Suppliers)
+				{
+					if (item.Equals(Model.SupplierName))
+					{
+						<option value="@item.Value" selected>@item.Text</option>
+					}
+
+					<option value="@item.Value">@item.Text</option>
+				}
+
+			</select>
+			@* <span class="text-danger" asp-validation-for="@Model.SupplierName"></span> *@
+		</div>
+
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
+			<select class="form-select border-0 shadow mb-2" asp-for="@Model.Status">
+			@* <option disabled selected>@Model.Status</option>
+			<option>W przygotowaniu</option>
+			<option>Wysłano</option>
+			<option>Zrealizowane</option>
+			<option>Anulowane</option> *@
+			
+			@* <span class="text-danger" asp-validation-for="@Model.Status"></span> *@
+
+				@foreach (var item in Model.StatusList)
+				{
+					if (item.Equals(Model.Status))
+					{
+						<option value="@item.Value" selected>@item.Text</option>
+					}
+
+					<option value="@item.Value">@item.Text</option>
+				}
+
+			</select>
+		</div>
+
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.CreationDate">Data zamówienia:</label>
+			<input class="form-control border-0 shadow mb-2" type="date" value="@Model.CreationDate.Date.ToString("yyyy-MM-dd")" asp-for="@Model.CreationDate" />
+		</div>
+	</div>
+
+	<div id="items" class="d-flex">
+		@for (var i = 0; i < Model.OrderDetails.Count(); i++)
+		{
+			<div class="col-2 row form-group m-lg-2">
+
+				<label class="ms-2 pb-2" asp-for="@Model.OrderDetails[i].ProductId">Indeks:</label>
+				<select class="form-select border-0 shadow mb-2" asp-for="@Model.OrderDetails[i].ProductId">
+			@* <option disabled selected>@Model.OrderDetails[i].ProductItemCode</option> *@
+
+					@foreach (var item in Model.Products)
+					{
+						if (item.Text.Equals(Model.OrderDetails[i].ProductItemCode))
+						{
+							<option value="@item.Value" selected>@item.Text</option>
+						}
+
+						<option value="@item.Value">@item.Text</option>
+					}
+			
+			</select>
+
+				<label class="ms-2 pb-2" asp-for="@Model.OrderDetails[i].Quantity">Ilość:</label>
+				<input class="form-control border-0 shadow mb-2" asp-for="@Model.OrderDetails[i].Quantity" />
+
+			</div>
+		}
+	</div>
+
+	<div class="row">
+		<label class="ms-2 pb-2" asp-for="@Model.Remarks">Uwagi do zamówienia:</label>
+		<input class="form-control border-0 shadow mb-2" asp-for="@Model.Remarks" />
+	</div>
+
+	<button type="submit" class="btn btn-info form-control mb-2">Edytuj</button>
+	<a class="btn btn-secondary" asp-controller="Order" asp-action="Index">Wróć do listy</a>
+
+	<input class="form-control border-0 shadow mb-2" hidden value="@Model.OrderId" asp-for="@Model.OrderId" />
+
+</form>
+

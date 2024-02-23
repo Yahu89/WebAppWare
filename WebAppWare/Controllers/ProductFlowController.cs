@@ -22,27 +22,6 @@ namespace WebAppWare.Controllers
             return View(model);
         }
 
-        [HttpPost]
-		public async Task<IActionResult> Paging(PaginationResult obj)
-		{
-			int resultPerPage = obj.ResultsPerPage;
-			var allProductFlows = await _productFlowRepo.GetAll();
-
-			int recordsQty = allProductFlows.Count();
-            int pageNumber = obj.CurrentPageNumber;
-
-			decimal operationResult = ((decimal)recordsQty / resultPerPage);
-            int howManyPagesTotal = (int)Math.Ceiling(operationResult);
-
-			var takeResults = allProductFlows.Take(resultPerPage).ToList();
-
-			PaginationResult paginationResult = new PaginationResult();
-            paginationResult.ProductFlows = takeResults;
-            paginationResult.PagesQuantity = howManyPagesTotal;
-
-			return View(paginationResult);
-		}
-
 		public async Task<IActionResult> Delete(int id)
         {
             var result = await _productFlowRepo.GetById(id);
@@ -68,52 +47,67 @@ namespace WebAppWare.Controllers
             {
                 await _productFlowRepo.DeleteById(id);
                 return RedirectToAction("Index");
-            }
+            } 
 
-            int qty = productFlowModel.Quantity;
-            DateTime insertDate = productFlowModel.CreationDate;
+            // commented
+			#region
+			//        int qty = productFlowModel.Quantity;
+			//        DateTime insertDate = productFlowModel.CreationDate;
 
-            IEnumerable<ProductFlowModel> prodFlowCumulative = await _productFlowRepo.GetAllCumulative((int)productFlowModel.ProductId, 
-                (int)productFlowModel.WarehouseId);
+			//        IEnumerable<ProductFlowModel> prodFlowCumulative = await _productFlowRepo.GetAllCumulative((int)productFlowModel.ProductId, 
+			//            (int)productFlowModel.WarehouseId);
 
-            var prodFlowCumulativeLimited = prodFlowCumulative.Where(x => x.CreationDate > insertDate).ToList();
+			//        var prodFlowCumulativeLimited = prodFlowCumulative.Where(x => x.CreationDate > insertDate).ToList();
 
-            int count = prodFlowCumulativeLimited.Count;
+			//        int count = prodFlowCumulativeLimited.Count;
 
-            int minValue = 0;
+			//        int minValue = 0;
 
-            if (count > 0)
+			//        if (count > 0)
+			//        {
+			//            minValue = prodFlowCumulativeLimited.Min(x => x.Cumulative);
+			//        }
+			//        else
+			//        {
+			//            var list = (List<ProductFlowModel>)prodFlowCumulative;
+			//minValue = list[0].Cumulative;
+			//        }
+
+			//if (minValue >= qty)
+			//{
+			//    if (howManyItems == 1)
+			//    {
+			//        await _movementRepo.DeleteById(id);
+			//        return RedirectToAction("Index");
+			//    }
+
+			//    await _productFlowRepo.DeleteById(id);
+			//    return RedirectToAction("Index");
+			//}
+			#endregion 
+
+			if (await _productFlowRepo.IsReadyToDeleteProductFlow(movementId) && howManyItems > 1)
             {
-                minValue = prodFlowCumulativeLimited.Min(x => x.Cumulative);
-            }
-            else
-            {
-                var list = (List<ProductFlowModel>)prodFlowCumulative;
-				minValue = list[0].Cumulative;
-            }
-
-            if (minValue >= qty)
-            {
-                if (howManyItems == 1)
-                {
-                    await _movementRepo.DeleteById(id);
-                    return RedirectToAction("Index");
-                }
-
                 await _productFlowRepo.DeleteById(id);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
-            return BadRequest();
+			if (await _productFlowRepo.IsReadyToDeleteProductFlow(movementId) && howManyItems == 1)
+			{
+				await _movementRepo.DeleteById(id);
+				return RedirectToAction(nameof(Index));
+			}
+
+			return BadRequest();
         }
 
-        public async Task<IActionResult> DeleteMm(int id)
+        public async Task<IActionResult> DeleteMmM(int id)
         {
             var productFlow = await _productFlowRepo.GetById(id);
             int moveId = productFlow.MovementId;
             int? productId = productFlow.ProductId;
             var movement = await _movementRepo.GetById(moveId);
-            string docNumber = movement.Document;        
+            string docNumber = movement.Document;
 
             var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
             var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();

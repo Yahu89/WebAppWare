@@ -10,7 +10,7 @@
 		<span class="text-danger" asp-validation-for="@Model.Document"></span>
 	</div>
 
-	@* @for (var i = 0; i < Model.ProductFlowModels.Length; i++)
+	@for (var i = 0; i < Model.ProductFlowModels.Count(); i++)
 	{
 		<div class="col-2 row form-group m-lg-2">
 
@@ -23,7 +23,7 @@
 			<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductFlowModels[i].Quantity" />
 
 		</div>
-	} *@
+	}
 
 	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Z magazynu:</label>
 	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">

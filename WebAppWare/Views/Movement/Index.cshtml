@@ -68,7 +68,7 @@
 						<a class="btn btn-danger" asp-controller="Movement" asp-action="@action" asp-route-id="@movement.Id">Usuń</a>
 					</td>
 					<td>
-						<a class="btn btn-secondary" asp-controller="Movement" asp-action="PdfGenerate">PDF</a>
+						<a class="btn btn-secondary" target="_blank" asp-controller="Movement" asp-action="PdfGenerate" asp-route-id="@movement.Id">PDF</a>
 					</td>
 				</tr>
 			}

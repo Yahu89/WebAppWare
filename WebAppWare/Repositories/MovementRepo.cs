@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,6 +87,80 @@ public class MovementRepo : IMovementRepo
 		return !isNotUnique;
 	}
 
+	public List<ProductFlowModel> GetProductFlowsFromForm(ProductFlowMovementModel obj)
+	{
+		var itemCodes = obj.ProductFlowModels
+									.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
+									.Select(x => new ProductFlowModel()
+									{
+										ProductId = x.ProductId,
+										ProductItemCode = x.ProductItemCode,
+										Supplier = x.Supplier,
+										SupplierId = x.SupplierId,
+										Warehouse = x.Warehouse,
+										Quantity = x.Quantity,
+										WarehouseId = obj.WarehouseId,
+										MovementType = x.MovementType,
+									})
+									.ToList();
+
+		return itemCodes;
+	}
+
+	public async Task<bool> IsPossibleToCreateWz(ProductFlowMovementModel obj, IEnumerable<ProductFlowModel> itemCodes)
+	{
+		if (string.IsNullOrEmpty(obj.Document) || obj.WarehouseId == 0)
+			return false;
+
+		if (!await IsDocumentNameUnique(obj.Document))
+			return false;
+
+		itemCodes = obj.ProductFlowModels
+											.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
+											.Select(x => new ProductFlowModel()
+											{
+												ProductId = x.ProductId,
+												ProductItemCode = x.ProductItemCode,
+												Supplier = x.Supplier,
+												SupplierId = x.SupplierId,
+												Warehouse = x.Warehouse,
+												Quantity = x.Quantity,
+												WarehouseId = obj.WarehouseId,
+												MovementType = x.MovementType,
+											})
+											.ToList();
+
+		if (itemCodes
+					.GroupBy(x => x.ProductId)
+					.Any(x => x.Count() > 1))
+			return false;
+
+		if (itemCodes
+				.Any(x => x.Quantity <= 0))
+			return false;
+
+		//MovementModel warMove = new MovementModel()
+		//{
+		//	Document = obj.Document,
+		//	MovementType = MovementType.WZ
+		//};
+
+		IProductFlowRepo _productFlowRepo = new ProductFlowRepo(_dbContext);
+
+		foreach (var item in itemCodes)
+		{
+			var cumulativeValueList = await _productFlowRepo.GetAllCumulative((int)item.ProductId, (int)item.WarehouseId);
+			int actualQty = cumulativeValueList.Last().Cumulative;
+
+			if (actualQty < item.Quantity)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public async Task<string> SetMovementNumber(DateTime date, MovementType movementType)
 	{
 		var recordsPerDate = await _dbContext.WarehouseMovements.Select(MapToModel).Where(x => x.CreationDate.Date == date).ToListAsync();
@@ -100,5 +175,53 @@ public class MovementRepo : IMovementRepo
 		return docNumber;
 	}
 
+	public bool IsUniqueAndQtyCorrectForPzWz(List<ProductFlowModel> itemCodes)
+	{
+		if (itemCodes
+				.GroupBy(x => x.ProductId)
+				.Any(x => x.Count() > 1))
+			return false;
 
+		if (itemCodes
+				.Any(x => x.Quantity <= 0))
+			return false;
+
+		return true;
+	}
+
+	public async Task<bool> IsPossibleToDeletePzWz(int id)
+	{
+		var movement = await GetById(id);
+
+		IProductFlowRepo _productFlowRepo = new ProductFlowRepo(_dbContext);
+		var productFlowsWithinMove = await _productFlowRepo.GetProductFlowsByMoveId(id);
+		int wareId = (int)productFlowsWithinMove.FirstOrDefault().WarehouseId;
+		DateTime insertDate = movement.CreationDate;
+
+		foreach (var item in productFlowsWithinMove)
+		{
+			int qty = item.Quantity;
+			var prodFlows = await _productFlowRepo.GetAllCumulative((int)item.ProductId, wareId);
+			var prodFlowsLimited = prodFlows.Where(x => x.CreationDate > insertDate).ToList();
+
+			int counter = prodFlowsLimited.Count;
+			int minValue;
+
+			if (counter == 0)
+			{
+				minValue = prodFlows.Last().Cumulative;
+			}
+			else
+			{
+				minValue = prodFlowsLimited.Min(x => x.Cumulative);
+			}
+
+			if (minValue < qty)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

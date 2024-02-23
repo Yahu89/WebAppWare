@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database.Entities;
+using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Database;
 
@@ -35,9 +36,10 @@ public partial class WarehouseDbContext : DbContext
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
     public virtual DbSet<WarehouseMovement> WarehouseMovements { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderDetails> OrderDetails { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS; Database=WarehouseBase; Trusted_Connection=true; TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -137,6 +139,23 @@ public partial class WarehouseDbContext : DbContext
             entity.HasIndex(e => e.Document, "IX_WarehouseMovements_Document").IsUnique();
 
             entity.Property(e => e.Document).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Order>(e =>
+        {
+            e.Property(e => e.Document).IsRequired().HasMaxLength(50);
+            e.Property(e => e.SupplierId).IsRequired();
+            e.Property(e => e.CreationDate).IsRequired();
+            e.Property(e => e.Status).IsRequired().HasMaxLength(50);
+            e.Property(e => e.Remarks).HasMaxLength(300).IsRequired(false);
+        });
+
+        modelBuilder.Entity<OrderDetails>(e =>
+        {
+            e.Property(e => e.OrderId).IsRequired();
+            e.Property(e => e.ProductId).IsRequired();
+            e.Property(e => e.Quantity).IsRequired();
+            e.HasOne(e => e.Order).WithMany(e => e.OrderDetails).HasForeignKey(e => e.OrderId);
         });
 
         OnModelCreatingPartial(modelBuilder);

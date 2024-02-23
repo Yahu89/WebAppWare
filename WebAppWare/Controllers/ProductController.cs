@@ -30,10 +30,12 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				string fileName = Path.GetFileNameWithoutExtension(product.ImageFile.FileName);
-				string extension = Path.GetExtension(product.ImageFile.FileName);
-				fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
-				fileName = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", fileName);
+				//string fileName = Path.GetFileNameWithoutExtension(product.ImageFile.FileName);
+				//string extension = Path.GetExtension(product.ImageFile.FileName);
+				//fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
+				//fileName = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", fileName);
+
+				var fileName = await _productRepo.CreateProductImgUrl(product);
 
 				var stream = new FileStream(fileName, FileMode.Create);
 

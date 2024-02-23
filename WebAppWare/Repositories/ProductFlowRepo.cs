@@ -15,6 +15,7 @@ namespace WebAppWare.Repositories;
 public class ProductFlowRepo : IProductFlowRepo
 {
     private readonly WarehouseDbContext _dbContext;
+    //private readonly IProductFlowRepo _productFlowRepo;
 
     private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
     {
@@ -28,7 +29,8 @@ public class ProductFlowRepo : IProductFlowRepo
         CreationDate = x.WarehouseMovement.CreationDate,
         ProductId = x.Product.Id,
         SupplierId = x.Supplier.Id,
-        WarehouseId = x.Warehouse.Id
+        WarehouseId = x.Warehouse.Id,
+        DocumentNumber = x.WarehouseMovement.Document
     };
 
     //private Expression<Func<ProductFlowModel, ProductsFlow>> MapToEntity = x => new ProductsFlow()
@@ -44,6 +46,7 @@ public class ProductFlowRepo : IProductFlowRepo
     public ProductFlowRepo(WarehouseDbContext dbContext)
     {
         _dbContext = dbContext;
+        //_productFlowRepo = productFlowRepo;
     }
 
 	public async Task CreateRange(IEnumerable<ProductFlowModel> model, int id)
@@ -173,4 +176,41 @@ public class ProductFlowRepo : IProductFlowRepo
         return result;
 	}
 
+	public async Task<bool> IsReadyToDeleteProductFlow(int id)
+	{
+		var productFlowModel = await GetById(id);
+		int movementId = productFlowModel.MovementId;
+
+		var prodFlowMoveIdList = await GetProductFlowsByMoveId(movementId);
+		int howManyItems = prodFlowMoveIdList.Count;
+
+		int qty = productFlowModel.Quantity;
+		DateTime insertDate = productFlowModel.CreationDate;
+
+		IEnumerable<ProductFlowModel> prodFlowCumulative = await GetAllCumulative((int)productFlowModel.ProductId,
+			(int)productFlowModel.WarehouseId);
+
+		var prodFlowCumulativeLimited = prodFlowCumulative.Where(x => x.CreationDate > insertDate).ToList();
+
+		int count = prodFlowCumulativeLimited.Count;
+
+		int minValue = 0;
+
+		if (count > 0)
+		{
+			minValue = prodFlowCumulativeLimited.Min(x => x.Cumulative);
+		}
+		else
+		{
+			var list = (List<ProductFlowModel>)prodFlowCumulative;
+			minValue = list[0].Cumulative;
+		}
+
+		if (minValue >= qty)
+		{
+            return true;
+		}
+
+        return false;
+	}
 }

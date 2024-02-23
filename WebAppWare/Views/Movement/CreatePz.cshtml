@@ -14,25 +14,25 @@
 	</div>
 
 	<div id="items" class="d-flex">
-		@* @for (var i = 0; i < items.Length; i++)
+		@for (var i = 0; i < items.Length; i++)
 		{
 			<div class="col-2 row form-group m-lg-2">
 
 				<label class="ms-2 pb-2" asp-for="@items[i].ProductId">Indeks:</label>
-				<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@items[i].ProductId">
+				<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[i].ProductId">
 					<option disabled selected>-- Wybierz towar --</option>
 				</select>
 
 				<label class="ms-2 pb-2" asp-for="@items[i].Supplier">Dostawca:</label>
-				<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@items[i].SupplierId">
+				<select class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.ProductFlowModels[i].SupplierId">
 					<option disabled selected>-- Wybierz dostawcę --</option>
 				</select>
 
 				<label class="ms-2 pb-2" asp-for="@items[i].Quantity">Ilość:</label>
-				<input class="form-control border-0 shadow mb-2" asp-for="@items[i].Quantity" />
+				<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductFlowModels[i].Quantity" />
 
 			</div>
-		} *@
+		}
 	</div>
 
 	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Magazyn:</label>
@@ -47,7 +47,7 @@
 
 </form>
 
-@section scripts {
+@* @section scripts {
 	<script>
 		document.addEventListener("DOMContentLoaded", () => {
 			console.log("Hello World!");
@@ -106,10 +106,4 @@
 			}
 		});
 
-		// jQuery dodatkowa biblioteka do JS ktora ulatwia korzystanie z DOM (czyli narzedzi dzie ktorym modemy modyfikowac kod HTML)
-		// tego uzyjemy pozniej
-		// $(() => {
-		// 	console.log("Hello World!");
-		// });
-	</script>
-}
+	</script> *@

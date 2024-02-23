@@ -70,41 +70,68 @@ namespace WebAppWare.Controllers
 			if (!await _movementRepo.IsDocumentNameUnique(obj.Document))
 				return RedirectToAction(nameof(CreatePz));
 
-			var itemCodes = obj.ProductFlowModels
-				.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
-				.Select(x => new ProductFlowModel()
-				{
-					ProductId = x.ProductId,
-					ProductItemCode = x.ProductItemCode,
-					Supplier = x.Supplier,
-					SupplierId = x.SupplierId,
-					Warehouse = x.Warehouse,
-					Quantity = x.Quantity,
-					WarehouseId = obj.WarehouseId,
-					MovementType = x.MovementType,
-				})
-				.ToList();
+			//var itemCodes = obj.ProductFlowModels
+			//	.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
+			//	.Select(x => new ProductFlowModel()
+			//	{
+			//		ProductId = x.ProductId,
+			//		ProductItemCode = x.ProductItemCode,
+			//		Supplier = x.Supplier,
+			//		SupplierId = x.SupplierId,
+			//		Warehouse = x.Warehouse,
+			//		Quantity = x.Quantity,
+			//		WarehouseId = obj.WarehouseId,
+			//		MovementType = x.MovementType,
+			//	})
+			//	.ToList();
 
-			if (itemCodes
-					.GroupBy(x => x.ProductId)
-					.Any(x => x.Count() > 1))
-				return RedirectToAction(nameof(CreatePz));
+			var itemCodes = _movementRepo.GetProductFlowsFromForm(obj);
 
-			if (itemCodes
-					.Any(x => x.Quantity <= 0))
-				return RedirectToAction(nameof(CreatePz));
 
-			var warMove = new MovementModel()
+
+			//if (itemCodes
+			//		.GroupBy(x => x.ProductId)
+			//		.Any(x => x.Count() > 1))
+			//	return RedirectToAction(nameof(CreatePz));
+
+			//if (itemCodes
+			//		.Any(x => x.Quantity <= 0))
+			//	return RedirectToAction(nameof(CreatePz));
+
+			if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(itemCodes))
 			{
-				Document = obj.Document,
-				MovementType = MovementType.PZ
-			};
+				MovementModel warMove = new MovementModel()
+				{
+					Document = obj.Document,
+					MovementType = MovementType.PZ
+				};
 
-			var id = await _movementRepo.Create(warMove);
+				var moveId = await _movementRepo.Create(warMove);
 
-			await _productFlowRepo.CreateRange(itemCodes, id);
+				itemCodes.ForEach(x =>
+				{
+					x.MovementId = moveId;
+					//x.Quantity = -x.Quantity;
+				});
 
-			return RedirectToAction(nameof(Index));
+				await _productFlowRepo.CreateRange(itemCodes, moveId);
+
+				return RedirectToAction(nameof(Index));
+			}
+
+			return RedirectToAction(nameof(BadRequest));
+
+			//var warMove = new MovementModel()
+			//{
+			//	Document = obj.Document,
+			//	MovementType = MovementType.PZ
+			//};
+
+			//var moveId = await _movementRepo.Create(warMove);
+
+			//await _productFlowRepo.CreateRange(itemCodes, moveId);
+
+			//return RedirectToAction(nameof(Index));
 		}
 
 		public async Task<IActionResult> CreateWz()
@@ -121,58 +148,109 @@ namespace WebAppWare.Controllers
 			if (!await _movementRepo.IsDocumentNameUnique(obj.Document))
 				return RedirectToAction(nameof(CreateWz));
 
-			var itemCodes = obj.ProductFlowModels
-												.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
-												.Select(x => new ProductFlowModel()
-												{
-													ProductId = x.ProductId,
-													ProductItemCode = x.ProductItemCode,
-													Supplier = x.Supplier,
-													SupplierId = x.SupplierId,
-													Warehouse = x.Warehouse,
-													Quantity = x.Quantity,
-													WarehouseId = obj.WarehouseId,
-													MovementType = x.MovementType,
-												})
-												.ToList();
+			var itemCodes = _movementRepo.GetProductFlowsFromForm(obj);
 
-			if (itemCodes
-					.GroupBy(x => x.ProductId)
-					.Any(x => x.Count() > 1))
-				return RedirectToAction(nameof(CreateWz));
-
-			if (itemCodes
-					.Any(x => x.Quantity <= 0))
-				return RedirectToAction(nameof(CreateWz));
-
-			MovementModel warMove = new MovementModel()
+			if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(itemCodes))
 			{
-				Document = obj.Document,
-				MovementType = MovementType.WZ
-			};
-
-			foreach (var item in itemCodes)
-			{
-				var cumulativeValueList = await _productFlowRepo.GetAllCumulative((int)item.ProductId, (int)item.WarehouseId);
-				int actualQty = cumulativeValueList.Last().Cumulative;
-
-				if (actualQty < item.Quantity)
+				MovementModel warMove = new MovementModel()
 				{
-					return RedirectToAction(nameof(CreateWz));
-				}
+					Document = obj.Document,
+					MovementType = MovementType.WZ
+				};
+
+				var moveId = await _movementRepo.Create(warMove);
+
+				itemCodes.ForEach(x =>
+				{
+					x.MovementId = moveId;
+					x.Quantity = -x.Quantity;
+				});
+
+				await _productFlowRepo.CreateRange(itemCodes, moveId);
+
+				return RedirectToAction(nameof(Index));
 			}
 
-			var moveId = await _movementRepo.Create(warMove);
+			return RedirectToAction(nameof(BadRequest));
 
-			itemCodes.ForEach(x =>
-			{
-				x.MovementId = moveId;
-				x.Quantity = -x.Quantity;
-			});
+			// commented
+			#region
+			//var itemCodes = obj.ProductFlowModels
+			//									.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
+			//									.Select(x => new ProductFlowModel()
+			//									{
+			//										ProductId = x.ProductId,
+			//										ProductItemCode = x.ProductItemCode,
+			//										Supplier = x.Supplier,
+			//										SupplierId = x.SupplierId,
+			//										Warehouse = x.Warehouse,
+			//										Quantity = x.Quantity,
+			//										WarehouseId = obj.WarehouseId,
+			//										MovementType = x.MovementType,
+			//									})
+			//									.ToList();
 
-			await _productFlowRepo.CreateRange(itemCodes, moveId);
+			//if (itemCodes
+			//		.GroupBy(x => x.ProductId)
+			//		.Any(x => x.Count() > 1))
+			//	return RedirectToAction(nameof(CreateWz));
 
-			return RedirectToAction("Index");
+			//if (itemCodes
+			//		.Any(x => x.Quantity <= 0))
+			//	return RedirectToAction(nameof(CreateWz));
+
+			//List<ProductFlowModel> itemCodes = new List<ProductFlowModel>();
+
+			//MovementModel warMove = new MovementModel(); 
+
+			//if (await _movementRepo.IsPossibleToCreateWz(obj, itemCodes))
+			//{
+			//	warMove.Document = obj.Document;
+			//	warMove.MovementType = MovementType.WZ;
+
+			//	var moveId = await _movementRepo.Create(warMove);
+
+			//	itemCodes.ForEach(x =>
+			//	{
+			//		x.MovementId = moveId;
+			//		x.Quantity = -x.Quantity;
+			//	});
+
+			//	await _productFlowRepo.CreateRange(itemCodes, moveId);
+
+			//	return RedirectToAction(nameof(Index));
+			//}
+
+			//MovementModel warMove = new MovementModel()
+			//{
+			//	Document = obj.Document,
+			//	MovementType = MovementType.WZ
+			//};
+
+			//foreach (var item in itemCodes)
+			//{
+			//	var cumulativeValueList = await _productFlowRepo.GetAllCumulative((int)item.ProductId, (int)item.WarehouseId);
+			//	int actualQty = cumulativeValueList.Last().Cumulative;
+
+			//	if (actualQty < item.Quantity)
+			//	{
+			//		return RedirectToAction(nameof(CreateWz));
+			//	}
+			//}
+
+			//var moveId = await _movementRepo.Create(warMove);
+
+			//itemCodes.ForEach(x =>
+			//{
+			//	x.MovementId = moveId;
+			//	x.Quantity = -x.Quantity;
+			//});
+
+			//await _productFlowRepo.CreateRange(itemCodes, moveId);
+
+			return RedirectToAction(nameof(CreateWz));
+
+			#endregion
 		}
 
 		public async Task<IActionResult> CreateMm()
@@ -205,7 +283,6 @@ namespace WebAppWare.Controllers
 										Quantity = x.Quantity,
 										WarehouseId = obj.WarehouseId,
 										MovementType = x.MovementType,
-
 									})
 									.ToList();
 
@@ -288,7 +365,7 @@ namespace WebAppWare.Controllers
 				Quantity = x.Quantity,
 				DocumentNumber = x.DocumentNumber
 
-			}).ToArray();
+			}).ToList();
 
 			return View(obj);
 		}
@@ -301,40 +378,46 @@ namespace WebAppWare.Controllers
 			if (movement.MovementType == MovementType.WZ)
 			{
 				await _movementRepo.DeleteById(id);
-				return RedirectToAction("Index");
+				return RedirectToAction(nameof(Index));
 			}
 
-			var productFlowsWithinMove = await _productFlowRepo.GetProductFlowsByMoveId(id);
-			int wareId = (int)productFlowsWithinMove.FirstOrDefault().WarehouseId;
-			DateTime insertDate = movement.CreationDate;
-
-			foreach (var item in productFlowsWithinMove)
+			if (await _movementRepo.IsPossibleToDeletePzWz(id))
 			{
-				int qty = item.Quantity;
-				var prodFlows = await _productFlowRepo.GetAllCumulative((int)item.ProductId, wareId);
-				var prodFlowsLimited = prodFlows.Where(x => x.CreationDate > insertDate).ToList();
-
-				int counter = prodFlowsLimited.Count;
-				int minValue;
-
-				if (counter == 0)
-				{
-					minValue = item.Cumulative;
-				}
-				else
-				{
-					minValue = prodFlowsLimited.Min(x => x.Cumulative);
-				}
-
-				if (minValue < qty)
-				{
-					return BadRequest();
-				}
+				await _movementRepo.DeleteById(id);
+				return RedirectToAction(nameof(Index));
 			}
 
-			await _movementRepo.DeleteById(id);
+			//var productFlowsWithinMove = await _productFlowRepo.GetProductFlowsByMoveId(id);
+			//int wareId = (int)productFlowsWithinMove.FirstOrDefault().WarehouseId;
+			//DateTime insertDate = movement.CreationDate;
 
-			return RedirectToAction("Index");
+			//foreach (var item in productFlowsWithinMove)
+			//{
+			//	int qty = item.Quantity;
+			//	var prodFlows = await _productFlowRepo.GetAllCumulative((int)item.ProductId, wareId);
+			//	var prodFlowsLimited = prodFlows.Where(x => x.CreationDate > insertDate).ToList();
+
+			//	int counter = prodFlowsLimited.Count;
+			//	int minValue;
+
+			//	if (counter == 0)
+			//	{
+			//		minValue = item.Cumulative;
+			//	}
+			//	else
+			//	{
+			//		minValue = prodFlowsLimited.Min(x => x.Cumulative);
+			//	}
+
+			//	if (minValue < qty)
+			//	{
+			//		return BadRequest();
+			//	}
+			//}
+
+			//await _movementRepo.DeleteById(id);
+
+			return BadRequest();
 		}
 
 		public async Task<IActionResult> DeleteMmM(int id)
@@ -370,9 +453,20 @@ namespace WebAppWare.Controllers
 				MovementId = movement.Id,
 				Quantity = x.Quantity,
 				DocumentNumber = x.DocumentNumber,
-			}).ToArray();
+			}).ToList();
 
 			return View(obj);
+		}
+
+		public async Task<IActionResult> PdfGenerate(int id)
+		{
+			//var movement = _movementRepo.GetById(id);
+			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
+
+			MovementPdfReport report = new MovementPdfReport();
+			byte[] bytes = report.PrepareReport(productFlows);
+
+			return File(bytes, "application/pdf");
 		}
 
 

@@ -1,0 +1,113 @@
+﻿@using WebAppWare.Database.Entities
+@model List<OrderModel>
+
+<div class="row">
+	<div class="col-2">
+		<a class="btn btn-success mb-2" asp-controller="Order" asp-action="Create">Dodaj zamówienie</a>
+	</div>
+</div>
+
+
+<div class="col-8 row">
+	<h4 class="mb-2">Lista zamówień: </h4>
+
+	<table class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+		<th>
+			ID
+		</th>
+		<th>
+			Nr dokumentu
+		</th>
+		<th>
+			Dostawca
+		</th>
+		<th>
+			Data utworzenia
+		</th>
+		<th>
+			Status
+		</th>
+		<th>
+
+		</th>
+		<th>
+
+		</th>
+		<th>
+
+		</th>
+
+		</thead>
+
+		<tbody>
+			@foreach (var order in Model)
+			{
+				string color = "white";
+
+				switch (order.Status)
+				{
+					case "W przygotowaniu":
+					{
+						color = "gray";
+						break;
+					}
+
+					case "Wysłano":
+					{
+						color = "yellow";
+						break;
+					}
+
+					case "Zrealizowano":
+					{
+						color = "green";
+						break;
+					}
+
+					case "Anulowano":
+					{
+						color = "red";
+						break;
+					}
+				}
+
+
+				<tr>
+					<td>
+						@order.Id
+					</td>
+					<td>
+						@order.Document
+					</td>
+					<td>
+						@order.SupplierName
+					</td>
+					<td>
+						@order.CreationDate
+					</td>
+					<td style="background-color: @color">
+						@order.Status
+					</td>
+					<td>
+
+						<a class="btn btn-danger" asp-controller="Order" asp-action="Remove" asp-route-id="@order.Id">Usuń</a>
+					</td>
+					<td>
+						<a class="btn btn-info" asp-controller="Order" asp-action="Edit" asp-route-id="@order.Id">Edytuj</a>
+					</td>
+					<td>
+						<a class="btn btn-secondary" target="_blank" asp-controller="Order" asp-action="PdfGenerate" asp-route-id="@order.Id">PDF</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+
+	</table>
+
+	<br />
+
+
+
+
+</div>

@@ -12,4 +12,5 @@ public interface IProductFlowRepo
     Task CreateRange(IEnumerable<ProductFlowModel> model, int id);
 	Task DeleteById(int id);
     Task DeleteRange(IEnumerable<ProductFlowModel> model);
+    Task<bool> IsReadyToDeleteProductFlow(int id);
 }
