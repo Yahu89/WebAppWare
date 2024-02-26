@@ -3,6 +3,11 @@ using WebAppWare.Repositories.Interfaces;
 using WebAppWare.Repositories;
 using WebAppWare.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
+using Ninject.Activation;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +38,46 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+//app.UseStaticFiles(new StaticFileOptions()
+//{
+//	ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string>
+//	{
+//	 {
+//		 ".apk",
+//		 "application/vnd.android.package-archive"
+//	   }
+//	})
+//});
+
+var provider = new FileExtensionContentTypeProvider();
+
+provider.Mappings[".jpg"] = "image/jpeg";
+
+
+//app.UseStaticFiles(new StaticFileOptions
+//{
+
+//	FileProvider = new PhysicalFileProvider(
+//		Path.Combine(env.ContentRootPath, "public")),
+//	RequestPath = "/public"
+//});
+
+//provider.Mappings.Add(".appx", "application/appx");
+//provider.Mappings.Add(".msix", "application/msix");
+//provider.Mappings.Add(".appxbundle", "application/appxbundle");
+//provider.Mappings.Add(".msixbundle", "application/msixbundle");
+//provider.Mappings.Add(".appinstaller", "application/appinstaller");
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//	ContentTypeProvider = provider
+//});
+
+//var provider = new FileExtensionContentTypeProvider();
+//// Add new mappings
+//provider.Mappings[".myapp"] = "application/x-msdownload";
+
+
+
 
 app.UseRouting();
 

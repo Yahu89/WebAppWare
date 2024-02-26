@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebAppWare.Models;
+using WebAppWare.Repositories;
 using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
@@ -191,6 +192,27 @@ namespace WebAppWare.Controllers
 
             return BadRequest();
         }
+
+        public async Task<IActionResult> PdfGenerate(int id)
+        {
+            var order = await _orderRepo.GetById(id);
+            var orderDetails = await _orderDetailsRepo.GetByOrderId(id);
+            var orderDetailsModelView = new OrderDetailsModelView()
+            {
+                OrderDetails = orderDetails,
+                Document = order.Document,
+                SupplierName = order.SupplierName,
+                Status = order.Status,
+                Remarks = order.Remarks,
+                CreationDate = order.CreationDate
+            };
+           		
+
+			OrderPdfReport report = new OrderPdfReport();
+			byte[] bytes = report.PrepareReport(orderDetailsModelView);
+
+			return File(bytes, "application/pdf");
+		}
 
 
     }
