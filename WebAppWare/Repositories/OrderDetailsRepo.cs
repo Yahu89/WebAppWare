@@ -12,7 +12,7 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 {
 	private readonly WarehouseDbContext _dbContext;
 
-	private Expression<Func<OrderDetails, OrderDetailsModel>> MapToModel = x => new OrderDetailsModel()
+	private Expression<Func<OrderItem, OrderDetailsModel>> MapToModel = x => new OrderDetailsModel()
 	{
 		Id = x.Id,
 		OrderId = x.OrderId,
@@ -23,12 +23,12 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 		CreationDate = x.Order.CreationDate,
 		ProductId = x.ProductId,
 		ProductItemCode = x.Product.ItemCode,
-		Status = x.Order.Status,
+		//Status = x.Order.Status,
 		Remarks = x.Order.Remarks,
 		Quantity = x.Quantity
 	};
 
-	private Expression<Func<OrderDetailsModel, OrderDetails>> MapToEntity = x => new OrderDetails()
+	private Expression<Func<OrderDetailsModel, OrderItem>> MapToEntity = x => new OrderItem()
 	{
 		Id = x.Id,
 		OrderId = x.OrderId,
@@ -43,26 +43,26 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 	public async Task CreateRange(IEnumerable<OrderDetailsModel> model)
 	{
 		var results = model.Select(MapToEntity.Compile()).ToList();
-		_dbContext.OrderDetails.AddRange(results);
+		_dbContext.OrderItems.AddRange(results);
 		await _dbContext.SaveChangesAsync();
 	}
 
 	public async Task EditRange(IEnumerable<OrderDetailsModel> model)
 	{
 		var results = model.Select(MapToEntity.Compile()).ToList();
-		_dbContext.OrderDetails.UpdateRange(results);
+		_dbContext.OrderItems.UpdateRange(results);
 		await _dbContext.SaveChangesAsync();
 	}
 
 	public async Task<IEnumerable<OrderDetailsModel>> GetAll()
 	{
-		var results = await _dbContext.OrderDetails.Select(MapToModel).ToListAsync();
+		var results = await _dbContext.OrderItems.Select(MapToModel).ToListAsync();
 		return results;
 	}
 
 	public async Task<List<OrderDetailsModel>> GetByOrderId(int id)
 	{
-		var results = await _dbContext.OrderDetails.Select(MapToModel).Where(x => x.OrderId == id).ToListAsync();
+		var results = await _dbContext.OrderItems.Select(MapToModel).Where(x => x.OrderId == id).ToListAsync();
 
 		if (results.Count == 0)
 		{

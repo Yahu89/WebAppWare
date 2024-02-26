@@ -76,8 +76,8 @@ public class WarehouseRepo : IWarehouseRepo
 
 	public async Task<List<ProductsAmountModel>> GetProductsAmount()
 	{
-		var result = await _dbContext.ProductSummaryModels.Select(ProductAmountMapToModel).ToListAsync();
-		return result;
+		//var result = await _dbContext.ProductSummaryModels.Select(ProductAmountMapToModel).ToListAsync();
+		return null;
 	}
 
 	public async Task<int> GetWarehouseIdByName(string name)

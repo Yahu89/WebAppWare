@@ -12,8 +12,8 @@ using WebAppWare.Database;
 namespace WepAppWare.Database.Migrations
 {
     [DbContext(typeof(WarehouseDbContext))]
-    [Migration("20240219145049_OrdersAdded")]
-    partial class OrdersAdded
+    [Migration("20240226181710_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,43 +25,6 @@ namespace WepAppWare.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("WebAppWare.Database.Entities.MovementsListWithCumulativeSumView", b =>
-                {
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("Cumulative")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ItemCode")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<int>("MoveId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Supplier")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Warehouse")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("MovementsListWithCumulativeSumView", (string)null);
-                });
-
             modelBuilder.Entity("WebAppWare.Database.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -72,61 +35,20 @@ namespace WepAppWare.Database.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImgUrl")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ItemCode")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "ItemCode" }, "IX_Products_ItemCode")
-                        .IsUnique();
+                    b.HasIndex("ImageId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("WebAppWare.Database.Entities.ProductSummaryModel", b =>
-                {
-                    b.Property<string>("ItemCode")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<int?>("TotalAmount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Warehouse")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("ProductSummaryModel", (string)null);
-                });
-
-            modelBuilder.Entity("WebAppWare.Database.Entities.ProductsAmountListView", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TotalAmount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WarehouseId")
-                        .HasColumnType("int");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("ProductsAmountListView", (string)null);
                 });
 
             modelBuilder.Entity("WebAppWare.Database.Entities.ProductsFlow", b =>
@@ -154,13 +76,13 @@ namespace WepAppWare.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "ProductId" }, "IX_ProductsFlows_ProductId");
+                    b.HasIndex("ProductId");
 
-                    b.HasIndex(new[] { "SupplierId" }, "IX_ProductsFlows_SupplierId");
+                    b.HasIndex("SupplierId");
 
-                    b.HasIndex(new[] { "WarehouseId" }, "IX_ProductsFlows_WarehouseId");
+                    b.HasIndex("WarehouseId");
 
-                    b.HasIndex(new[] { "WarehouseMovementId" }, "IX_ProductsFlows_WarehouseMovementId");
+                    b.HasIndex("WarehouseMovementId");
 
                     b.ToTable("ProductsFlows");
                 });
@@ -175,36 +97,15 @@ namespace WepAppWare.Database.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Suppliers");
-                });
-
-            modelBuilder.Entity("WebAppWare.Database.Entities.TwojaTabela", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<int?>("Ilosc")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NazwaProduktu")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__TwojaTab__3214EC27ECB68040");
-
-                    b.ToTable("TwojaTabela", (string)null);
                 });
 
             modelBuilder.Entity("WebAppWare.Database.Entities.Warehouse", b =>
@@ -220,8 +121,7 @@ namespace WepAppWare.Database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -241,18 +141,39 @@ namespace WepAppWare.Database.Migrations
 
                     b.Property<string>("Document")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MovementType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "Document" }, "IX_WarehouseMovements_Document")
-                        .IsUnique();
-
                     b.ToTable("WarehouseMovements");
+                });
+
+            modelBuilder.Entity("WepAppWare.Database.Entities.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AbsolutePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("WepAppWare.Database.Entities.Order", b =>
@@ -268,17 +189,14 @@ namespace WepAppWare.Database.Migrations
 
                     b.Property<string>("Document")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
@@ -290,7 +208,7 @@ namespace WepAppWare.Database.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("WepAppWare.Database.Entities.OrderDetails", b =>
+            modelBuilder.Entity("WepAppWare.Database.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -313,7 +231,16 @@ namespace WepAppWare.Database.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("WebAppWare.Database.Entities.Product", b =>
+                {
+                    b.HasOne("WepAppWare.Database.Entities.Image", "Image")
+                        .WithMany("Products")
+                        .HasForeignKey("ImageId");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("WebAppWare.Database.Entities.ProductsFlow", b =>
@@ -356,10 +283,10 @@ namespace WepAppWare.Database.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("WepAppWare.Database.Entities.OrderDetails", b =>
+            modelBuilder.Entity("WepAppWare.Database.Entities.OrderItem", b =>
                 {
                     b.HasOne("WepAppWare.Database.Entities.Order", "Order")
-                        .WithMany("OrderDetails")
+                        .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -395,9 +322,14 @@ namespace WepAppWare.Database.Migrations
                     b.Navigation("ProductsFlows");
                 });
 
+            modelBuilder.Entity("WepAppWare.Database.Entities.Image", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("WepAppWare.Database.Entities.Order", b =>
                 {
-                    b.Navigation("OrderDetails");
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

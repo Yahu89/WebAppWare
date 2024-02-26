@@ -8,11 +8,12 @@ using Microsoft.Extensions.FileProviders;
 using Ninject.Activation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
+using WepAppWare.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
-builder.Services.AddDbContext<WarehouseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("WarehouseDbContext")));
+builder.Services.AddDbContext<WarehouseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(WarehouseDbContext))));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -25,6 +26,8 @@ builder.Services.AddScoped<IProductFlowRepo, ProductFlowRepo>();
 builder.Services.AddScoped<IMovementRepo, MovementRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderDetailsRepo, OrderDetailsRepo>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
+
 
 var app = builder.Build();
 
@@ -49,9 +52,9 @@ app.UseStaticFiles();
 //	})
 //});
 
-var provider = new FileExtensionContentTypeProvider();
+//var provider = new FileExtensionContentTypeProvider();
 
-provider.Mappings[".jpg"] = "image/jpeg";
+//provider.Mappings[".jpg"] = "image/jpeg";
 
 
 //app.UseStaticFiles(new StaticFileOptions
@@ -86,5 +89,14 @@ app.UseAuthorization();
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Product}/{action=Index}/{id?}");
+
+
+
+var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<WarehouseDbContext>();
+var dbIntializer = new WarehouseDbInitializer(dbContext);
+
+// seeding data
+await dbIntializer.SeedData();
 
 app.Run();

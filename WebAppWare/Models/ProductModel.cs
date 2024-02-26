@@ -2,19 +2,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Web;
+using WebAppWare.Models.BaseModels;
 
 namespace WebAppWare.Models
 {
-	public class ProductModel
+	public class ProductModel : BaseImageModel
 	{
-		public int Id { get; set; }
-
 		[Required(ErrorMessage = "Pole Indeks jest wymagane")]
 		public string ItemCode { get; set; }
 
 		[Required(ErrorMessage = "Pole Opis jest wymagane")]
 		public string Description { get; set; }
-		public string ImgUrl { get; set; } = string.Empty;
-        public IFormFile ImageFile { get; set; }
     }
 }

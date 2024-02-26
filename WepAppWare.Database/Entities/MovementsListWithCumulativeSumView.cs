@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;
 
-public partial class MovementsListWithCumulativeSumView
+public partial class MovementsListWithCumulativeSumView : BaseEntity
 {
-    public int Id { get; set; }
-
     public int MoveId { get; set; }
 
     public string Warehouse { get; set; } = null!;

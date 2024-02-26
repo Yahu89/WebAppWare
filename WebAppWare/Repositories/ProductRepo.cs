@@ -14,44 +14,36 @@ namespace WebAppWare.Repositories;
 public class ProductRepo : IProductRepo
 {
 	private readonly WarehouseDbContext _dbContext;
-	private readonly IWebHostEnvironment _webHostEnvironment;
 
 	private Expression<Func<Product, ProductModel>> MapToModel = e => new ProductModel
 	{
 		Id = e.Id,
 		Description = e.Description,
-		ImgUrl = e.ImgUrl,
 		ItemCode = e.ItemCode,
+		ImagePath = e.Image != null ? e.Image.Path : "",
 	};
 	private Expression<Func<ProductModel, Product>> MapToEntity = e => new Product()
 	{
 		Id = e.Id,
 		Description = e.Description,
-		ImgUrl = e.ImgUrl,
 		ItemCode = e.ItemCode,
 	};
 
-	public ProductRepo(WarehouseDbContext dbContext, IWebHostEnvironment webHostEnvironment)
+	public ProductRepo(WarehouseDbContext dbContext)
 	{
 		_dbContext = dbContext;
-		_webHostEnvironment = webHostEnvironment;
 	}
 
-	public async Task Add(ProductModel model)
+	public async Task Add(ProductModel model, int? imageId = null)
 	{
 		var entity = MapToEntity.Compile().Invoke(model);
+
+		// jesli podano imageId to uzupelniamy
+		if (imageId.HasValue)
+			entity.ImageId = imageId;
+
 		_dbContext.Products.Add(entity);
 		await _dbContext.SaveChangesAsync();
-	}
-
-	public async Task<string> CreateProductImgUrl(ProductModel product)
-	{
-		string fileName = Path.GetFileNameWithoutExtension(product.ImageFile.FileName);
-		string extension = Path.GetExtension(product.ImageFile.FileName);
-		fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
-		fileName = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", fileName);
-
-		return fileName;
 	}
 
 	public async Task Delete(ProductModel model)

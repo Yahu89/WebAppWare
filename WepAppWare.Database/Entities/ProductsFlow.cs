@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;
 
-public partial class ProductsFlow
+public partial class ProductsFlow : BaseEntity
 {
-    public int Id { get; set; }
-
     public int Quantity { get; set; } = 0;
 
     public int WarehouseMovementId { get; set; }

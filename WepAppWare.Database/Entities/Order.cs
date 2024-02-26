@@ -4,17 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAppWare.Database.Entities;
+using WepAppWare.Database.Entities.Base;
 
 namespace WepAppWare.Database.Entities;
 
-public class Order
+public class Order : BaseEntity
 {
-    public int Id { get; set; }
     public string Document { get; set; }
-    public Supplier Supplier { get; set; }
     public int SupplierId { get; set; }
+    public Supplier Supplier { get; set; }
     public DateTime CreationDate { get; set; } = DateTime.Now;
-    public string Status { get; set; }
-    public string Remarks { get; set; }
-    public ICollection<OrderDetails> OrderDetails { get; set; } = new List<OrderDetails>();
+    public OrderStatus Status { get; set; }
+    public string? Remarks { get; set; }
+
+    public IEnumerable<OrderItem> Items { get; set; } = new HashSet<OrderItem>();
 }

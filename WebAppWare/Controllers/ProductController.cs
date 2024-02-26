@@ -8,13 +8,19 @@ namespace WebAppWare.Controllers
 	{
 		private readonly IProductRepo _productRepo;
 		private readonly IWebHostEnvironment _webHostEnvironment;
-		public ProductController(IProductRepo productRepo,
-								IWebHostEnvironment webHostEnvironment)
-        {
+		private readonly IImageRepository _imageRepo;
+
+		public ProductController(
+			IProductRepo productRepo,
+			IWebHostEnvironment webHostEnvironment,
+			IImageRepository imageRepo
+			)
+		{
 			_productRepo = productRepo;
 			_webHostEnvironment = webHostEnvironment;
-        }
-        public async Task<ActionResult<List<ProductModel>>> Index()
+			_imageRepo = imageRepo;
+		}
+		public async Task<ActionResult<List<ProductModel>>> Index()
 		{
 			var products = await _productRepo.GetAll();
 			return View(products);
@@ -30,22 +36,10 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				//string fileName = Path.GetFileNameWithoutExtension(product.ImageFile.FileName);
-				//string extension = Path.GetExtension(product.ImageFile.FileName);
-				//fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
-				//fileName = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", fileName);
+				await _imageRepo.Create(product);
 
-				var fileName = await _productRepo.CreateProductImgUrl(product);
-
-				var stream = new FileStream(fileName, FileMode.Create);
-
-				await product.ImageFile.CopyToAsync(stream);
-				product.ImgUrl = fileName;
-
-				await _productRepo.Add(product);
-
-				return RedirectToAction("Index");
-			}			
+				return RedirectToAction(nameof(Index));
+			}
 
 			return View();
 		}
@@ -61,9 +55,9 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-                await _productRepo.Update(product);
-                return RedirectToAction("Index");
-            }
+				await _productRepo.Update(product);
+				return RedirectToAction("Index");
+			}
 
 			return View();
 		}

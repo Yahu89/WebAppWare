@@ -39,16 +39,10 @@
 						@product.Description
 					</td>
 					<td>
-
-						@if (!string.IsNullOrEmpty(product.ImgUrl))
+						@if (!string.IsNullOrEmpty(product.ImagePath))
 						{
-							<img src="~/wwwroot/Images/dev-hobby-logo2407321748" width="100" height="100" />
-							<img src="https://ilovelodz.pl/660-large_default/krokodyl-kraken-pluszak-20cm.jpg" width="100" height="100" />
-							<img src="@Url.Content(product.ImgUrl)" width="100" height="100" />
+							<img src="@product.ImagePath" width="100" height="100" />
 						}
-
-						@* <img src="@Url.Content(product.ImgUrl)" width="100" height="100" /> *@
-						
 					</td>
 					<td>
 						<a class="btn btn-secondary" asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id">Edytuj</a>

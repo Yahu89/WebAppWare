@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;
 
-public partial class Warehouse
+public partial class Warehouse : BaseEntity
 {
-    public int Id { get; set; }
-
     //[DisplayName("Nazwa")]
     //[Required(ErrorMessage = "Pole jest wymagane")]
     //[MaxLength(100)]

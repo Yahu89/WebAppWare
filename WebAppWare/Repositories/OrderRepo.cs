@@ -21,7 +21,7 @@ public class OrderRepo : IOrderRepo
 		SupplierName = x.Supplier.Name,
 		SupplierEmail = x.Supplier.Email,
 		CreationDate = x.CreationDate,
-		Status = x.Status,
+		//Status = x.Status,
 		Remarks = x.Remarks
 	};
 
@@ -31,7 +31,7 @@ public class OrderRepo : IOrderRepo
 		Document = x.Document,
 		SupplierId = x.SupplierId,
 		CreationDate = x.CreationDate,
-		Status = x.Status,
+		//Status = x.Status,
 		Remarks = x.Remarks
 	};
 	public OrderRepo(WarehouseDbContext dbContext)

@@ -11,9 +11,8 @@ public interface IProductRepo
 {
 	Task<IEnumerable<ProductModel>> GetAll();
 	Task<int> GetProductIdByCode(string itemCode);
-	Task Add(ProductModel product);
+	Task Add(ProductModel product, int? imageId = null);
 	Task<ProductModel> GetById(int id);
 	Task Update(ProductModel product);
 	Task Delete(ProductModel product);
-	Task<string> CreateProductImgUrl(ProductModel model);
 }

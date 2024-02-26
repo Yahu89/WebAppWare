@@ -8,158 +8,151 @@ namespace WebAppWare.Database;
 
 public partial class WarehouseDbContext : DbContext
 {
-    public WarehouseDbContext()
-    {
-    }
+	public WarehouseDbContext(DbContextOptions<WarehouseDbContext> options)
+		: base(options)
+	{
+	}
 
-    public WarehouseDbContext(DbContextOptions<WarehouseDbContext> options)
-        : base(options)
-    {
-    }
+	//public virtual DbSet<MovementsListWithCumulativeSumView> MovementsListWithCumulativeSumViews { get; set; }
 
-    //public virtual DbSet<ProductFlowModel> ProductFlowModels { get; set; }
+	public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<MovementsListWithCumulativeSumView> MovementsListWithCumulativeSumViews { get; set; }
+	//public virtual DbSet<ProductSummaryModel> ProductSummaryModels { get; set; }
 
-    public virtual DbSet<Product> Products { get; set; }
+	//public virtual DbSet<ProductsAmountListView> ProductsAmountListViews { get; set; }
 
-    public virtual DbSet<ProductSummaryModel> ProductSummaryModels { get; set; }
+	public virtual DbSet<ProductsFlow> ProductsFlows { get; set; }
 
-    public virtual DbSet<ProductsAmountListView> ProductsAmountListViews { get; set; }
+	public virtual DbSet<Supplier> Suppliers { get; set; }
 
-    public virtual DbSet<ProductsFlow> ProductsFlows { get; set; }
+	public virtual DbSet<Warehouse> Warehouses { get; set; }
 
-    public virtual DbSet<Supplier> Suppliers { get; set; }
+	public virtual DbSet<WarehouseMovement> WarehouseMovements { get; set; }
+	public DbSet<Order> Orders { get; set; }
+	public DbSet<OrderItem> OrderItems { get; set; }
+	public DbSet<Image> Images { get; set; }
 
-    public virtual DbSet<TwojaTabela> TwojaTabelas { get; set; }
+	//protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+	//    => optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS; Database=WarehouseBase; Trusted_Connection=true; TrustServerCertificate=true");
 
-    public virtual DbSet<Warehouse> Warehouses { get; set; }
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		////modelBuilder.Entity<ProductFlowModel>(entity =>
+		////{
+		////    entity
+		////        .HasNoKey()
+		////        .ToView("MovementsListView");
 
-    public virtual DbSet<WarehouseMovement> WarehouseMovements { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderDetails> OrderDetails { get; set; }
+		////    entity.Property(e => e.ItemCode).HasMaxLength(15);
+		////    entity.Property(e => e.Supplier).HasMaxLength(150);
+		////    entity.Property(e => e.Warehouse).HasMaxLength(100);
+		////});
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS; Database=WarehouseBase; Trusted_Connection=true; TrustServerCertificate=true");
+		//modelBuilder.Entity<MovementsListWithCumulativeSumView>(entity =>
+		//{
+		//    entity
+		//        .HasNoKey()
+		//        .ToView("MovementsListWithCumulativeSumView");
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        //modelBuilder.Entity<ProductFlowModel>(entity =>
-        //{
-        //    entity
-        //        .HasNoKey()
-        //        .ToView("MovementsListView");
+		//    entity.Property(e => e.ItemCode).HasMaxLength(15);
+		//    entity.Property(e => e.Supplier).HasMaxLength(150);
+		//    entity.Property(e => e.Warehouse).HasMaxLength(100);
+		//});
 
-        //    entity.Property(e => e.ItemCode).HasMaxLength(15);
-        //    entity.Property(e => e.Supplier).HasMaxLength(150);
-        //    entity.Property(e => e.Warehouse).HasMaxLength(100);
-        //});
+		//modelBuilder.Entity<Product>(entity =>
+		//{
+		//    entity.HasIndex(e => e.ItemCode, "IX_Products_ItemCode").IsUnique();
 
-        modelBuilder.Entity<MovementsListWithCumulativeSumView>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("MovementsListWithCumulativeSumView");
+		//    entity.Property(e => e.Description).HasMaxLength(200);
+		//    entity.Property(e => e.ImgUrl).HasMaxLength(400);
+		//    entity.Property(e => e.ItemCode).HasMaxLength(15);
+		//});
 
-            entity.Property(e => e.ItemCode).HasMaxLength(15);
-            entity.Property(e => e.Supplier).HasMaxLength(150);
-            entity.Property(e => e.Warehouse).HasMaxLength(100);
-        });
+		//modelBuilder.Entity<ProductSummaryModel>(entity =>
+		//{
+		//    entity
+		//        .HasNoKey()
+		//        .ToView("ProductSummaryModel");
 
-        modelBuilder.Entity<Product>(entity =>
-        {
-            entity.HasIndex(e => e.ItemCode, "IX_Products_ItemCode").IsUnique();
+		//    entity.Property(e => e.ItemCode).HasMaxLength(15);
+		//    entity.Property(e => e.Warehouse).HasMaxLength(100);
+		//});
 
-            entity.Property(e => e.Description).HasMaxLength(200);
-            entity.Property(e => e.ImgUrl).HasMaxLength(400);
-            entity.Property(e => e.ItemCode).HasMaxLength(15);
-        });
+		//modelBuilder.Entity<ProductsAmountListView>(entity =>
+		//{
+		//    entity
+		//        .HasNoKey()
+		//        .ToView("ProductsAmountListView");
+		//});
 
-        modelBuilder.Entity<ProductSummaryModel>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("ProductSummaryModel");
+		//modelBuilder.Entity<ProductsFlow>(entity =>
+		//{
+		//    entity.HasIndex(e => e.ProductId, "IX_ProductsFlows_ProductId");
 
-            entity.Property(e => e.ItemCode).HasMaxLength(15);
-            entity.Property(e => e.Warehouse).HasMaxLength(100);
-        });
+		//    entity.HasIndex(e => e.SupplierId, "IX_ProductsFlows_SupplierId");
 
-        modelBuilder.Entity<ProductsAmountListView>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("ProductsAmountListView");
-        });
+		//    entity.HasIndex(e => e.WarehouseId, "IX_ProductsFlows_WarehouseId");
 
-        modelBuilder.Entity<ProductsFlow>(entity =>
-        {
-            entity.HasIndex(e => e.ProductId, "IX_ProductsFlows_ProductId");
+		//    entity.HasIndex(e => e.WarehouseMovementId, "IX_ProductsFlows_WarehouseMovementId");
 
-            entity.HasIndex(e => e.SupplierId, "IX_ProductsFlows_SupplierId");
+		//    entity.HasOne(d => d.Product).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.ProductId);
 
-            entity.HasIndex(e => e.WarehouseId, "IX_ProductsFlows_WarehouseId");
+		//    entity.HasOne(d => d.Supplier).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.SupplierId);
 
-            entity.HasIndex(e => e.WarehouseMovementId, "IX_ProductsFlows_WarehouseMovementId");
+		//    entity.HasOne(d => d.Warehouse).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.WarehouseId);
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.ProductId);
+		//    entity.HasOne(d => d.WarehouseMovement).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.WarehouseMovementId);
+		//});
 
-            entity.HasOne(d => d.Supplier).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.SupplierId);
+		//modelBuilder.Entity<Supplier>(entity =>
+		//{
+		//    entity.Property(e => e.Email).HasMaxLength(150);
+		//    entity.Property(e => e.Name).HasMaxLength(150);
+		//});
 
-            entity.HasOne(d => d.Warehouse).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.WarehouseId);
+		//modelBuilder.Entity<TwojaTabela>(entity =>
+		//{
+		//    entity.HasKey(e => e.Id).HasName("PK__TwojaTab__3214EC27ECB68040");
 
-            entity.HasOne(d => d.WarehouseMovement).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.WarehouseMovementId);
-        });
+		//    entity.ToTable("TwojaTabela");
 
-        modelBuilder.Entity<Supplier>(entity =>
-        {
-            entity.Property(e => e.Email).HasMaxLength(150);
-            entity.Property(e => e.Name).HasMaxLength(150);
-        });
+		//    entity.Property(e => e.Id)
+		//        .ValueGeneratedNever()
+		//        .HasColumnName("ID");
+		//    entity.Property(e => e.NazwaProduktu).HasMaxLength(255);
+		//});
 
-        modelBuilder.Entity<TwojaTabela>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__TwojaTab__3214EC27ECB68040");
+		//modelBuilder.Entity<Warehouse>(entity =>
+		//{
+		//    entity.Property(e => e.Name).HasMaxLength(100);
+		//});
 
-            entity.ToTable("TwojaTabela");
+		//modelBuilder.Entity<WarehouseMovement>(entity =>
+		//{
+		//    entity.HasIndex(e => e.Document, "IX_WarehouseMovements_Document").IsUnique();
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
-            entity.Property(e => e.NazwaProduktu).HasMaxLength(255);
-        });
+		//    entity.Property(e => e.Document).HasMaxLength(100);
+		//});
 
-        modelBuilder.Entity<Warehouse>(entity =>
-        {
-            entity.Property(e => e.Name).HasMaxLength(100);
-        });
+		//modelBuilder.Entity<Order>(e =>
+		//{
+		//    e.Property(e => e.Document).IsRequired().HasMaxLength(50);
+		//    e.Property(e => e.SupplierId).IsRequired();
+		//    e.Property(e => e.CreationDate).IsRequired();
+		//    e.Property(e => e.Status).IsRequired().HasMaxLength(50);
+		//    e.Property(e => e.Remarks).HasMaxLength(300).IsRequired(false);
+		//});
 
-        modelBuilder.Entity<WarehouseMovement>(entity =>
-        {
-            entity.HasIndex(e => e.Document, "IX_WarehouseMovements_Document").IsUnique();
+		//modelBuilder.Entity<OrderDetails>(e =>
+		//{
+		//    e.Property(e => e.OrderId).IsRequired();
+		//    e.Property(e => e.ProductId).IsRequired();
+		//    e.Property(e => e.Quantity).IsRequired();
+		//    e.HasOne(e => e.Order).WithMany(e => e.OrderDetails).HasForeignKey(e => e.OrderId);
+		//});
 
-            entity.Property(e => e.Document).HasMaxLength(100);
-        });
+		//OnModelCreatingPartial(modelBuilder);
+	}
 
-        modelBuilder.Entity<Order>(e =>
-        {
-            e.Property(e => e.Document).IsRequired().HasMaxLength(50);
-            e.Property(e => e.SupplierId).IsRequired();
-            e.Property(e => e.CreationDate).IsRequired();
-            e.Property(e => e.Status).IsRequired().HasMaxLength(50);
-            e.Property(e => e.Remarks).HasMaxLength(300).IsRequired(false);
-        });
-
-        modelBuilder.Entity<OrderDetails>(e =>
-        {
-            e.Property(e => e.OrderId).IsRequired();
-            e.Property(e => e.ProductId).IsRequired();
-            e.Property(e => e.Quantity).IsRequired();
-            e.HasOne(e => e.Order).WithMany(e => e.OrderDetails).HasForeignKey(e => e.OrderId);
-        });
-
-        OnModelCreatingPartial(modelBuilder);
-    }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+	partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
