@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Primitives;
+using System.Collections;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
@@ -467,6 +469,29 @@ namespace WebAppWare.Controllers
 			byte[] bytes = report.PrepareReport(productFlows);
 
 			return File(bytes, "application/pdf");
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> TestPz(IFormCollection collection)
+		{
+			var model = _movementRepo.FromCollectionToMovementModel(collection, MovementType.PZ);
+			var list = _productFlowRepo.FromCollectionToProductFlowModel(collection, 0);
+
+			if (await _movementRepo.IsDocumentNameUnique(model.Document))
+			{
+				if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(list))
+				{
+					int moveId = await _movementRepo.Create(model);
+
+					list.ForEach(x => x.MovementId = moveId);
+
+					await _productFlowRepo.CreateRange(list, moveId);
+
+					return RedirectToAction(nameof(Index));
+				}
+			}
+
+			return BadRequest();
 		}
 
 

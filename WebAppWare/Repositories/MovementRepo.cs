@@ -183,7 +183,7 @@ public class MovementRepo : IMovementRepo
 			return false;
 
 		if (itemCodes
-				.Any(x => x.Quantity <= 0))
+				.Any(x => x.Quantity <= 0 || string.IsNullOrEmpty(x.Quantity.ToString())))
 			return false;
 
 		return true;
@@ -223,5 +223,19 @@ public class MovementRepo : IMovementRepo
 		}
 
 		return true;
+	}
+
+	public MovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type)
+	{
+		var document = collection["Document"];
+
+		MovementModel movement = new MovementModel()
+		{
+			Document = document,
+			CreationDate = DateTime.Now,
+			MovementType = type
+		};
+
+		return movement;
 	}
 }

@@ -13,4 +13,5 @@ public interface IProductFlowRepo
 	Task DeleteById(int id);
     Task DeleteRange(IEnumerable<ProductFlowModel> model);
     Task<bool> IsReadyToDeleteProductFlow(int id);
+    List<ProductFlowModel> FromCollectionToProductFlowModel(IFormCollection collection, int moveId);
 }

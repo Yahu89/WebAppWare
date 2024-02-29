@@ -93,6 +93,33 @@ public class ProductFlowRepo : IProductFlowRepo
         await _dbContext.SaveChangesAsync();
 	}
 
+	public List<ProductFlowModel> FromCollectionToProductFlowModel(IFormCollection collection, int moveId)
+	{
+		var itemCodes = collection["items"];
+		var suppliers = collection["suppliers"];
+		var quantities = collection["quantity"];
+		var warehouse = collection["WarehouseId"];
+
+		List<ProductFlowModel> list = new List<ProductFlowModel>();
+
+		for (int i = 0; i < itemCodes.Count(); i++)
+		{
+            if (string.IsNullOrWhiteSpace(quantities[i]) || !int.TryParse(quantities[i], out _))
+            {
+                throw new FormatException("Data is wrong...");
+            }
+
+			list.Add(new ProductFlowModel());
+			list[i].ProductId = int.Parse(itemCodes[i]);
+			list[i].SupplierId = int.Parse(suppliers[i]);
+			list[i].Quantity = int.Parse(quantities[i]);
+			list[i].WarehouseId = int.Parse(warehouse);
+			list[i].MovementId = moveId;
+		}
+
+        return list;
+	}
+
 	public async Task<List<ProductFlowModel>> GetAll()
     {
         var result = await _dbContext.ProductsFlows.Select(MapToModel)

@@ -20,4 +20,5 @@ public interface IMovementRepo
 	List<ProductFlowModel> GetProductFlowsFromForm(ProductFlowMovementModel model);
 	bool IsUniqueAndQtyCorrectForPzWz(List<ProductFlowModel> itemCodes);
 	Task<bool> IsPossibleToDeletePzWz(int id);
+	MovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type);
 }
