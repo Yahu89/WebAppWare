@@ -1,4 +1,5 @@
 ﻿@model ProductFlowMovementModel
+
 @{
 	var items = Model.ProductFlowModels.ToArray();
 }
@@ -47,63 +48,3 @@
 
 </form>
 
-@* @section scripts {
-	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-			console.log("Hello World!");
-
-			const items = document.getElementById("items");
-			console.log(items);
-
-			items.appendChild(getElement());
-
-			// element
-
-			const el = @Html.Raw(Json.Serialize(Model));
-			console.log(el.productFlowModels);
-
-			if (!el) {
-				el = [];
-			}
-
-
-
-
-			function getElement() {
-				return `
-		<div class="col-2 row form-group m-lg-2">
-
-						<label class="ms-2 pb-2" for="items_0__ProductId">Indeks:</label>
-						<select class="form-select border-0 shadow mb-2" id="items_0__ProductId" name="items[0].ProductId">
-							<option disabled="" selected="">-- Wybierz towar --</option>
-						<option value="1">42001A</option>
-		<option value="2">42002A</option>
-		<option value="3">42003A</option>
-		<option value="4">42004A</option>
-		<option value="5">42005A</option>
-		<option value="8">42006A</option>
-		<option value="33">42007A</option>
-		<option value="34">42008A</option>
-		<option value="35">42009C</option>
-		<option value="36">42010D</option>
-		</select>
-
-						<label class="ms-2 pb-2" for="items_0__Supplier">Dostawca:</label>
-						<select class="form-select border-0 shadow mb-2" id="items_0__SupplierId" name="items[0].SupplierId">
-							<option disabled="" selected="">-- Wybierz dostawcę --</option>
-						<option value="1">Elewar sp. z o.o.</option>
-		<option value="2">Almex sp. z o.o.</option>
-		<option value="3">CartBox sc.</option>
-		<option value="5">EMS Group sp. z o.o.</option>
-		<option value="8">Max-Bud sp. z o.o.</option>
-		</select>
-
-						<label class="ms-2 pb-2" for="items_0__Quantity">Ilość:</label>
-						<input class="form-control border-0 shadow mb-2" type="number" data-val="true" data-val-required="The Quantity field is required." id="items_0__Quantity" name="items[0].Quantity" value="0"><input name="__Invariant" type="hidden" value="items[0].Quantity">
-
-					</div>
-						`;
-			}
-		});
-
-	</script> *@
