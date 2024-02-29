@@ -104,7 +104,7 @@ public class ProductFlowRepo : IProductFlowRepo
 
 		for (int i = 0; i < itemCodes.Count(); i++)
 		{
-            if (string.IsNullOrWhiteSpace(quantities[i]) || !int.TryParse(quantities[i], out _))
+            if (string.IsNullOrWhiteSpace(quantities[i]) || !int.TryParse(quantities[i], out _) || !int.TryParse(warehouse, out _))
             {
                 throw new FormatException("Data is wrong...");
             }

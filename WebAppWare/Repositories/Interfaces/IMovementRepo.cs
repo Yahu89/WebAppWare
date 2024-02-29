@@ -16,7 +16,7 @@ public interface IMovementRepo
 	Task<MovementModel> GetLastMovement();
 	Task DeleteById(int id);
 	Task<string> SetMovementNumber(DateTime date, MovementType moveType);
-	Task<bool> IsPossibleToCreateWz(ProductFlowMovementModel model, IEnumerable<ProductFlowModel> itemCodes);
+	Task<bool> IsPossibleToCreateWz(IFormCollection collection);
 	List<ProductFlowModel> GetProductFlowsFromForm(ProductFlowMovementModel model);
 	bool IsUniqueAndQtyCorrectForPzWz(List<ProductFlowModel> itemCodes);
 	Task<bool> IsPossibleToDeletePzWz(int id);
