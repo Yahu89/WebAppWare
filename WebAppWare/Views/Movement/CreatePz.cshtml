@@ -6,30 +6,30 @@
 
 <h4 class="pb-2">Dodawanie PZ</h4>
 
-<form method="post" class="row" asp-controller="Movement" asp-action="TestPz">
+<form id="form" class="row" data-url="@Url.Action("CreatePz")">
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
-		<input class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
+		<input id="Document" class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
 		<span class="text-danger" asp-validation-for="@Model.Document"></span>
 	</div>
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Magazyn:</label>
-		<select class="form-select border-0 shadow mb-4" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
+		<select id="WarehouseId" class="form-select border-0 shadow mb-4" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
 			<option disabled selected>-- Wybierz magazyn --</option>
 		</select>
 	</div>
 
 	<div class="col-2">
-		<input type="submit" class="btn btn-success" value="Zatwierdź" />
+		<input id="submitButton" type="button" class="btn btn-success" value="Zatwierdź" />
 	</div>
 
-	<table class="table table-bordered table-striped" style="width: 100%">
+	<table id="table" class="table table-bordered table-striped" style="width: 100%">
 		<thead>
-			<th>
-				Index
-			</th>
+		<th>
+			Index
+		</th>
 		<th>
 			Dostawca
 		</th>
@@ -37,23 +37,22 @@
 			Ilość
 		</th>
 		<th>
-			<input type="button" class="btn btn-success" value="Dodaj kolejny" onclick="addRecord()"/>
+			<input id="addRowButton" type="button" class="btn btn-success" value="Dodaj kolejny"/>
 		</th>
 		</thead>
 
 		<tbody id="parentTable">
-			<tr>
+			<tr name="item">
 				<td>
-					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2" })
+					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
 				</td>
 				<td>
-					@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2" })
+					@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
 				</td>
 				<td>
-					<input class="form-control border-0 shadow mb-2" type="text" name="quantity"/>
+					<input data-toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
 				</td>
 				<td>
-					
 				</td>
 			</tr>
 		</tbody>
@@ -66,38 +65,115 @@
 @section Scripts
 {
 	<script>
+		// () => {} to jest arrow function / anonimowa funckja / lambda expression
+		$(() => {
+			const addRecord = () => {
+				const row = `
+							<tr name="item">
+								<td>
+		@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
+								</td>
+								<td>
+		@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
+								</td>
+								<td>
+									<input data-toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
+								</td>
+								<td>
+								</td>
+							</tr>
+						`;
 
-		function getHtmlCode() {
+				console.log('row', row);
 
-			return `<tr>
-						<td>
-							@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2" })
-						</td>
-						<td>
-							@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2" })
-						</td>
-						<td>
-							<input class="form-control border-0 shadow mb-2" type="text" name="quantity"/>
-						</td>
-						<td>
-							<input type="button" class="btn btn-danger" value="Usuń" onclick="removeRecord(this)"/>
-						</td>
-					</tr>`
-		}
+				$('#table tr:last').after(row);
+			}
 
-		function addRecord() {
+			$('#submitButton').click((e) => {
+				e.preventDefault();
 
-			let tr = document.createElement("tr");
-			tr.innerHTML = getHtmlCode();
-			document.getElementById("parentTable").appendChild(tr);
+				onSubmit();
+			});
 
-		}
+			$('#addRowButton').click(() => {
+				addRecord();
+			});
 
-		function removeRecord(tr) {
+			const onSubmit = () => {
+				const form = {
+					document: '',
+					warehouseId: 0,
+					productFlowModels: []
+				};
 
-			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
-		}
+				console.log('document', $('#Document').val());
+				form.document = $('#Document').val();
 
+				console.log('WarehouseId', $('#WarehouseId').val());
+				form.warehouseId = $('#WarehouseId').val();
+
+				const items = $('tr[name="item"]');
+				// console.log(items);
+
+				const elements = [];
+
+				$.each(items, function () {
+					// elementy listy
+					console.log(this);
+
+					const properties = $(this).find('[name="items-property"]');
+					console.log('properties:');
+
+					const item = {};
+
+					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
+					let i = 0;
+					$.each(properties, function () {
+						if (i === 0) {
+							item.productId = $(this).val();
+						}
+						if (i === 1) {
+							item.supplierId = $(this).val();
+						}
+						if (i === 2) {
+							item.quantity = $(this).val();
+						}
+
+						i++;
+					});
+
+					elements.push(item);
+				})
+
+				console.log('FINAL:');
+				console.log(elements);
+
+				form.productFlowModels = elements;
+
+				console.log('FORM:');
+				console.log(form);
+
+				const data = $('#form');
+				console.log(data.data('url'));
+
+				$.ajax({
+					url: data.data('url'),
+					method: 'POST',
+					data: form,
+					success: function () {
+						console.log('wyslano zapytanie');
+					},
+					error: function (error) {
+						console.log(error.error);
+					}
+				});
+			}
+
+			function removeRecord(tr) {
+
+				document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
+			}
+		});
 	</script>
 }
 
