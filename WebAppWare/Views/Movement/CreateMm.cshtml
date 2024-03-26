@@ -1,42 +1,97 @@
 ﻿@model ProductFlowMovementModel
 
+
 <h4 class="pb-2">Dodawanie MM</h4>
 
-<form method="post" class="row" asp-controller="Movement" asp-action="CreateMm">
+<form method="post" class="row" asp-controller="Movement" asp-action="TestMm">
 
-	<div class="col-12">
+	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
-		<input class="form-control border-0 shadow mb-2" asp-for="@Model.Document" />
+		<input class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
 		<span class="text-danger" asp-validation-for="@Model.Document"></span>
 	</div>
 
-	@for (var i = 0; i < Model.ProductFlowModels.Count(); i++)
-	{
-		<div class="col-2 row form-group m-lg-2">
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Z magazynu:</label>
+		<select class="form-select border-0 shadow mb-4" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
+			<option disabled selected>-- Wybierz magazyn --</option>
+		</select>
+	</div>
 
-			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].ProductId">Indeks:</label>
-			<select class="form-select border-0 shadow mb-2" asp-items="@Model.Products" asp-for="@Model.ProductFlowModels[i].ProductId">
-				<option disabled selected>-- Wybierz towar --</option>
-			</select>
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Do magazynu:</label>
+		<select class="form-select border-0 shadow mb-4" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
+			<option disabled selected>-- Wybierz magazyn --</option>
+		</select>
+	</div>
 
-			<label class="ms-2 pb-2" asp-for="@Model.ProductFlowModels[i].Quantity">Ilość:</label>
-			<input class="form-control border-0 shadow mb-2" asp-for="@Model.ProductFlowModels[i].Quantity" />
+	<div class="col-2">
+		<input type="submit" class="btn btn-success" value="Zatwierdź" />
+	</div>
 
-		</div>
-	}
+	<table class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+		<th>
+			Index
+		</th>
+		<th>
+			Ilość
+		</th>
+		<th>
+			<input type="button" class="btn btn-success" value="Dodaj kolejny" onclick="addRecord()" />
+		</th>
+		</thead>
 
-	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Z magazynu:</label>
-	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
-		<option disabled selected>-- Wybierz magazyn --</option>
-	</select>
+		<tbody id="parentTable">
+			<tr>
+				<td>
+					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2" })
+				</td>
+				<td>
+					<input class="form-control border-0 shadow mb-2" type="text" name="quantity" />
+				</td>
+				<td>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 
-	<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Do magazynu:</label>
-	<select class="form-select border-0 shadow mb-2" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseToId">
-		<option disabled selected>-- Wybierz magazyn --</option>
-	</select>
-
-
-	<button type="submit" class="btn btn-success form-control mb-2">Dodaj</button>
 	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
 
 </form>
+
+@section Scripts
+{
+	<script>
+
+		function getHtmlCode() {
+
+			return `<tr>
+										<td>
+							@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2" })
+										</td>
+										<td>
+											<input class="form-control border-0 shadow mb-2" type="text" name="quantity"/>
+										</td>
+										<td>
+											<input type="button" class="btn btn-danger" value="Usuń" onclick="removeRecord(this)"/>
+										</td>
+									</tr>`
+		}
+
+		function addRecord() {
+
+			let tr = document.createElement("tr");
+			tr.innerHTML = getHtmlCode();
+			document.getElementById("parentTable").appendChild(tr);
+
+		}
+
+		function removeRecord(tr) {
+
+			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
+		}
+
+	</script>
+}
+

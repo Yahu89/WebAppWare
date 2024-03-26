@@ -5,6 +5,8 @@ namespace WebAppWare.Repositories.Interfaces
 {
 	public interface IImageRepository
 	{
-		public Task Create(ProductModel product);
+		Task Create(ProductModel product);
+		Task<string> GetLogoPath();
+
 	}
 }

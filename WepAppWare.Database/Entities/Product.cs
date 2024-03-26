@@ -12,9 +12,6 @@ public partial class Product : BaseEntity
     //[MinLength(3)]
     //[MaxLength(15)]
     public string ItemCode { get; set; } = string.Empty;
-
-    //[Required(ErrorMessage = "Pole Opis jest wymagane")]
-    //[MaxLength(200)]
     public string Description { get; set; } = string.Empty;
 
     public int? ImageId { get; set; }

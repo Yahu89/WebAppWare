@@ -20,7 +20,7 @@ public class ProductRepo : IProductRepo
 		Id = e.Id,
 		Description = e.Description,
 		ItemCode = e.ItemCode,
-		ImagePath = e.Image != null ? e.Image.Path : "",
+		ImagePath = e.Image != null ? e.Image.Path : ""
 	};
 	private Expression<Func<ProductModel, Product>> MapToEntity = e => new Product()
 	{

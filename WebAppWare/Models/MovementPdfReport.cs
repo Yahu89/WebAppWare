@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using WebAppWare.Database.Entities;
+using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Models;
 
@@ -19,7 +20,13 @@ public class MovementPdfReport
     string _movementNumber;
 	DateTime _creationDate;
 
-	public byte[] PrepareReport(List<ProductFlowModel> model)
+	private readonly IImageRepository _imageRepository;
+	public MovementPdfReport(IImageRepository imageRepository)
+    {
+		_imageRepository = imageRepository;
+    }
+
+    public byte[] PrepareReport(List<ProductFlowModel> model)
     {
         _productFlows = model;
 		_movementNumber = _productFlows.FirstOrDefault().DocumentNumber;
@@ -46,7 +53,7 @@ public class MovementPdfReport
         return _stream.ToArray();
     }
 
-    private void ReportHeader()
+    private async void ReportHeader()
     {
 		_fontStyle = FontFactory.GetFont("Tahoma", 12f, 1);
 
@@ -58,7 +65,9 @@ public class MovementPdfReport
 		byte[] imageBytes;
 
 		WebClient wc = new WebClient();
-		imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\Images\dev-hobby-logo2442555683.jpg");
+		
+		//imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\Images\dev-hobby-logo2442555683.jpg");
+		imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\wwwroot\images\test-image.jpg");
 
 		Image img = Image.GetInstance(imageBytes);
 		img.ScaleAbsolute(150f, 50f);

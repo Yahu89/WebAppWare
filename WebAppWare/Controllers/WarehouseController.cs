@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
@@ -22,17 +23,17 @@ namespace WebAppWare.Controllers
 			return View();
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Create(WarehouseModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				await _warehouseRepo.Add(model);
-				return RedirectToAction("Index");
-			}
+		//[HttpPost]
+		//public async Task<IActionResult> Create(WarehouseModel model)
+		//{
+		//	if (ModelState.IsValid)
+		//	{
+		//		await _warehouseRepo.Add(model);
+		//		return RedirectToAction("Index");
+		//	}
 	
-			return View();
-		}
+		//	return View();
+		//}
 
 		public async Task<IActionResult> Edit(int id)
 		{
@@ -40,16 +41,41 @@ namespace WebAppWare.Controllers
 			return View(warehouse);
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Edit(WarehouseModel warehouse)
-		{
-			if (ModelState.IsValid)
-			{
-                await _warehouseRepo.Update(warehouse);
-                return RedirectToAction("Index");
-            }
+		//[HttpPost]
+		//public async Task<IActionResult> Edit(WarehouseModel warehouse)
+		//{
+		//	if (ModelState.IsValid)
+		//	{
+  //              await _warehouseRepo.Update(warehouse);
+  //              return RedirectToAction("Index");
+  //          }
 
-			return View();
+		//	return View();
+		//}
+
+		[HttpPost]
+		public async Task<IActionResult> Upsert(WarehouseModel model)
+		{
+			if (model.Id == 0)
+			{
+                if (ModelState.IsValid)
+                {
+                    await _warehouseRepo.Add(model);
+                    return RedirectToAction(nameof(Index));
+                }
+
+				return RedirectToAction(nameof(Create));
+            }
+			else
+			{
+                if (ModelState.IsValid)
+                {
+                    await _warehouseRepo.Update(model);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return RedirectToAction(nameof(Edit));
+            }
 		}
 
 		public async Task<IActionResult> Delete(int id)

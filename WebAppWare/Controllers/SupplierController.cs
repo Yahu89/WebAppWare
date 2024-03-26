@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
@@ -22,17 +23,17 @@ namespace WebAppWare.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(SupplierModel suplier)
-        {
-            if (ModelState.IsValid)
-            {
-                await _supplierRepo.Create(suplier);
-                return RedirectToAction("Index");
-            }
+        //[HttpPost]
+        //public async Task<IActionResult> Create(SupplierModel suplier)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        await _supplierRepo.Create(suplier);
+        //        return RedirectToAction("Index");
+        //    }
             
-            return View();
-        }
+        //    return View();
+        //}
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -40,16 +41,36 @@ namespace WebAppWare.Controllers
             return View(supplier);
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> Edit(SupplierModel supplier)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        await _supplierRepo.Update(supplier);
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    return View();           
+        //}
+
         [HttpPost]
-        public async Task<IActionResult> Edit(SupplierModel supplier)
+        public async Task<IActionResult> Upsert(SupplierModel model)
         {
             if (ModelState.IsValid)
             {
-                await _supplierRepo.Update(supplier);
-                return RedirectToAction("Index");
+                if (model.Id == 0)
+                {
+                    await _supplierRepo.Create(model);
+                }
+                else
+                {
+                    await _supplierRepo.Update(model);
+                }
+
+                return RedirectToAction(nameof(Index));
             }
 
-            return View();           
+            return RedirectToAction(nameof(Create));
         }
 
         public async Task<IActionResult> Delete(int id)

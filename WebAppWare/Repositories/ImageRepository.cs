@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database;
 using WebAppWare.Models;
 using WebAppWare.Models.BaseModels;
@@ -39,27 +40,8 @@ namespace WebAppWare.Repositories
 					AbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, localPath)
 				};
 
-				//var absolutePath = Path.Combine(_webHostEnvironment.WebRootPath, localPath);
-
 				using var stream = new FileStream(image.AbsolutePath, FileMode.Create);
 				await product.ImageFile.CopyToAsync(stream);
-
-				//var absolutePath = CreateImageAbsolutePath(product);
-
-				// zapisyjemy do folderu wwwroot
-				
-
-				// zapisujem w bazie dane zapisanego pliku
-				//var image = new Image()
-				//{
-				//	Name = $"{product.ImageFile.Name}",
-				//	AbsolutePath = absolutePath,
-				//	Path = $"images/{product.ImageFile.Name}"
-				//};
-
-				//image.AbsolutePath = absolutePath;
-
-				
 
 				await _dbContext.Images.AddAsync(image);
 				await _dbContext.SaveChangesAsync();
@@ -70,25 +52,22 @@ namespace WebAppWare.Repositories
 			await _productRepo.Add(product, id);
 		}
 
-		//private string CreateImageAbsolutePath(BaseImageModel? model)
-		//{
-		//	//string? fileName = Path.GetFileNameWithoutExtension(model.ImageFile.FileName);
-		//	//string? extension = Path.GetExtension(model.ImageFile.FileName);
-		//	//fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
-		//	string fileName = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-
-		//	return fileName;
-		//}
+		public async Task<string> GetLogoPath()
+		{
+				var path = (await _dbContext.Images.FirstOrDefaultAsync(x => x.Id == 1)).Path;
+				return path;			
+		}
 
 		private string CreateLocalPath(BaseImageModel? model)
 		{
 			string? fileName = Path.GetFileNameWithoutExtension(model.ImageFile.FileName);
 			string? extension = Path.GetExtension(model.ImageFile.FileName);
 			fileName = fileName + DateTime.Now.ToString("yymmssffff") + extension;
-			//fileName = Path.Combine("images", fileName);
 			fileName = $"images/{fileName}";
 
 			return fileName;
 		}
+
+		
 	}
 }

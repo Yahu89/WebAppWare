@@ -15,7 +15,6 @@ namespace WebAppWare.Repositories;
 public class ProductFlowRepo : IProductFlowRepo
 {
     private readonly WarehouseDbContext _dbContext;
-    //private readonly IProductFlowRepo _productFlowRepo;
 
     private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
     {
@@ -33,20 +32,10 @@ public class ProductFlowRepo : IProductFlowRepo
         DocumentNumber = x.WarehouseMovement.Document
     };
 
-    //private Expression<Func<ProductFlowModel, ProductsFlow>> MapToEntity = x => new ProductsFlow()
-    //{
-    //    Id = x.Id,
-    //    WarehouseMovementId = x.MovementId,
-    //    Quantity = x.Quantity,
-    //    WarehouseId = x.WarehouseId,
-    //    ProductId = x.ProductId,
-    //    SupplierId = x.SupplierId
-    //};
 
     public ProductFlowRepo(WarehouseDbContext dbContext)
     {
         _dbContext = dbContext;
-        //_productFlowRepo = productFlowRepo;
     }
 
 	public async Task CreateRange(IEnumerable<ProductFlowModel> model, int id)
