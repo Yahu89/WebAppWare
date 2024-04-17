@@ -21,16 +21,27 @@ public class ProductFlowRepo : IProductFlowRepo
         Id = x.Id,
         MovementId = x.WarehouseMovementId,
         MovementType = x.WarehouseMovement.MovementType,
-        Warehouse = x.Warehouse.Name,
         ProductItemCode = x.Product.ItemCode,
         Quantity = x.Quantity,
         Supplier = x.Supplier.Name,
         CreationDate = x.WarehouseMovement.CreationDate,
         ProductId = x.Product.Id,
         SupplierId = x.Supplier.Id,
-        WarehouseId = x.Warehouse.Id,
         DocumentNumber = x.WarehouseMovement.Document
     };
+
+	private Expression<Func<ProductsFlow, ProductFlowSearchModel>> MapToSearchModel = x => new ProductFlowSearchModel()
+	{
+
+	};
+
+	//private Expression<Func<Form, ProductFlowModel>> MapFromFormToProductFlowModel = x => new ProductFlowModel()
+	//{
+	//	Id = x.Id,
+	//	DocumentNumber = x.Document,
+	//	WarehouseId = x.WarehouseId,
+	//	ProductId = x.ProductFlowModels
+	//}
 
 
     public ProductFlowRepo(WarehouseDbContext dbContext)
@@ -45,7 +56,6 @@ public class ProductFlowRepo : IProductFlowRepo
                {
                    Quantity = x.Quantity,
                    WarehouseMovementId = id,
-                   WarehouseId = x.WarehouseId,
                    ProductId = x.ProductId,
                    SupplierId = x.SupplierId,
                });
@@ -72,7 +82,6 @@ public class ProductFlowRepo : IProductFlowRepo
             Id = x.Id,
 			Quantity = x.Quantity,
 			WarehouseMovementId = x.MovementId,
-			WarehouseId = x.WarehouseId,
 			ProductId = x.ProductId,
 			SupplierId = x.SupplierId
 		})
@@ -102,7 +111,6 @@ public class ProductFlowRepo : IProductFlowRepo
 			list[i].ProductId = int.Parse(itemCodes[i]);
 			list[i].SupplierId = int.Parse(suppliers[i]);
 			list[i].Quantity = int.Parse(quantities[i]);
-			list[i].WarehouseId = int.Parse(warehouse);
 			list[i].MovementId = moveId;
 		}
 
@@ -122,7 +130,6 @@ public class ProductFlowRepo : IProductFlowRepo
 	{
 		var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
                                                             .Where(x => x.ProductId == prodId)
-                                                            .Where(x => x.WarehouseId == wareId)
                                                             .OrderBy(x => x.CreationDate)
                                                             .ToListAsync();
 
@@ -160,11 +167,11 @@ public class ProductFlowRepo : IProductFlowRepo
             {
                 switch (i)
                 {
-                    case 0:
-                        {
-                            result = result.Where(x => x.Warehouse.Contains(content[i])).ToList();
-                            break;
-                        }
+                    //case 0:
+                    //    {
+                    //        result = result.Where(x => x.Warehouse.Contains(content[i])).ToList();
+                    //        break;
+                    //    }
 
 					case 1:
 						{

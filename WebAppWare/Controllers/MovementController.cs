@@ -5,6 +5,7 @@ using System.Collections;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace WebAppWare.Controllers
 {
@@ -79,7 +80,7 @@ namespace WebAppWare.Controllers
 
 			if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(itemCodes))
 			{
-				MovementModel warMove = new MovementModel()
+				WarehouseMovementModel warMove = new WarehouseMovementModel()
 				{
 					Document = obj.Document,
 					MovementType = MovementType.PZ
@@ -118,7 +119,7 @@ namespace WebAppWare.Controllers
 
 			if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(itemCodes))
 			{
-				MovementModel warMove = new MovementModel()
+				WarehouseMovementModel warMove = new WarehouseMovementModel()
 				{
 					Document = obj.Document,
 					MovementType = MovementType.WZ
@@ -166,7 +167,6 @@ namespace WebAppWare.Controllers
 									{
 										ProductId = x.ProductId,
 										ProductItemCode = x.ProductItemCode,
-										Warehouse = x.Warehouse,
 										Quantity = x.Quantity,
 										WarehouseId = obj.WarehouseId,
 										MovementType = x.MovementType,
@@ -182,7 +182,7 @@ namespace WebAppWare.Controllers
 					.Any(x => x.Quantity <= 0))
 				return RedirectToAction(nameof(CreateMm));
 
-			MovementModel warMove = new MovementModel()
+			WarehouseMovementModel warMove = new WarehouseMovementModel()
 			{
 				Document = obj.Document,
 				MovementType = MovementType.MM
@@ -316,25 +316,92 @@ namespace WebAppWare.Controllers
 			return File(bytes, "application/pdf");
 		}
 
+		//[HttpPost]
+		//public async Task<IActionResult> TestPz(IFormCollection collection)
+		//{
+		//	var model = _movementRepo.FromCollectionToMovementModel(collection, MovementType.PZ);
+		//	var list = _productFlowRepo.FromCollectionToProductFlowModel(collection, 0);
+
+		//	if (await _movementRepo.IsDocumentNameUnique(model.Document))
+		//	{
+		//		if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(list))
+		//		{
+		//			int moveId = await _movementRepo.Create(model);
+
+		//			await _productFlowRepo.CreateRange(list, moveId);
+
+		//			return RedirectToAction(nameof(Index));
+		//		}
+		//	}
+
+		//	return BadRequest();
+		//}
+
 		[HttpPost]
-		public async Task<IActionResult> TestPz(IFormCollection collection)
+		public async Task<IActionResult> TestPz2(Form model)
 		{
-			var model = _movementRepo.FromCollectionToMovementModel(collection, MovementType.PZ);
-			var list = _productFlowRepo.FromCollectionToProductFlowModel(collection, 0);
+			var movementModel = await _movementRepo.FromPzFormToMovementModel(model, MovementType.PZ);
+			var movementId = 0;
+
+			var productsFlowModel = FormToProductFlowModelList(model, movementId);
 
 			if (await _movementRepo.IsDocumentNameUnique(model.Document))
 			{
-				if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(list))
+				if (_movementRepo.IsUniqueAndQtyCorrectForPzWz(productsFlowModel))
 				{
-					int moveId = await _movementRepo.Create(model);					
+					movementId = await _movementRepo.Create(movementModel);
 
-					await _productFlowRepo.CreateRange(list, moveId);
+					await _productFlowRepo.CreateRange(productsFlowModel, movementId);
 
 					return RedirectToAction(nameof(Index));
 				}
 			}
 
 			return BadRequest();
+		}
+
+		public List<ProductFlowModel> FormToProductFlowModelList(Form model, int movementId)
+		{
+			string doc = model.Document;
+			int wareId = model.WarehouseId;
+			//int moveId = 0;
+
+			//var model2 = await _movementRepo.FromPzFormToMovementModel(model, MovementType.PZ);
+			//moveId = model2.Id;
+
+
+			//List<ProductFlowModel> result = new List<ProductFlowModel>();
+
+			//foreach (var item in model.ProductFlowModels)
+			//{
+			//	ProductFlowModel element = new ProductFlowModel()
+			//	{					
+			//		ProductId = item.ProductId,
+			//		SupplierId = item.SupplierId,
+			//		WarehouseId = wareId,
+			//		DocumentNumber = doc,
+			//		Quantity = item.Quantity,
+			//		MovementType = MovementType.PZ,
+			//		MovementId = movementId,
+			//		CreationDate = DateTime.Now
+			//	};
+
+			//	result.Add(element);
+			//}
+
+			var result = (List<ProductFlowModel>)model.ProductFlowModels.Select(x => new ProductFlowModel()
+			{
+				ProductId = x.ProductId,
+				SupplierId = x.SupplierId,
+				WarehouseId = wareId,
+				DocumentNumber = doc,
+				Quantity = x.Quantity,
+				MovementType = MovementType.PZ,
+				MovementId = movementId,
+				CreationDate = DateTime.Now
+			});
+
+			return result;		
 		}
 
 		[HttpPost]

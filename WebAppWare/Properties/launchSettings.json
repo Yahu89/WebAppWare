@@ -1,13 +1,19 @@
-﻿{
-
+{
   "profiles": {
     "WebApp": {
       "commandName": "IISExpress",
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:6001;http://localhost:6000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:6001;http://localhost:6000"
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:50968/",
+      "sslPort": 44310
     }
   }
 }

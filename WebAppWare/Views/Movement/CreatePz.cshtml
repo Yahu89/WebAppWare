@@ -6,7 +6,7 @@
 
 <h4 class="pb-2">Dodawanie PZ</h4>
 
-<form id="form" class="row" data-url="@Url.Action("CreatePz")">
+<form id="form" class="row" data-url="@Url.Action("TestPz2")">
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
@@ -44,13 +44,13 @@
 		<tbody id="parentTable">
 			<tr name="item">
 				<td>
-					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
+					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", toggle = "item-property" })
 				</td>
 				<td>
-					@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
+					@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", toggle = "item-property" })
 				</td>
 				<td>
-					<input data-toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
+					<input toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
 				</td>
 				<td>
 				</td>
@@ -59,6 +59,7 @@
 	</table>
 
 	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
+	<p id="test">dfgdfg</p>
 
 </form>
 
@@ -66,20 +67,21 @@
 {
 	<script>
 		// () => {} to jest arrow function / anonimowa funckja / lambda expression
-		$(() => {
+		$(document).ready(function() {
 			const addRecord = () => {
-				const row = `
+				let row = `
 							<tr name="item">
 								<td>
-		@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
+		@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @toggle = "item-property" })
 								</td>
 								<td>
-		@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", @data_toggle = "item-property" })
+		@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", @toggle = "item-property" })
 								</td>
 								<td>
-									<input data-toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
+									<input toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
 								</td>
 								<td>
+									<input type="button" class="btn btn-danger" value="Usuń" onclick="removeRecord(this)"/>
 								</td>
 							</tr>
 						`;
@@ -90,7 +92,7 @@
 			}
 
 			$('#submitButton').click((e) => {
-				e.preventDefault();
+				//e.preventDefault();
 
 				onSubmit();
 			});
@@ -99,7 +101,16 @@
 				addRecord();
 			});
 
+			// $('#removeButton').click((tr) => {
+			// 	removeRecord(this);
+			// });
+
+			let isCorrectData;
+
 			const onSubmit = () => {
+
+				isCorrectData = true;
+
 				const form = {
 					document: '',
 					warehouseId: 0,
@@ -108,6 +119,12 @@
 
 				console.log('document', $('#Document').val());
 				form.document = $('#Document').val();
+
+				if (form.document.length == 0) {
+					$('#Document').val('Niepoprawne dane');
+					//form.document.val('Niepoprawne dane');
+					isCorrectData = false;
+				}
 
 				console.log('WarehouseId', $('#WarehouseId').val());
 				form.warehouseId = $('#WarehouseId').val();
@@ -121,22 +138,33 @@
 					// elementy listy
 					console.log(this);
 
-					const properties = $(this).find('[name="items-property"]');
+					const properties = $(this).find('[toggle="item-property"]');
 					console.log('properties:');
 
 					const item = {};
 
 					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
 					let i = 0;
-					$.each(properties, function () {
+					// let isCorrectData = true;
+
+					$.each(properties, function (index, element) {
 						if (i === 0) {
-							item.productId = $(this).val();
+							item.productId = $(element).val();				
 						}
+
 						if (i === 1) {
 							item.supplierId = $(this).val();
 						}
 						if (i === 2) {
 							item.quantity = $(this).val();
+							let c = parseInt(item.quantity);
+
+							//console.log(c);
+							if (isNaN(c)) {
+								//console.log('TRUE');
+								isCorrectData = false;
+								$(element).val('Niepoprawne dane');							
+							}
 						}
 
 						i++;
@@ -156,24 +184,44 @@
 				const data = $('#form');
 				console.log(data.data('url'));
 
-				$.ajax({
-					url: data.data('url'),
-					method: 'POST',
-					data: form,
-					success: function () {
-						console.log('wyslano zapytanie');
-					},
-					error: function (error) {
-						console.log(error.error);
-					}
-				});
+			
+				if (isCorrectData) {
+
+					console.log('isCorrectData:', isCorrectData);
+
+					$.ajax({
+						url: data.data('url'),
+						method: 'POST',
+						data: form,
+						success: function () {
+							console.log('wyslano zapytanie');
+						},
+						error: function (error) {
+							console.log(error.error);
+						}
+					});
+				}
+
+				// $.ajax({
+				// 	url: data.data('url'),
+				// 	method: 'POST',
+				// 	data: form,
+				// 	success: function () {
+				// 		console.log('wyslano zapytanie');
+				// 	},
+				// 	error: function (error) {
+				// 		console.log(error.error);
+				// 	}
+				// });
 			}
 
-			function removeRecord(tr) {
-
-				document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
-			}
 		});
+
+		function removeRecord(tr) {
+
+			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
+		}
+
 	</script>
 }
 

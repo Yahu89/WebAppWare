@@ -17,7 +17,7 @@ public class MovementRepo : IMovementRepo
 {
 	private readonly WarehouseDbContext _dbContext;
 
-	private Expression<Func<WarehouseMovement, MovementModel>> MapToModel = x => new MovementModel()
+	private Expression<Func<WarehouseMovement, WarehouseMovementModel>> MapToModel = x => new WarehouseMovementModel()
 	{
 		Id = x.Id,
 		Document = x.Document,
@@ -25,7 +25,7 @@ public class MovementRepo : IMovementRepo
 		CreationDate = x.CreationDate
 	};
 
-	private Expression<Func<MovementModel, WarehouseMovement>> MapToEntity = x => new WarehouseMovement()
+	private Expression<Func<WarehouseMovementModel, WarehouseMovement>> MapToEntity = x => new WarehouseMovement()
 	{
 		Id = x.Id,
 		Document = x.Document,
@@ -38,7 +38,7 @@ public class MovementRepo : IMovementRepo
         _dbContext = dbContext;
     }
 
-	public async Task<int> Create(MovementModel model)
+	public async Task<int> Create(WarehouseMovementModel model)
 	{
 		var movement = MapToEntity.Compile().Invoke(model);
 		_dbContext.WarehouseMovements.Add(movement);
@@ -55,7 +55,7 @@ public class MovementRepo : IMovementRepo
 		await _dbContext.SaveChangesAsync();
 	}
 
-	public async Task<List<MovementModel>> GetAll()
+	public async Task<List<WarehouseMovementModel>> GetAll()
 	{
 		var result = await _dbContext.WarehouseMovements.Select(MapToModel)
 												.OrderByDescending(x => x.CreationDate)
@@ -64,13 +64,13 @@ public class MovementRepo : IMovementRepo
 		return result;
 	}
 
-	public async Task<MovementModel> GetById(int id)
+	public async Task<WarehouseMovementModel> GetById(int id)
 	{
 		var movement = await _dbContext.WarehouseMovements.Select(MapToModel).FirstOrDefaultAsync(x => x.Id == id);
 		return movement;
 	}
 
-	public async Task<MovementModel> GetLastMovement()
+	public async Task<WarehouseMovementModel> GetLastMovement()
 	{
 		var lastMove = await _dbContext.WarehouseMovements.Select(MapToModel)
 													.OrderBy(x => x.Id)
@@ -235,11 +235,25 @@ public class MovementRepo : IMovementRepo
 		return true;
 	}
 
-	public MovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type)
+	public WarehouseMovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type)
 	{
 		var document = collection["Document"];
 
-		MovementModel movement = new MovementModel()
+		WarehouseMovementModel movement = new WarehouseMovementModel()
+		{
+			Document = document,
+			CreationDate = DateTime.Now,
+			MovementType = type
+		};
+
+		return movement;
+	}
+
+	public async Task<WarehouseMovementModel> FromPzFormToMovementModel(Form model, MovementType type)
+	{
+		string document = model.Document;
+
+		WarehouseMovementModel movement = new WarehouseMovementModel()
 		{
 			Document = document,
 			CreationDate = DateTime.Now,

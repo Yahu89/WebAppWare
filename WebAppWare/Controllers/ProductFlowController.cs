@@ -47,44 +47,7 @@ namespace WebAppWare.Controllers
             {
                 await _productFlowRepo.DeleteById(id);
                 return RedirectToAction("Index");
-            } 
-
-            // commented
-			#region
-			//        int qty = productFlowModel.Quantity;
-			//        DateTime insertDate = productFlowModel.CreationDate;
-
-			//        IEnumerable<ProductFlowModel> prodFlowCumulative = await _productFlowRepo.GetAllCumulative((int)productFlowModel.ProductId, 
-			//            (int)productFlowModel.WarehouseId);
-
-			//        var prodFlowCumulativeLimited = prodFlowCumulative.Where(x => x.CreationDate > insertDate).ToList();
-
-			//        int count = prodFlowCumulativeLimited.Count;
-
-			//        int minValue = 0;
-
-			//        if (count > 0)
-			//        {
-			//            minValue = prodFlowCumulativeLimited.Min(x => x.Cumulative);
-			//        }
-			//        else
-			//        {
-			//            var list = (List<ProductFlowModel>)prodFlowCumulative;
-			//minValue = list[0].Cumulative;
-			//        }
-
-			//if (minValue >= qty)
-			//{
-			//    if (howManyItems == 1)
-			//    {
-			//        await _movementRepo.DeleteById(id);
-			//        return RedirectToAction("Index");
-			//    }
-
-			//    await _productFlowRepo.DeleteById(id);
-			//    return RedirectToAction("Index");
-			//}
-			#endregion 
+            }  
 
 			if (await _productFlowRepo.IsReadyToDeleteProductFlow(movementId) && howManyItems > 1)
             {
@@ -159,11 +122,25 @@ namespace WebAppWare.Controllers
 			return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Search(ProductFlowSearchModel model)
+        //[HttpPost]
+        public async Task<IActionResult> Search(ProductFlowSearchModel model, int currentPage = 1, string warehouse = "", string ind = "",
+                                                string supplier = "")
         {
+            //model.Supplier = supplier;
+            //model.Warehouse = warehouse;
+            //model.ItemCode = ind;
+
+            warehouse = model.Warehouse;
+            ind = model.ItemCode;
+            supplier = model.Supplier;
             var results = await _productFlowRepo.GetBySearch(model.Warehouse, model.ItemCode, model.Supplier);
-            model.ProductsFlow = results;
+            //model.ProductsFlow = results;
+            int totalRecords = results.Count();
+            int recordsPerPage = 25;
+            model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));
+            model.CurrentPage = currentPage;
+
+            model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage).Take(recordsPerPage);
             return View(model);
         }
     }

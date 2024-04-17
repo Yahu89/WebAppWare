@@ -9,16 +9,17 @@ namespace WebAppWare.Repositories.Interfaces;
 
 public interface IMovementRepo
 {
-	Task<List<MovementModel>> GetAll();
-	Task<MovementModel> GetById(int id);
+	Task<List<WarehouseMovementModel>> GetAll();
+	Task<WarehouseMovementModel> GetById(int id);
 	Task<bool> IsDocumentNameUnique(string inputName);
-	Task<int> Create(MovementModel model);
-	Task<MovementModel> GetLastMovement();
+	Task<int> Create(WarehouseMovementModel model);
+	Task<WarehouseMovementModel> GetLastMovement();
 	Task DeleteById(int id);
 	Task<string> SetMovementNumber(DateTime date, MovementType moveType);
 	Task<bool> IsPossibleToCreateWz(IFormCollection collection);
 	List<ProductFlowModel> GetProductFlowsFromForm(ProductFlowMovementModel model);
 	bool IsUniqueAndQtyCorrectForPzWz(List<ProductFlowModel> itemCodes);
 	Task<bool> IsPossibleToDeletePzWz(int id);
-	MovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type);
+	WarehouseMovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type);
+	Task<WarehouseMovementModel> FromPzFormToMovementModel(Form model, MovementType type);
 }
