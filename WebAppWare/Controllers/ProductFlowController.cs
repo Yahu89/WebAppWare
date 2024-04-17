@@ -123,22 +123,21 @@ namespace WebAppWare.Controllers
         }
 
         //[HttpPost]
-        public async Task<IActionResult> Search(ProductFlowSearchModel model, int currentPage = 1, string warehouse = "", string ind = "",
-                                                string supplier = "")
+        public async Task<IActionResult> Search(ProductFlowSearchModel model)
         {
             //model.Supplier = supplier;
             //model.Warehouse = warehouse;
             //model.ItemCode = ind;
 
-            warehouse = model.Warehouse;
-            ind = model.ItemCode;
-            supplier = model.Supplier;
+            //warehouse = model.Warehouse;
+            //ind = model.ItemCode;
+            //supplier = model.Supplier;
+            
             var results = await _productFlowRepo.GetBySearch(model.Warehouse, model.ItemCode, model.Supplier);
             //model.ProductsFlow = results;
             int totalRecords = results.Count();
-            int recordsPerPage = 25;
+            int recordsPerPage = 5;
             model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));
-            model.CurrentPage = currentPage;
 
             model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage).Take(recordsPerPage);
             return View(model);

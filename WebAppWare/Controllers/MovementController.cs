@@ -109,8 +109,6 @@ namespace WebAppWare.Controllers
 		//[HttpPost]
 		//public async Task<IActionResult> CreateWz(ProductFlowMovementModel obj)
 		//{
-		//	if (string.IsNullOrEmpty(obj.Document) || obj.WarehouseId == 0)
-		//		return RedirectToAction(nameof(CreateWz));
 
 		//	if (!await _movementRepo.IsDocumentNameUnique(obj.Document))
 		//		return RedirectToAction(nameof(CreateWz));

@@ -45,6 +45,14 @@ public class MovementRepo : IMovementRepo
 
 		if (model.MovementType is MovementType.PZ)
 		{
+			// TODO: po przeniesieniu WarehoueID z ProductFlow do WarehouseMovement zrob ta walidacje ponizej
+			//if (string.IsNullOrEmpty(movement.Document) || movement.WarehouseId == 0)
+			//{
+			//	throw new Exception("ISTNIEJE JUZ!");
+			//}
+
+			// TODO: Dla WZ popraw, ze w bazie nie sa trzymane - wartosci, tylko logika obliczajaca sama bedzie odejmowac tam gdzie trzeba
+
 			if (!await IsDocumentNameUnique(movement.Document))
 			{
 				throw new Exception("ISTNIEJE JUZ!");
@@ -195,6 +203,8 @@ public class MovementRepo : IMovementRepo
 				return false;
 			}
 		}
+
+		// 
 
 		return true;
 	}

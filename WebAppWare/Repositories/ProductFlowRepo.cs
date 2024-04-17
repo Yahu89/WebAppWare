@@ -128,6 +128,8 @@ public class ProductFlowRepo : IProductFlowRepo
 
 	public async Task<IEnumerable<ProductFlowModel>> GetAllCumulative(int prodId, int wareId)
 	{
+		// 
+
 		var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
                                                             .Where(x => x.ProductId == prodId)
                                                             .OrderBy(x => x.CreationDate)
