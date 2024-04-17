@@ -12,5 +12,5 @@ public partial class WarehouseMovement : BaseEntity
 
     public MovementType MovementType { get; set; }
 
-    public virtual ICollection<ProductsFlow> ProductsFlows { get; set; } = new List<ProductsFlow>();
+    public virtual ICollection<ProductsFlow> ProductsFlows { get; set; } = new HashSet<ProductsFlow>();
 }

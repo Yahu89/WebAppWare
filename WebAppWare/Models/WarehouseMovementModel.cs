@@ -7,9 +7,10 @@ public class WarehouseMovementModel
 {
     public int Id { get; set; }
 
-    public string Document { get; set; }
+	public int WarehouseId { get; set; }
+	public string Document { get; set; }
     public MovementType MovementType { get; set; }
     public DateTime CreationDate { get; set; } = DateTime.Now;
 
-    public IEnumerable<ProductFlowModel> ProductsFlowModels { get; set; } = new List<ProductFlowModel>();
+    public IEnumerable<ProductFlowModel> ProductFlowModels { get; set; } = new HashSet<ProductFlowModel>();
 }

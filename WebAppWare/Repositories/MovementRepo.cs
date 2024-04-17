@@ -34,18 +34,46 @@ public class MovementRepo : IMovementRepo
 	};
 
 	public MovementRepo(WarehouseDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-	public async Task<int> Create(WarehouseMovementModel model)
 	{
+		_dbContext = dbContext;
+	}
+
+	public async Task Create(WarehouseMovementModel model)
+	{
+		// tutaj mapujemy tylko DOKUMENT, bez elementow
 		var movement = MapToEntity.Compile().Invoke(model);
-		_dbContext.WarehouseMovements.Add(movement);
 
-		await _dbContext.SaveChangesAsync();
+		if (model.MovementType is MovementType.PZ)
+		{
+			if (!await IsDocumentNameUnique(movement.Document))
+			{
+				throw new Exception("ISTNIEJE JUZ!");
+			}
 
-		return movement.Id;
+			var items = model.ProductFlowModels;
+
+			if (!IsUniqueAndQtyCorrectForPzWz(items))
+			{
+				throw new Exception("XXXX");
+			}
+
+			await _dbContext.WarehouseMovements.AddAsync(movement);
+			await _dbContext.SaveChangesAsync();
+
+			// po savechanges w movement uzupelnia sie jego id, wiec teraz mozemy dodac jego itemy do tabeli ProductFlow
+			var entites = items
+				.Select(x => new ProductsFlow
+				{
+					// uzupelnianie wartosci z modelu
+					WarehouseMovementId = movement.Id,
+					ProductId = x.ProductId,
+					//itd
+				})
+				.ToList();
+
+			await _dbContext.ProductsFlows.AddRangeAsync(entites);
+			await _dbContext.SaveChangesAsync();
+		}
 	}
 
 	public async Task DeleteById(int id)
@@ -155,7 +183,7 @@ public class MovementRepo : IMovementRepo
 		//		.Any(x => x.Quantity <= 0))
 		//	return false;
 
-		
+
 
 		foreach (var item in prodFlow)
 		{
@@ -185,7 +213,7 @@ public class MovementRepo : IMovementRepo
 		return docNumber;
 	}
 
-	public bool IsUniqueAndQtyCorrectForPzWz(List<ProductFlowModel> itemCodes)
+	public bool IsUniqueAndQtyCorrectForPzWz(IEnumerable<ProductFlowModel> itemCodes)
 	{
 		if (itemCodes
 				.GroupBy(x => x.ProductId)
