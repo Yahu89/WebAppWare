@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;
 
 public partial class Warehouse : BaseEntity
 {
-    //[DisplayName("Nazwa")]
-    //[Required(ErrorMessage = "Pole jest wymagane")]
-    //[MaxLength(100)]
-    
-    public string Name { get; set; }
+    //public int Id { get; set; }
 
-    //[DisplayName("Czy aktywny")]
-    //[Required]
-    public bool IsActive { get; set; } = true;
+    public string Name { get; set; } = null!;
 
-    public virtual ICollection<ProductsFlow> ProductsFlows { get; set; } = new List<ProductsFlow>();
+    public bool IsActive { get; set; }
+
+    public virtual ICollection<WarehouseMovement> WarehouseMovements { get; set; } = new List<WarehouseMovement>();
 }

@@ -11,7 +11,7 @@ namespace WebAppWare.Repositories;
 
 public class OrderRepo : IOrderRepo
 {
-	private readonly WarehouseDbContext _dbContext;
+	private readonly WarehouseBaseContext _dbContext;
 
 	private Expression<Func<Order, OrderModel>> MapToModel = x => new OrderModel()
 	{
@@ -34,7 +34,7 @@ public class OrderRepo : IOrderRepo
 		//Status = x.Status,
 		Remarks = x.Remarks
 	};
-	public OrderRepo(WarehouseDbContext dbContext)
+	public OrderRepo(WarehouseBaseContext dbContext)
     {
         _dbContext = dbContext;
     }

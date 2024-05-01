@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using WebAppWare.Database;
+using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 using WepAppWare.Database.Entities;
@@ -10,7 +11,7 @@ namespace WebAppWare.Repositories;
 
 public class OrderDetailsRepo : IOrderDetailsRepo
 {
-	private readonly WarehouseDbContext _dbContext;
+	private readonly WarehouseBaseContext _dbContext;
 
 	private Expression<Func<OrderItem, OrderDetailsModel>> MapToModel = x => new OrderDetailsModel()
 	{
@@ -35,7 +36,7 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 		ProductId = x.ProductId,
 		Quantity = x.Quantity
 	};
-	public OrderDetailsRepo(WarehouseDbContext dbContext)
+	public OrderDetailsRepo(WarehouseBaseContext dbContext)
     {
         _dbContext = dbContext;
     }

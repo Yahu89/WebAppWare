@@ -8,13 +8,15 @@ using WebAppWare.Database;
 using WebAppWare.Database.Entities;
 using WepAppWare.Database.Entities;
 
+
+
 namespace WepAppWare.Database
 {
-	public class WarehouseDbInitializer
+    public class WarehouseDbInitializer
 	{
-		private readonly WarehouseDbContext _dbContext;
+		private readonly WarehouseBaseContext _dbContext;
 
-		public WarehouseDbInitializer(WarehouseDbContext dbContext)
+		public WarehouseDbInitializer(WarehouseBaseContext dbContext)
 		{
 			_dbContext = dbContext;
 		}
@@ -24,8 +26,11 @@ namespace WepAppWare.Database
 			await _dbContext.Database.MigrateAsync();
 
 			var productsCount = await _dbContext.Products.CountAsync();
+			var prodFlowsCount = await _dbContext.ProductsFlows.CountAsync();
+
 			if (productsCount > 0)
 				return;
+
 
 			var productImage = new Image()
 			{
@@ -34,26 +39,30 @@ namespace WepAppWare.Database
 				AbsolutePath = @"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\wwwroot\images\test-image.jpg"
 			};
 
-			await _dbContext.Images.AddAsync(productImage);
+			var prodImg = new Image();
+
+			_dbContext.Images.Add(productImage);
 			await _dbContext.SaveChangesAsync();
 
 			var products = new List<Product>
 			{
 				new Product
 				{
+					Id = 1,
 					ItemCode = "42001A",
 					Description = "Świeczka zapachowa",
 					ImageId = productImage.Id,
 				},
 				new Product
 				{
+					Id = 2,
 					ItemCode = "42002A",
 					Description = "Odkurzacz",
 					ImageId = productImage.Id,
 				},
 			};
 
-			await _dbContext.Products.AddRangeAsync(products);
+			_dbContext.Products.AddRange(products);
 			await _dbContext.SaveChangesAsync();
 
 			var warehouses = new List<Warehouse>
@@ -70,7 +79,7 @@ namespace WepAppWare.Database
 				},
 			};
 
-			await _dbContext.Warehouses.AddRangeAsync(warehouses);
+			_dbContext.Warehouses.AddRange(warehouses);
 			await _dbContext.SaveChangesAsync();
 
 			var suppliers = new List<Supplier>
@@ -87,15 +96,16 @@ namespace WepAppWare.Database
 				},
 			};
 
-			await _dbContext.Suppliers.AddRangeAsync(suppliers);
+			_dbContext.Suppliers.AddRange(suppliers);
 			await _dbContext.SaveChangesAsync();
 
 			var order1 = new Order
 			{
 				Document = "PO20022401",
 				SupplierId = 1,
-				Status = OrderStatus.New,
+				Status = (int)OrderStatus.New,
 			};
+
 			var order1Items = new List<OrderItem>
 			{
 				new OrderItem
@@ -116,8 +126,9 @@ namespace WepAppWare.Database
 			{
 				Document = "PO20022402",
 				SupplierId = 2,
-				Status = OrderStatus.New,
+				Status = (int)OrderStatus.New,
 			};
+
 			var order2Items = new List<OrderItem>
 			{
 				new OrderItem
@@ -134,15 +145,21 @@ namespace WepAppWare.Database
 				},
 			};
 
-			await _dbContext.Orders.AddAsync(order1);
-			await _dbContext.Orders.AddAsync(order2);
+			_dbContext.Orders.Add(order1);
+			_dbContext.Orders.Add(order2);
 
 			await _dbContext.OrderItems.AddRangeAsync(order1Items);
 			await _dbContext.SaveChangesAsync();
 
+			var wareTemp = new WarehouseMovement();
+			//var prodFlow = new ProductsFlow();
+
+			//prodFlow.WarehouseMovement = wareTemp;
+
+
 			var warehouseMovement = new WarehouseMovement()
 			{
-				MovementType = MovementType.PZ,
+				MovementType = (int)MovementType.PZ,
 				Document = "PZ09022401",
 			};
 
@@ -150,22 +167,23 @@ namespace WepAppWare.Database
 			{
 				WarehouseMovement = warehouseMovement,
 				ProductId = 1,
-				WarehouseId = 1,
+				//WarehouseId = 1,
 				SupplierId = 1,
 				Quantity = 100,
 			};
+
 			var productFlow2 = new ProductsFlow()
 			{
 				WarehouseMovement = warehouseMovement,
 				ProductId = 2,
-				WarehouseId = 1,
+				//WarehouseId = 1,
 				SupplierId = 2,
 				Quantity = 200,
 			};
 
-			await _dbContext.WarehouseMovements.AddAsync(warehouseMovement);
-			await _dbContext.ProductsFlows.AddAsync(productFlow1);
-			await _dbContext.ProductsFlows.AddAsync(productFlow2);
+			_dbContext.WarehouseMovements.Add(warehouseMovement);
+			_dbContext.ProductsFlows.Add(productFlow1);
+			_dbContext.ProductsFlows.Add(productFlow2);
 
 			await _dbContext.SaveChangesAsync();
 		}

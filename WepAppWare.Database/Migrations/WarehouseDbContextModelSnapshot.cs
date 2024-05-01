@@ -10,7 +10,7 @@ using WebAppWare.Database;
 
 namespace WepAppWare.Database.Migrations
 {
-    [DbContext(typeof(WarehouseDbContext))]
+    [DbContext(typeof(WarehouseBaseContext))]
     partial class WarehouseDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -43,45 +43,9 @@ namespace WepAppWare.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
+                    b.HasIndex(new[] { "ImageId" }, "IX_Products_ImageId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("WebAppWare.Database.Entities.ProductsFlow", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("WarehouseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WarehouseMovementId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("SupplierId");
-
-                    b.HasIndex("WarehouseId");
-
-                    b.HasIndex("WarehouseMovementId");
-
-                    b.ToTable("ProductsFlows");
                 });
 
             modelBuilder.Entity("WebAppWare.Database.Entities.Supplier", b =>
@@ -143,7 +107,12 @@ namespace WepAppWare.Database.Migrations
                     b.Property<int>("MovementType")
                         .HasColumnType("int");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex(new[] { "WarehouseId" }, "IX_WarehouseMovements_WarehouseId");
 
                     b.ToTable("WarehouseMovements");
                 });
@@ -199,7 +168,7 @@ namespace WepAppWare.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SupplierId");
+                    b.HasIndex(new[] { "SupplierId" }, "IX_Orders_SupplierId");
 
                     b.ToTable("Orders");
                 });
@@ -223,11 +192,47 @@ namespace WepAppWare.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex(new[] { "OrderId" }, "IX_OrderItems_OrderId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex(new[] { "ProductId" }, "IX_OrderItems_ProductId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("WepAppWare.Database.Entities.ProductsFlow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarehouseMovementId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.HasIndex(new[] { "ProductId" }, "IX_ProductsFlows_ProductId");
+
+                    b.HasIndex(new[] { "SupplierId" }, "IX_ProductsFlows_SupplierId");
+
+                    b.HasIndex(new[] { "WarehouseMovementId" }, "IX_ProductsFlows_WarehouseMovementId");
+
+                    b.ToTable("ProductsFlows");
                 });
 
             modelBuilder.Entity("WebAppWare.Database.Entities.Product", b =>
@@ -239,33 +244,15 @@ namespace WepAppWare.Database.Migrations
                     b.Navigation("Image");
                 });
 
-            modelBuilder.Entity("WebAppWare.Database.Entities.ProductsFlow", b =>
+            modelBuilder.Entity("WebAppWare.Database.Entities.WarehouseMovement", b =>
                 {
-                    b.HasOne("WebAppWare.Database.Entities.Product", "Product")
-                        .WithMany("ProductsFlows")
-                        .HasForeignKey("ProductId");
-
-                    b.HasOne("WebAppWare.Database.Entities.Supplier", "Supplier")
-                        .WithMany("ProductsFlows")
-                        .HasForeignKey("SupplierId");
-
                     b.HasOne("WebAppWare.Database.Entities.Warehouse", "Warehouse")
-                        .WithMany("ProductsFlows")
-                        .HasForeignKey("WarehouseId");
-
-                    b.HasOne("WebAppWare.Database.Entities.WarehouseMovement", "WarehouseMovement")
-                        .WithMany("ProductsFlows")
-                        .HasForeignKey("WarehouseMovementId")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
-
-                    b.Navigation("Supplier");
-
                     b.Navigation("Warehouse");
-
-                    b.Navigation("WarehouseMovement");
                 });
 
             modelBuilder.Entity("WepAppWare.Database.Entities.Order", b =>
@@ -282,13 +269,13 @@ namespace WepAppWare.Database.Migrations
             modelBuilder.Entity("WepAppWare.Database.Entities.OrderItem", b =>
                 {
                     b.HasOne("WepAppWare.Database.Entities.Order", "Order")
-                        .WithMany("Items")
+                        .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WebAppWare.Database.Entities.Product", "Product")
-                        .WithMany()
+                        .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -298,8 +285,37 @@ namespace WepAppWare.Database.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("WepAppWare.Database.Entities.ProductsFlow", b =>
+                {
+                    b.HasOne("WebAppWare.Database.Entities.Product", "Product")
+                        .WithMany("ProductsFlows")
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("WebAppWare.Database.Entities.Supplier", "Supplier")
+                        .WithMany("ProductsFlows")
+                        .HasForeignKey("SupplierId");
+
+                    b.HasOne("WebAppWare.Database.Entities.Warehouse", null)
+                        .WithMany("ProductsFlows")
+                        .HasForeignKey("WarehouseId");
+
+                    b.HasOne("WebAppWare.Database.Entities.WarehouseMovement", "WarehouseMovement")
+                        .WithMany("ProductsFlows")
+                        .HasForeignKey("WarehouseMovementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("WarehouseMovement");
+                });
+
             modelBuilder.Entity("WebAppWare.Database.Entities.Product", b =>
                 {
+                    b.Navigation("OrderItems");
+
                     b.Navigation("ProductsFlows");
                 });
 
@@ -325,7 +341,7 @@ namespace WepAppWare.Database.Migrations
 
             modelBuilder.Entity("WepAppWare.Database.Entities.Order", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

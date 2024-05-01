@@ -8,14 +8,7 @@ public class ProductFlowMovementModel
     public IEnumerable<SelectListItem> Products { get; set; }
     public IEnumerable<SelectListItem> Suppliers { get; set; }
     public IEnumerable<SelectListItem> Warehouses { get; set; }
-    public List<ProductFlowModel> ProductFlowModels { get; set; } = new List<ProductFlowModel>()
-    {
-        //new ProductFlowModel(),
-        //new ProductFlowModel(),
-        //new ProductFlowModel(),
-        //new ProductFlowModel(),
-        //new ProductFlowModel()
-    };
+    public List<ProductFlowModel> ProductFlowModels { get; set; } = new List<ProductFlowModel>();
     public string Warehouse { get; set; }
     public int WarehouseId { get; set; }
     public string WarehouseTo { get; set; }

@@ -9,25 +9,28 @@ using WebAppWare.Database;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
+using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Repositories;
 
 public class ProductFlowRepo : IProductFlowRepo
 {
-    private readonly WarehouseDbContext _dbContext;
+    private readonly WarehouseBaseContext _dbContext;
 
     private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
     {
         Id = x.Id,
         MovementId = x.WarehouseMovementId,
-        MovementType = x.WarehouseMovement.MovementType,
+        MovementType = (MovementType)x.WarehouseMovement.MovementType,
         ProductItemCode = x.Product.ItemCode,
         Quantity = x.Quantity,
         Supplier = x.Supplier.Name,
         CreationDate = x.WarehouseMovement.CreationDate,
-        ProductId = x.Product.Id,
+        ProductId = x.ProductId,
         SupplierId = x.Supplier.Id,
-        DocumentNumber = x.WarehouseMovement.Document
+        DocumentNumber = x.WarehouseMovement.Document,
+		Warehouse = x.WarehouseMovement.Warehouse.Name,
+		WarehouseId = x.WarehouseMovement.WarehouseId
     };
 
 	private Expression<Func<ProductsFlow, ProductFlowSearchModel>> MapToSearchModel = x => new ProductFlowSearchModel()
@@ -44,7 +47,7 @@ public class ProductFlowRepo : IProductFlowRepo
 	//}
 
 
-    public ProductFlowRepo(WarehouseDbContext dbContext)
+    public ProductFlowRepo(WarehouseBaseContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -128,10 +131,8 @@ public class ProductFlowRepo : IProductFlowRepo
 
 	public async Task<IEnumerable<ProductFlowModel>> GetAllCumulative(int prodId, int wareId)
 	{
-		// 
-
 		var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
-                                                            .Where(x => x.ProductId == prodId)
+                                                            .Where(x => x.ProductId == prodId && x.WarehouseId == wareId)
                                                             .OrderBy(x => x.CreationDate)
                                                             .ToListAsync();
 
@@ -169,11 +170,11 @@ public class ProductFlowRepo : IProductFlowRepo
             {
                 switch (i)
                 {
-                    //case 0:
-                    //    {
-                    //        result = result.Where(x => x.Warehouse.Contains(content[i])).ToList();
-                    //        break;
-                    //    }
+					case 0:
+						{
+							result = result.Where(x => x.Warehouse.Contains(content[i])).ToList();
+							break;
+						}
 
 					case 1:
 						{
@@ -183,7 +184,6 @@ public class ProductFlowRepo : IProductFlowRepo
 
 					case 2:
 						{
-
 							result = result.Where(x => !string.IsNullOrEmpty(x.Supplier))
                                             .Where(x => x.Supplier.Contains(content[i])).ToList();
 							break;
@@ -193,6 +193,25 @@ public class ProductFlowRepo : IProductFlowRepo
         }
 
         return result;
+	}
+
+	public async Task<int> GetCurrentQtyPerItemAndWarehouse(int item, int warehouseId)
+	{
+		if (item == 0 || warehouseId == 0)
+		{
+			return 0;
+		}
+
+		var cumulatedList = await GetAllCumulative(item, warehouseId);
+
+		if (cumulatedList.Count() == 0)
+		{
+			return 0;
+		}
+
+		var result = cumulatedList.Last().Cumulative;
+
+		return result;
 	}
 
 	public async Task<List<ProductFlowModel>> GetProductFlowsByMoveId(int id)

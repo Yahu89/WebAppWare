@@ -14,7 +14,7 @@ namespace WebAppWare.Repositories;
 
 public class SupplierRepo : ISupplierRepo
 {
-    private readonly WarehouseDbContext _dbContext;
+    private readonly WarehouseBaseContext _dbContext;
 
 	private Expression<Func<SupplierModel, Supplier>> MapToEntity = x => new Supplier()
 	{
@@ -29,7 +29,7 @@ public class SupplierRepo : ISupplierRepo
 		Name = x.Name,
 		Email = x.Email
 	};
-    public SupplierRepo(WarehouseDbContext warehouseBaseContext)
+    public SupplierRepo(WarehouseBaseContext warehouseBaseContext)
     {
         _dbContext = warehouseBaseContext;
     }

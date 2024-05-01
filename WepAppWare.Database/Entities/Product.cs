@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using WepAppWare.Database.Entities;
 using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;
 
 public partial class Product : BaseEntity
 {
-    //[Required(ErrorMessage = "Pole Indeks jest wymagane")]
-    //[MinLength(3)]
-    //[MaxLength(15)]
-    public string ItemCode { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    //public int Id { get; set; }
+
+    public string ItemCode { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
 
     public int? ImageId { get; set; }
-    public Image? Image { get; set; }
+
+    public virtual Image? Image { get; set; }
+
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual ICollection<ProductsFlow> ProductsFlows { get; set; } = new List<ProductsFlow>();
 }

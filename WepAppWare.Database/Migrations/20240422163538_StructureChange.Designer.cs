@@ -12,8 +12,8 @@ using WebAppWare.Database;
 namespace WepAppWare.Database.Migrations
 {
     [DbContext(typeof(WarehouseBaseContext))]
-    [Migration("20240226181710_Init")]
-    partial class Init
+    [Migration("20240422163538_StructureChange")]
+    partial class StructureChange
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,7 +146,12 @@ namespace WepAppWare.Database.Migrations
                     b.Property<int>("MovementType")
                         .HasColumnType("int");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId");
 
                     b.ToTable("WarehouseMovements");
                 });
@@ -192,7 +197,6 @@ namespace WepAppWare.Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -253,7 +257,7 @@ namespace WepAppWare.Database.Migrations
                         .WithMany("ProductsFlows")
                         .HasForeignKey("SupplierId");
 
-                    b.HasOne("WebAppWare.Database.Entities.Warehouse", "Warehouse")
+                    b.HasOne("WebAppWare.Database.Entities.Warehouse", null)
                         .WithMany("ProductsFlows")
                         .HasForeignKey("WarehouseId");
 
@@ -267,9 +271,18 @@ namespace WepAppWare.Database.Migrations
 
                     b.Navigation("Supplier");
 
-                    b.Navigation("Warehouse");
-
                     b.Navigation("WarehouseMovement");
+                });
+
+            modelBuilder.Entity("WebAppWare.Database.Entities.WarehouseMovement", b =>
+                {
+                    b.HasOne("WebAppWare.Database.Entities.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("WepAppWare.Database.Entities.Order", b =>

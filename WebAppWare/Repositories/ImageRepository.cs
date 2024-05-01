@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database;
+using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Models.BaseModels;
 using WebAppWare.Repositories.Interfaces;
@@ -10,12 +11,12 @@ namespace WebAppWare.Repositories
 {
 	public class ImageRepository : IImageRepository
 	{
-		private readonly WarehouseDbContext _dbContext;
+		private readonly WarehouseBaseContext _dbContext;
 		private readonly IProductRepo _productRepo;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 
 		public ImageRepository(
-			WarehouseDbContext dbContext,
+			WarehouseBaseContext dbContext,
 			IProductRepo productRepo,
 			IWebHostEnvironment webHostEnvironment
 			)

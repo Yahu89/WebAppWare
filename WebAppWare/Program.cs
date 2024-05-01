@@ -13,7 +13,7 @@ using WepAppWare.Database;
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
-builder.Services.AddDbContext<WarehouseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(WarehouseDbContext))));
+builder.Services.AddDbContext<WarehouseBaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(WarehouseBaseContext))));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -93,7 +93,7 @@ app.MapControllerRoute(
 
 
 var scope = app.Services.CreateScope();
-var dbContext = scope.ServiceProvider.GetRequiredService<WarehouseDbContext>();
+var dbContext = scope.ServiceProvider.GetRequiredService<WarehouseBaseContext>();
 var dbIntializer = new WarehouseDbInitializer(dbContext);
 
 // seeding data

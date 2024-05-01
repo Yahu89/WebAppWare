@@ -338,12 +338,12 @@ namespace WebAppWare.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateWarehouseMovement(WarehouseMovementModel model)
 		{
+
+			//var movementType = model.MovementType;
+
 			try
 			{
 				await _movementRepo.Create(model);
-
-				//return RedirectToAction(nameof(Index));
-
 				return Json(new { redirectToUrl = Url.Action("Index", "Movement") });
 			}
 			catch (Exception ex)
@@ -351,8 +351,27 @@ namespace WebAppWare.Controllers
 				Console.WriteLine(ex.ToString());
 
 				// TODO: wyswietlic komunikat ze cos poszlo nie tak!
-				return Json(new { redirectToUrl = Url.Action("Index", "Movement") });
+				return Json(new { redirectToUrl = Url.Action("Error", "Movement") });
+				//return BadRequest(ex.ToString());
 			}
+		}
+
+		public async Task<IActionResult> AddProductFlows()
+		{
+			List<ProductFlowModel> products = new List<ProductFlowModel>()
+			{
+				new ProductFlowModel()
+				{
+					ProductId = 16,
+					SupplierId = 2,
+					Quantity = 50,
+					MovementId = 40
+				}
+			};
+
+			await _productFlowRepo.CreateRange(products, 40);
+			
+			return Json(products);
 		}
 
 		public List<ProductFlowModel> FormToProductFlowModelList(Form model, int movementId)

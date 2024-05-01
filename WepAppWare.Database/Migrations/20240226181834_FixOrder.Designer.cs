@@ -11,7 +11,7 @@ using WebAppWare.Database;
 
 namespace WepAppWare.Database.Migrations
 {
-    [DbContext(typeof(WarehouseDbContext))]
+    [DbContext(typeof(WarehouseBaseContext))]
     [Migration("20240226181834_FixOrder")]
     partial class FixOrder
     {

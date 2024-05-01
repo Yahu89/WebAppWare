@@ -14,7 +14,7 @@ namespace WebAppWare.Repositories;
 
 public class WarehouseRepo : IWarehouseRepo
 {
-	private readonly WarehouseDbContext _dbContext;
+	private readonly WarehouseBaseContext _dbContext;
 
 	private Expression<Func<Warehouse, WarehouseModel>> MapToModel = x => new WarehouseModel()
 	{
@@ -37,7 +37,7 @@ public class WarehouseRepo : IWarehouseRepo
 		TotalAmount = (int)x.TotalAmount
 	};
 
-	public WarehouseRepo(WarehouseDbContext dbContext)
+	public WarehouseRepo(WarehouseBaseContext dbContext)
     {
         _dbContext = dbContext;
     }

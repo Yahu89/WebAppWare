@@ -69,7 +69,7 @@ public class MovementPdfReport
 		//imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\Images\dev-hobby-logo2442555683.jpg");
 		imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\wwwroot\images\test-image.jpg");
 
-		Image img = Image.GetInstance(imageBytes);
+        iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(imageBytes);
 		img.ScaleAbsolute(150f, 50f);
 		img.SetAbsolutePosition(420, 780);
 		//img.SpacingAfter = 20;

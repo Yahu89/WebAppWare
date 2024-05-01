@@ -15,27 +15,33 @@ namespace WebAppWare.Repositories;
 
 public class MovementRepo : IMovementRepo
 {
-	private readonly WarehouseDbContext _dbContext;
+	private readonly WarehouseBaseContext _dbContext;
+	private readonly IProductFlowRepo _productFlowRepo;
 
 	private Expression<Func<WarehouseMovement, WarehouseMovementModel>> MapToModel = x => new WarehouseMovementModel()
 	{
 		Id = x.Id,
 		Document = x.Document,
-		MovementType = x.MovementType,
-		CreationDate = x.CreationDate
+		MovementType = (MovementType)x.MovementType,
+		CreationDate = x.CreationDate,
+		WarehouseId = x.WarehouseId,
+		Warehouse = x.Warehouse
 	};
 
 	private Expression<Func<WarehouseMovementModel, WarehouseMovement>> MapToEntity = x => new WarehouseMovement()
 	{
 		Id = x.Id,
 		Document = x.Document,
-		MovementType = x.MovementType,
-		CreationDate = x.CreationDate
+		MovementType = (int)x.MovementType,
+		CreationDate = x.CreationDate,
+		WarehouseId = x.WarehouseId,
+		Warehouse = x.Warehouse
 	};
 
-	public MovementRepo(WarehouseDbContext dbContext)
+	public MovementRepo(WarehouseBaseContext dbContext, IProductFlowRepo productFlowRepo)
 	{
 		_dbContext = dbContext;
+		_productFlowRepo = productFlowRepo;
 	}
 
 	public async Task Create(WarehouseMovementModel model)
@@ -43,44 +49,65 @@ public class MovementRepo : IMovementRepo
 		// tutaj mapujemy tylko DOKUMENT, bez elementow
 		var movement = MapToEntity.Compile().Invoke(model);
 
+		if (string.IsNullOrEmpty(movement.Document) || movement.WarehouseId == 0)
+		{
+			throw new Exception("Niepoprawne dane");
+		}
+
+		if (!await IsDocumentNameUnique(movement.Document))
+		{
+			throw new Exception("ISTNIEJE JUZ!");
+		}
+
+		var items = model.ProductFlowModels;
+
+		if (!IsUniqueAndQtyCorrectForPzWz(items))
+		{
+			throw new Exception("Niepoprawne dane");
+		}
+
 		if (model.MovementType is MovementType.PZ)
 		{
-			// TODO: po przeniesieniu WarehoueID z ProductFlow do WarehouseMovement zrob ta walidacje ponizej
-			//if (string.IsNullOrEmpty(movement.Document) || movement.WarehouseId == 0)
-			//{
-			//	throw new Exception("ISTNIEJE JUZ!");
-			//}
-
-			// TODO: Dla WZ popraw, ze w bazie nie sa trzymane - wartosci, tylko logika obliczajaca sama bedzie odejmowac tam gdzie trzeba
-
-			if (!await IsDocumentNameUnique(movement.Document))
-			{
-				throw new Exception("ISTNIEJE JUZ!");
-			}
-
-			var items = model.ProductFlowModels;
-
-			if (!IsUniqueAndQtyCorrectForPzWz(items))
-			{
-				throw new Exception("XXXX");
-			}
-
-			await _dbContext.WarehouseMovements.AddAsync(movement);
+			_dbContext.WarehouseMovements.Add(movement);
 			await _dbContext.SaveChangesAsync();
 
-			// po savechanges w movement uzupelnia sie jego id, wiec teraz mozemy dodac jego itemy do tabeli ProductFlow
-			var entites = items
-				.Select(x => new ProductsFlow
-				{
-					// uzupelnianie wartosci z modelu
-					WarehouseMovementId = movement.Id,
-					ProductId = x.ProductId,
-					//itd
-				})
-				.ToList();
+			await _productFlowRepo.CreateRange(items, movement.Id);
+		}
+		else if (model.MovementType is MovementType.WZ)
+		{
+			if (await IsQtyEnoughToCreateWz(model))
+			{
+				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
+				_dbContext.WarehouseMovements.Add(movement);
+				await _dbContext.SaveChangesAsync();
 
-			await _dbContext.ProductsFlows.AddRangeAsync(entites);
-			await _dbContext.SaveChangesAsync();
+				await _productFlowRepo.CreateRange(items, movement.Id);
+			}
+			else
+			{
+				throw new Exception("Coś poszło nie tak...");
+			}
+		}
+		else if (model.MovementType is MovementType.MM)
+		{
+			if (model.WarehouseToId == 0)
+			{
+				throw new Exception("Niepoprawne dane");
+			}
+
+			if (await IsQtyEnoughToCreateWz(model))
+			{
+				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
+				_dbContext.WarehouseMovements.Add(movement);
+				await _dbContext.SaveChangesAsync();
+
+				await _productFlowRepo.CreateRange(items, movement.Id);
+
+				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
+				items.ToList().ForEach(x => x.WarehouseId = model.WarehouseToId);
+
+				await _productFlowRepo.CreateRange(items, movement.Id);
+			}
 		}
 	}
 
@@ -148,63 +175,28 @@ public class MovementRepo : IMovementRepo
 		return itemCodes;
 	}
 
-	public async Task<bool> IsPossibleToCreateWz(IFormCollection collection)
+	public async Task<bool> IsQtyEnoughToCreateWz(WarehouseMovementModel model)
 	{
-		IProductFlowRepo _productFlowRepo = new ProductFlowRepo(_dbContext);
+		var items = model.ProductFlowModels;
 
-		var movement = FromCollectionToMovementModel(collection, MovementType.WZ);
-		var prodFlow = _productFlowRepo.FromCollectionToProductFlowModel(collection, 0);
-		var warehouseId = prodFlow.First().WarehouseId;
-
-		if (string.IsNullOrEmpty(movement.Document) || warehouseId == 0)
-			return false;
-
-		if (!await IsDocumentNameUnique(movement.Document))
-			return false;
-
-		//itemCodes = obj.ProductFlowModels
-		//									.Where(x => x != null && x.ProductId != null && x.SupplierId != null)
-		//									.Select(x => new ProductFlowModel()
-		//									{
-		//										ProductId = x.ProductId,
-		//										ProductItemCode = x.ProductItemCode,
-		//										Supplier = x.Supplier,
-		//										SupplierId = x.SupplierId,
-		//										Warehouse = x.Warehouse,
-		//										Quantity = x.Quantity,
-		//										WarehouseId = obj.WarehouseId,
-		//										MovementType = x.MovementType,
-		//									})
-		//									.ToList();
-
-		if (!IsUniqueAndQtyCorrectForPzWz(prodFlow))
-		{
-			return false;
-		}
-
-		//if (prodFlow
-		//			.GroupBy(x => x.ProductId)
-		//			.Any(x => x.Count() > 1))
+		//if (!IsUniqueAndQtyCorrectForPzWz(items))
+		//{
 		//	return false;
+		//}
 
-		//if (prodFlow
-		//		.Any(x => x.Quantity <= 0))
-		//	return false;
-
-
-
-		foreach (var item in prodFlow)
+		foreach (var item in items)
 		{
-			var cumulativeValueList = await _productFlowRepo.GetAllCumulative((int)item.ProductId, (int)item.WarehouseId);
-			int actualQty = cumulativeValueList.Count() == 0 ? 0 : cumulativeValueList.Last().Cumulative;
+			//int id = (int)item.ProductId;
+			//var cumulativeValueList = await _productFlowRepo.GetAllCumulative((int)item.ProductId, model.WarehouseId);
+			//int actualQty = cumulativeValueList.Count() == 0 ? 0 : cumulativeValueList.Last().Cumulative;
+
+			int actualQty = await _productFlowRepo.GetCurrentQtyPerItemAndWarehouse((int)item.ProductId, model.WarehouseId);
 
 			if (actualQty < item.Quantity)
 			{
 				return false;
 			}
 		}
-
-		// 
 
 		return true;
 	}

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppWare", "WebAppWare\WebAppWare.csproj", "{1C36C06A-E52B-4F59-B01A-FE4E3D1D546A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WepAppWare.Database", "WepAppWare.Database\WepAppWare.Database.csproj", "{78869F01-725B-4368-91BE-BFE45F6FAE1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppWare.Database", "WepAppWare.Database\WebAppWare.Database.csproj", "{78869F01-725B-4368-91BE-BFE45F6FAE1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

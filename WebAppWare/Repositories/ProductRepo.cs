@@ -13,7 +13,7 @@ namespace WebAppWare.Repositories;
 
 public class ProductRepo : IProductRepo
 {
-	private readonly WarehouseDbContext _dbContext;
+	private readonly WarehouseBaseContext _dbContext;
 
 	private Expression<Func<Product, ProductModel>> MapToModel = e => new ProductModel
 	{
@@ -29,7 +29,7 @@ public class ProductRepo : IProductRepo
 		ItemCode = e.ItemCode,
 	};
 
-	public ProductRepo(WarehouseDbContext dbContext)
+	public ProductRepo(WarehouseBaseContext dbContext)
 	{
 		_dbContext = dbContext;
 	}

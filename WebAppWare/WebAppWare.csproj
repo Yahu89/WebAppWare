@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WepAppWare.Database\WepAppWare.Database.csproj" />
+    <ProjectReference Include="..\WepAppWare.Database\WebAppWare.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>

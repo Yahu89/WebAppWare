@@ -6,11 +6,17 @@ namespace WebAppWare.Database.Entities;
 
 public partial class WarehouseMovement : BaseEntity
 {
-    public string Document { get; set; } = string.Empty;
+    //public int Id { get; set; }
 
-    public DateTime CreationDate { get; set; } = DateTime.Now;
+    public string Document { get; set; } = null!;
 
-    public MovementType MovementType { get; set; }
+    public DateTime CreationDate { get; set; }
 
-    public virtual ICollection<ProductsFlow> ProductsFlows { get; set; } = new HashSet<ProductsFlow>();
+    public int MovementType { get; set; }
+
+    public int WarehouseId { get; set; }
+
+    public virtual ICollection<ProductsFlow> ProductsFlows { get; set; } = new List<ProductsFlow>();
+
+    public virtual Warehouse Warehouse { get; set; } = null!;
 }
