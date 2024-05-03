@@ -37,29 +37,71 @@ namespace WebAppWare.Controllers
             var prodFlowMoveIdList = await _productFlowRepo.GetProductFlowsByMoveId(movementId);
             int howManyItems = prodFlowMoveIdList.Count;
 
-            if (howManyItems == 1 && productFlowModel.MovementType == MovementType.WZ)
-            {
-                await _movementRepo.DeleteById(movementId);
-                return RedirectToAction("Index");
-            }
-            
+            //if (howManyItems == 1 && productFlowModel.MovementType == MovementType.WZ)
+            //{
+            //    await _movementRepo.DeleteById(movementId);
+            //    return RedirectToAction(nameof(Index));
+            //}
+
             if (productFlowModel.MovementType == MovementType.WZ)
             {
-                await _productFlowRepo.DeleteById(id);
-                return RedirectToAction("Index");
-            }  
-
-			if (await _productFlowRepo.IsReadyToDeleteProductFlow(movementId) && howManyItems > 1)
-            {
-                await _productFlowRepo.DeleteById(id);
-                return RedirectToAction(nameof(Index));
+                if (howManyItems == 1)
+                {
+					await _movementRepo.DeleteById(movementId);
+					return RedirectToAction(nameof(Index));
+				}
+				else
+                {
+					await _productFlowRepo.DeleteById(id);
+					return RedirectToAction(nameof(Index));
+				}
             }
 
-			if (await _productFlowRepo.IsReadyToDeleteProductFlow(movementId) && howManyItems == 1)
-			{
-				await _movementRepo.DeleteById(id);
-				return RedirectToAction(nameof(Index));
-			}
+            if (productFlowModel.MovementType == MovementType.PZ)
+            {
+                if (howManyItems == 1)
+                {
+                    if (await _movementRepo.IsPossibleToDeletePzWz(movementId))
+                    {
+						await _movementRepo.DeleteById(movementId);
+						return RedirectToAction(nameof(Index));
+					}
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                else
+                {
+                    if (await _productFlowRepo.IsReadyToDeleteProductFlow(id))
+                    {
+						await _productFlowRepo.DeleteById(id);
+						return RedirectToAction(nameof(Index));
+					}
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+            
+   //         if (productFlowModel.MovementType == MovementType.WZ)
+   //         {
+   //             await _productFlowRepo.DeleteById(id);
+   //             return RedirectToAction(nameof(Index));
+   //         }  
+
+			//if (await _productFlowRepo.IsReadyToDeleteProductFlow(id) && howManyItems > 1)
+   //         {
+   //             await _productFlowRepo.DeleteById(id);
+   //             return RedirectToAction(nameof(Index));
+   //         }
+
+			//if (await _productFlowRepo.IsReadyToDeleteProductFlow(id) && howManyItems == 1)
+			//{
+			//	await _movementRepo.DeleteById(id);
+			//	return RedirectToAction(nameof(Index));
+			//}
 
 			return BadRequest();
         }

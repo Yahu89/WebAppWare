@@ -1,4 +1,5 @@
-﻿using WebAppWare.Database.Entities;
+﻿using WebAppWare.Database;
+using WebAppWare.Database.Entities;
 
 namespace WebAppWare.Models;
 
@@ -24,4 +25,6 @@ public class ProductFlowModel
 
     public DateTime CreationDate { get; set; }
     public int Cumulative { get; set; }
+    public int? WarehouseToId { get; set; }
+    public string? WarehouseToIdName { get; set; }
 }

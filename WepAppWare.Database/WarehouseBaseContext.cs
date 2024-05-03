@@ -34,7 +34,7 @@ public partial class WarehouseBaseContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data source=localhost\\SQLEXPRESS; Trusted_Connection=true; Initial Catalog=WarehouseBase; TrustServerCertificate=true; Integrated Security= true");
+        => optionsBuilder.UseSqlServer("Data source=localhost\\SQLEXPRESS; Trusted_Connection=true; Initial Catalog=WarehouseBase; TrustServerCertificate=true; Integrated Security=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -69,20 +69,17 @@ public partial class WarehouseBaseContext : DbContext
 
             entity.HasIndex(e => e.SupplierId, "IX_ProductsFlows_SupplierId");
 
+            entity.HasIndex(e => e.WarehouseId, "IX_ProductsFlows_WarehouseId");
+
             entity.HasIndex(e => e.WarehouseMovementId, "IX_ProductsFlows_WarehouseMovementId");
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.ProductId);
 
             entity.HasOne(d => d.Supplier).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.SupplierId);
 
+            entity.HasOne(d => d.Warehouse).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.WarehouseId);
+
             entity.HasOne(d => d.WarehouseMovement).WithMany(p => p.ProductsFlows).HasForeignKey(d => d.WarehouseMovementId);
-        });
-
-        modelBuilder.Entity<WarehouseMovement>(entity =>
-        {
-            entity.HasIndex(e => e.WarehouseId, "IX_WarehouseMovements_WarehouseId");
-
-            entity.HasOne(d => d.Warehouse).WithMany(p => p.WarehouseMovements).HasForeignKey(d => d.WarehouseId);
         });
 
         OnModelCreatingPartial(modelBuilder);

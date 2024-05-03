@@ -6,7 +6,6 @@ namespace WebAppWare.Database.Entities;
 
 public partial class ProductsFlow : BaseEntity
 {
-    //public int Id { get; set; }
 
     public int Quantity { get; set; }
 
@@ -21,4 +20,6 @@ public partial class ProductsFlow : BaseEntity
     public virtual Supplier? Supplier { get; set; }
 
     public virtual WarehouseMovement WarehouseMovement { get; set; } = null!;
+    public virtual Warehouse Warehouse { get; set; }
+    public int WarehouseId { get; set; }
 }

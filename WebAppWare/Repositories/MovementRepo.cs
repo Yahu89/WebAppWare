@@ -24,8 +24,8 @@ public class MovementRepo : IMovementRepo
 		Document = x.Document,
 		MovementType = (MovementType)x.MovementType,
 		CreationDate = x.CreationDate,
-		WarehouseId = x.WarehouseId,
-		Warehouse = x.Warehouse
+		//WarehouseId = x.WarehouseId,
+		//Warehouse = x.Warehouse
 	};
 
 	private Expression<Func<WarehouseMovementModel, WarehouseMovement>> MapToEntity = x => new WarehouseMovement()
@@ -34,8 +34,8 @@ public class MovementRepo : IMovementRepo
 		Document = x.Document,
 		MovementType = (int)x.MovementType,
 		CreationDate = x.CreationDate,
-		WarehouseId = x.WarehouseId,
-		Warehouse = x.Warehouse
+		//WarehouseId = x.WarehouseId,
+		//Warehouse = x.Warehouse
 	};
 
 	public MovementRepo(WarehouseBaseContext dbContext, IProductFlowRepo productFlowRepo)
@@ -49,7 +49,7 @@ public class MovementRepo : IMovementRepo
 		// tutaj mapujemy tylko DOKUMENT, bez elementow
 		var movement = MapToEntity.Compile().Invoke(model);
 
-		if (string.IsNullOrEmpty(movement.Document) || movement.WarehouseId == 0)
+		if (string.IsNullOrEmpty(movement.Document) || model.WarehouseId == 0)
 		{
 			throw new Exception("Niepoprawne dane");
 		}
@@ -61,6 +61,7 @@ public class MovementRepo : IMovementRepo
 
 		var items = model.ProductFlowModels;
 
+
 		if (!IsUniqueAndQtyCorrectForPzWz(items))
 		{
 			throw new Exception("Niepoprawne dane");
@@ -69,12 +70,23 @@ public class MovementRepo : IMovementRepo
 		if (model.MovementType is MovementType.PZ)
 		{
 			_dbContext.WarehouseMovements.Add(movement);
-			await _dbContext.SaveChangesAsync();
+			items.ToList().ForEach(x => x.WarehouseId = model.WarehouseId);
+
+			try
+			{
+				await _dbContext.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"{ex.Message}", ex);
+			}	
 
 			await _productFlowRepo.CreateRange(items, movement.Id);
 		}
 		else if (model.MovementType is MovementType.WZ)
 		{
+			items.ToList().ForEach(x => x.WarehouseId = model.WarehouseId);
+
 			if (await IsQtyEnoughToCreateWz(model))
 			{
 				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
@@ -90,22 +102,25 @@ public class MovementRepo : IMovementRepo
 		}
 		else if (model.MovementType is MovementType.MM)
 		{
-			if (model.WarehouseToId == 0)
+			if (model.WarehouseId == 0)
 			{
 				throw new Exception("Niepoprawne dane");
 			}
 
 			if (await IsQtyEnoughToCreateWz(model))
-			{
-				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
+			{		
+				//model.WarehouseToId = model.WarehouseToId;
+				model.WarehouseId = model.WarehouseId;
 				_dbContext.WarehouseMovements.Add(movement);
 				await _dbContext.SaveChangesAsync();
 
+
+				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
+				items.ToList().ForEach(x => x.WarehouseId = model.WarehouseId);
 				await _productFlowRepo.CreateRange(items, movement.Id);
 
 				items.ToList().ForEach(x => x.Quantity = -x.Quantity);
 				items.ToList().ForEach(x => x.WarehouseId = model.WarehouseToId);
-
 				await _productFlowRepo.CreateRange(items, movement.Id);
 			}
 		}
@@ -179,17 +194,8 @@ public class MovementRepo : IMovementRepo
 	{
 		var items = model.ProductFlowModels;
 
-		//if (!IsUniqueAndQtyCorrectForPzWz(items))
-		//{
-		//	return false;
-		//}
-
 		foreach (var item in items)
 		{
-			//int id = (int)item.ProductId;
-			//var cumulativeValueList = await _productFlowRepo.GetAllCumulative((int)item.ProductId, model.WarehouseId);
-			//int actualQty = cumulativeValueList.Count() == 0 ? 0 : cumulativeValueList.Last().Cumulative;
-
 			int actualQty = await _productFlowRepo.GetCurrentQtyPerItemAndWarehouse((int)item.ProductId, model.WarehouseId);
 
 			if (actualQty < item.Quantity)
@@ -233,9 +239,9 @@ public class MovementRepo : IMovementRepo
 	{
 		var movement = await GetById(id);
 
-		IProductFlowRepo _productFlowRepo = new ProductFlowRepo(_dbContext);
 		var productFlowsWithinMove = await _productFlowRepo.GetProductFlowsByMoveId(id);
 		int wareId = (int)productFlowsWithinMove.FirstOrDefault().WarehouseId;
+		int? wareToId = 0;
 		DateTime insertDate = movement.CreationDate;
 
 		foreach (var item in productFlowsWithinMove)
@@ -243,6 +249,15 @@ public class MovementRepo : IMovementRepo
 			int qty = item.Quantity;
 			var prodFlows = await _productFlowRepo.GetAllCumulative((int)item.ProductId, wareId);
 			var prodFlowsLimited = prodFlows.Where(x => x.CreationDate > insertDate).ToList();
+
+			if (movement.MovementType is MovementType.MM)
+			{
+				wareToId = (int)productFlowsWithinMove.FirstOrDefault().WarehouseId;
+				productFlowsWithinMove = (await _productFlowRepo.GetProductFlowsByMoveId(id)).Where(x => x.Quantity > 0).ToList();
+				prodFlows = await _productFlowRepo.GetAllCumulative((int)item.ProductId, (int)wareToId);
+				qty = Math.Abs(item.Quantity);
+				prodFlowsLimited = prodFlows.Where(x => x.CreationDate > insertDate).ToList();
+			}
 
 			int counter = prodFlowsLimited.Count;
 			int minValue;

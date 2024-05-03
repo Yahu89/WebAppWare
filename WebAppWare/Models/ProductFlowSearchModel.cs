@@ -8,4 +8,5 @@ public class ProductFlowSearchModel
     public string Supplier { get; set; }
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
+    public string WarehouseToId { get; set; }
 }

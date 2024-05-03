@@ -29,8 +29,10 @@ public class ProductFlowRepo : IProductFlowRepo
         ProductId = x.ProductId,
         SupplierId = x.Supplier.Id,
         DocumentNumber = x.WarehouseMovement.Document,
-		Warehouse = x.WarehouseMovement.Warehouse.Name,
-		WarehouseId = x.WarehouseMovement.WarehouseId
+		Warehouse = x.Warehouse.Name,
+		WarehouseId = x.Warehouse.Id,
+		//WarehouseToId = x.WarehouseMovement.WarehouseToId,
+		//WarehouseToIdName = x.WarehouseMovement.WarehouseTo.Name
     };
 
 	private Expression<Func<ProductsFlow, ProductFlowSearchModel>> MapToSearchModel = x => new ProductFlowSearchModel()
@@ -61,6 +63,7 @@ public class ProductFlowRepo : IProductFlowRepo
                    WarehouseMovementId = id,
                    ProductId = x.ProductId,
                    SupplierId = x.SupplierId,
+				   WarehouseId = (int)x.WarehouseId
                });
 
 		_dbContext.ProductsFlows.AddRange(entities);
@@ -123,7 +126,7 @@ public class ProductFlowRepo : IProductFlowRepo
 	public async Task<List<ProductFlowModel>> GetAll()
     {
         var result = await _dbContext.ProductsFlows.Select(MapToModel)
-                                            .OrderByDescending(x => x.CreationDate)
+                                            .OrderByDescending(x => x.Id)
                                             .ToListAsync();
 
         return result;
@@ -132,9 +135,9 @@ public class ProductFlowRepo : IProductFlowRepo
 	public async Task<IEnumerable<ProductFlowModel>> GetAllCumulative(int prodId, int wareId)
 	{
 		var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
-                                                            .Where(x => x.ProductId == prodId && x.WarehouseId == wareId)
-                                                            .OrderBy(x => x.CreationDate)
-                                                            .ToListAsync();
+                                    .Where(x => x.ProductId == prodId && x.WarehouseId == wareId)
+                                    .OrderBy(x => x.Id)
+                                    .ToListAsync();
 
         for (int i = 0; i < prodFlowWithCumulative.Count; i++)
         {

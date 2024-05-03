@@ -91,7 +91,21 @@
 						@item.MovementId
 					</td>
 					<td>
-						@item.Warehouse
+						@if (item.WarehouseToId != null)
+						{
+							if (item.Quantity < 0)
+							{
+								@item.Warehouse
+							}
+							else
+							{
+								@item.WarehouseToIdName
+							}
+						}
+						else
+						{
+							@item.Warehouse
+						}						
 					</td>
 					<td>
 						@item.ProductItemCode

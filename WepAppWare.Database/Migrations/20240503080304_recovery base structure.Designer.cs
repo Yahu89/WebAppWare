@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAppWare.Database;
 
@@ -11,9 +12,11 @@ using WebAppWare.Database;
 namespace WepAppWare.Database.Migrations
 {
     [DbContext(typeof(WarehouseBaseContext))]
-    partial class WarehouseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240503080304_recovery base structure")]
+    partial class recoverybasestructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,11 +158,11 @@ namespace WepAppWare.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("WarehouseId");
+
                     b.HasIndex(new[] { "ProductId" }, "IX_ProductsFlows_ProductId");
 
                     b.HasIndex(new[] { "SupplierId" }, "IX_ProductsFlows_SupplierId");
-
-                    b.HasIndex(new[] { "WarehouseId" }, "IX_ProductsFlows_WarehouseId");
 
                     b.HasIndex(new[] { "WarehouseMovementId" }, "IX_ProductsFlows_WarehouseMovementId");
 
@@ -207,7 +210,7 @@ namespace WepAppWare.Database.Migrations
                     b.ToTable("Warehouses");
                 });
 
-            modelBuilder.Entity("WebAppWare.Database.WarehouseMovement", b =>
+            modelBuilder.Entity("WebAppWare.Database.Entities.WarehouseMovement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,7 +293,7 @@ namespace WepAppWare.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebAppWare.Database.WarehouseMovement", "WarehouseMovement")
+                    b.HasOne("WebAppWare.Database.Entities.WarehouseMovement", "WarehouseMovement")
                         .WithMany("ProductsFlows")
                         .HasForeignKey("WarehouseMovementId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -305,7 +308,7 @@ namespace WepAppWare.Database.Migrations
                     b.Navigation("WarehouseMovement");
                 });
 
-            modelBuilder.Entity("WebAppWare.Database.WarehouseMovement", b =>
+            modelBuilder.Entity("WebAppWare.Database.Entities.WarehouseMovement", b =>
                 {
                     b.HasOne("WebAppWare.Database.Entities.Warehouse", null)
                         .WithMany("WarehouseMovements")
@@ -341,7 +344,7 @@ namespace WepAppWare.Database.Migrations
                     b.Navigation("WarehouseMovements");
                 });
 
-            modelBuilder.Entity("WebAppWare.Database.WarehouseMovement", b =>
+            modelBuilder.Entity("WebAppWare.Database.Entities.WarehouseMovement", b =>
                 {
                     b.Navigation("ProductsFlows");
                 });

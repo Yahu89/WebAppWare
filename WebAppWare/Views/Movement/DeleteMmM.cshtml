@@ -32,3 +32,57 @@
 	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
 
 </form> *@
+
+
+<form method="post" class="row" asp-controller="Movement" asp-action="DeletePost" asp-route-id="@Model.ProductFlowModels[0].MovementId">
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
+		<input id="Document" disabled class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
+		<span class="text-danger" asp-validation-for="@Model.Document"></span>
+	</div>
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Z magazynu:</label>
+		<input disabled class="form-control border-0 shadow mb-4" value="@Model.Warehouse" asp-for="@Model.Warehouse" />
+	</div>
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Warehouses">Do magazynu:</label>
+		<input disabled class="form-control border-0 shadow mb-4" value="@Model.WarehouseTo" asp-for="@Model.WarehouseTo" />
+	</div>
+
+	<div class="col-2">
+		<input type="submit" class="btn btn-danger" value="Usuń ruch" />
+	</div>
+
+	<table id="table" class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+		<th>
+			Index
+		</th>
+		<th>
+			Ilość
+		</th>
+		</thead>
+
+		<tbody id="parentTable">
+			
+				@foreach (var item in Model.ProductFlowModels)
+				{
+				<tr name="item">
+					<td>
+						<input disabled class="form-control border-0 shadow mb-4" value="@item.ProductItemCode" />
+					</td>
+					<td>
+						<input disabled class="form-control border-0 shadow mb-4" value="@item.Quantity" />
+					</td>
+				</tr>
+				}
+			
+		</tbody>
+	</table>
+
+	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
+
+</form>
