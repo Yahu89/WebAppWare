@@ -103,7 +103,7 @@ namespace WepAppWare.Database
 			{
 				Document = "PO20022401",
 				SupplierId = 1,
-				Status = (int)OrderStatus.New,
+				Status = (int)OrderStatus.InPreparation,
 			};
 
 			var order1Items = new List<OrderItem>
@@ -126,7 +126,7 @@ namespace WepAppWare.Database
 			{
 				Document = "PO20022402",
 				SupplierId = 2,
-				Status = (int)OrderStatus.New,
+				Status = (int)OrderStatus.InPreparation,
 			};
 
 			var order2Items = new List<OrderItem>

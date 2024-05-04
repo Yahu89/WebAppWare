@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Models;
 
@@ -14,6 +15,7 @@ public class OrderModel
     public DateTime CreationDate { get; set; } = DateTime.Now;
 
 	[Required(ErrorMessage = "Ustawienie statusu jest wymagane")]
-	public string Status { get; set; }
+	public int StatusId { get; set; }
+    public string Status { get; set; }
     public string Remarks { get; set; }
 }

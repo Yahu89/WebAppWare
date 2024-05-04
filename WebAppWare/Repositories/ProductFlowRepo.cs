@@ -16,8 +16,9 @@ namespace WebAppWare.Repositories;
 public class ProductFlowRepo : IProductFlowRepo
 {
     private readonly WarehouseBaseContext _dbContext;
+	//private readonly IMovementRepo _movementRepo;
 
-    private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
+	private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
     {
         Id = x.Id,
         MovementId = x.WarehouseMovementId,
@@ -31,9 +32,9 @@ public class ProductFlowRepo : IProductFlowRepo
         DocumentNumber = x.WarehouseMovement.Document,
 		Warehouse = x.Warehouse.Name,
 		WarehouseId = x.Warehouse.Id,
-		//WarehouseToId = x.WarehouseMovement.WarehouseToId,
-		//WarehouseToIdName = x.WarehouseMovement.WarehouseTo.Name
-    };
+		//WarehouseToId = ,
+		//WarehouseToIdName = x.Warehouse.N
+	};
 
 	private Expression<Func<ProductsFlow, ProductFlowSearchModel>> MapToSearchModel = x => new ProductFlowSearchModel()
 	{
@@ -52,6 +53,7 @@ public class ProductFlowRepo : IProductFlowRepo
     public ProductFlowRepo(WarehouseBaseContext dbContext)
     {
         _dbContext = dbContext;
+		//_movementRepo = movementRepo;
     }
 
 	public async Task CreateRange(IEnumerable<ProductFlowModel> model, int id)
@@ -221,6 +223,93 @@ public class ProductFlowRepo : IProductFlowRepo
 	{
 		var result = await _dbContext.ProductsFlows.Select(MapToModel).Where(x => x.MovementId == id).ToListAsync();
         return result;
+	}
+
+	public async Task<bool> IsReadyToDeleteItemRecordsForAllMoveTypes(int id)
+	{
+		var productFlowModel = await GetById(id);
+		int movementId = productFlowModel.MovementId;
+		IMovementRepo _movementRepo = new MovementRepo(_dbContext, this);
+
+		var prodFlowMoveIdList = await GetProductFlowsByMoveId(movementId);
+		int howManyItems = prodFlowMoveIdList.Count;
+
+		if (productFlowModel.MovementType == MovementType.WZ)
+		{
+			if (howManyItems == 1)
+			{
+				await _movementRepo.DeleteById(movementId);
+				return true;
+			}
+			else
+			{
+				await DeleteById(id);
+				return true;
+			}
+		}
+
+		if (productFlowModel.MovementType == MovementType.PZ)
+		{
+			if (howManyItems == 1)
+			{
+				if (await _movementRepo.IsPossibleToDeletePzWz(movementId))
+				{
+					await _movementRepo.DeleteById(movementId);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (await IsReadyToDeleteProductFlow(id))
+				{
+					await DeleteById(id);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+		if (productFlowModel.MovementType is MovementType.MM)
+		{
+			var itemCodeToDelete = productFlowModel.ProductId;
+			var coupleOfItems = prodFlowMoveIdList.Where(x => x.ProductId == itemCodeToDelete).ToList();
+			var itemCodeToCheck = coupleOfItems.Where(x => x.Quantity > 0).ToList();
+			var itemCodeIdToCheck = itemCodeToCheck[0].Id;
+
+			if (prodFlowMoveIdList.Count == 2)
+			{
+				if (await IsReadyToDeleteProductFlow(itemCodeIdToCheck))
+				{
+					await _movementRepo.DeleteById(movementId);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (await IsReadyToDeleteProductFlow(itemCodeIdToCheck))
+				{
+					await DeleteRange(coupleOfItems);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public async Task<bool> IsReadyToDeleteProductFlow(int id)

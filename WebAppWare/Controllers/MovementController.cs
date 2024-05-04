@@ -87,11 +87,13 @@ namespace WebAppWare.Controllers
 			var movement = await _movementRepo.GetById(id);
 			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
 			string warehouse = productFlows.FirstOrDefault(x => x.MovementId == id).Warehouse;
+			string? warehouseTo = productFlows.FirstOrDefault(x => x.MovementId == id).WarehouseToIdName;
 
 			ProductFlowMovementModel obj = new ProductFlowMovementModel()
 			{
 				Document = movement.Document,
-				Warehouse = warehouse
+				Warehouse = warehouse,
+				WarehouseTo = warehouseTo
 			};
 
 			obj.ProductFlowModels = productFlows.Select(x => new ProductFlowModel()
@@ -105,8 +107,9 @@ namespace WebAppWare.Controllers
 				WarehouseId = x.WarehouseId,
 				MovementId = movement.Id,
 				Quantity = x.Quantity,
-				DocumentNumber = x.DocumentNumber
-
+				DocumentNumber = x.DocumentNumber,
+				WarehouseToId = x.WarehouseToId,
+				WarehouseToIdName = warehouseTo
 			}).ToList();
 
 			return View(obj);
@@ -139,7 +142,7 @@ namespace WebAppWare.Controllers
 			var productFlowsOut = productFlows.Where(x => x.Quantity < 0).ToList();
 			var productFlowsIn = productFlows.Where(x => x.Quantity > 0).ToList();
 			string warehouse = productFlowsOut.FirstOrDefault().Warehouse;
-			string warehouseTo = productFlows.Where(x => x.Quantity > 0).FirstOrDefault().WarehouseToIdName;
+			string warehouseTo = productFlowsIn.FirstOrDefault(x => x.Quantity > 0).Warehouse;
 
 			ProductFlowMovementModel obj = new ProductFlowMovementModel()
 			{
@@ -159,7 +162,8 @@ namespace WebAppWare.Controllers
 				WarehouseId = x.WarehouseId,
 				MovementId = movement.Id,
 				Quantity = x.Quantity,
-				DocumentNumber = x.DocumentNumber,			
+				DocumentNumber = x.DocumentNumber,
+				WarehouseToIdName = warehouseTo
 			}).ToList();
 
 			return View(obj);

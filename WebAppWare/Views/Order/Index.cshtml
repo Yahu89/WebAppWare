@@ -1,4 +1,5 @@
 ﻿@using WebAppWare.Database.Entities
+@using WepAppWare.Database.Entities
 @model List<OrderModel>
 
 <div class="row">
@@ -45,28 +46,33 @@
 			{
 				string color = "white";
 
-				switch (order.Status)
+				switch (order.StatusId)
 				{
-					case "W przygotowaniu":
+					case 1:
 					{
-						color = "gray";
+							//"W przygotowaniu";
+							order.Status = "W przygotowaniu";
+							color = "gray";
 						break;
 					}
 
-					case "Wysłano":
+					case 2:
 					{
+							order.Status = "Wysłano";
 						color = "yellow";
 						break;
 					}
 
-					case "Zrealizowano":
+					case 3:
 					{
+							order.Status = "Zrealizowano";
 						color = "green";
 						break;
 					}
 
-					case "Anulowano":
+					case 4:
 					{
+							order.Status = "Anulowano";
 						color = "red";
 						break;
 					}

@@ -31,82 +31,102 @@ namespace WebAppWare.Controllers
         [HttpPost]
         public async Task<IActionResult> DeletePost(int id)
         {
-            var productFlowModel = await _productFlowRepo.GetById(id);
-            int movementId = productFlowModel.MovementId;
+			#region
+			//         var productFlowModel = await _productFlowRepo.GetById(id);
+			//         int movementId = productFlowModel.MovementId;
 
-            var prodFlowMoveIdList = await _productFlowRepo.GetProductFlowsByMoveId(movementId);
-            int howManyItems = prodFlowMoveIdList.Count;
+			//         var prodFlowMoveIdList = await _productFlowRepo.GetProductFlowsByMoveId(movementId);
+			//         int howManyItems = prodFlowMoveIdList.Count;
 
-            //if (howManyItems == 1 && productFlowModel.MovementType == MovementType.WZ)
-            //{
-            //    await _movementRepo.DeleteById(movementId);
-            //    return RedirectToAction(nameof(Index));
-            //}
+			//         if (productFlowModel.MovementType == MovementType.WZ)
+			//         {
+			//             if (howManyItems == 1)
+			//             {
+			//		await _movementRepo.DeleteById(movementId);
+			//		return RedirectToAction(nameof(Index));
+			//	}
+			//	else
+			//             {
+			//		await _productFlowRepo.DeleteById(id);
+			//		return RedirectToAction(nameof(Index));
+			//	}
+			//         }
 
-            if (productFlowModel.MovementType == MovementType.WZ)
-            {
-                if (howManyItems == 1)
-                {
-					await _movementRepo.DeleteById(movementId);
-					return RedirectToAction(nameof(Index));
-				}
-				else
-                {
-					await _productFlowRepo.DeleteById(id);
-					return RedirectToAction(nameof(Index));
-				}
-            }
+			//         if (productFlowModel.MovementType == MovementType.PZ)
+			//         {
+			//             if (howManyItems == 1)
+			//             {
+			//                 if (await _movementRepo.IsPossibleToDeletePzWz(movementId))
+			//                 {
+			//			await _movementRepo.DeleteById(movementId);
+			//			return RedirectToAction(nameof(Index));
+			//		}
+			//                 else
+			//                 {
+			//                     return BadRequest();
+			//                 }
+			//             }
+			//             else
+			//             {
+			//                 if (await _productFlowRepo.IsReadyToDeleteProductFlow(id))
+			//                 {
+			//			await _productFlowRepo.DeleteById(id);
+			//			return RedirectToAction(nameof(Index));
+			//		}
+			//                 else
+			//                 {
+			//                     return BadRequest();
+			//                 }
+			//             }
+			//         }
 
-            if (productFlowModel.MovementType == MovementType.PZ)
-            {
-                if (howManyItems == 1)
-                {
-                    if (await _movementRepo.IsPossibleToDeletePzWz(movementId))
-                    {
-						await _movementRepo.DeleteById(movementId);
-						return RedirectToAction(nameof(Index));
-					}
-                    else
-                    {
-                        return BadRequest();
-                    }
-                }
-                else
-                {
-                    if (await _productFlowRepo.IsReadyToDeleteProductFlow(id))
-                    {
-						await _productFlowRepo.DeleteById(id);
-						return RedirectToAction(nameof(Index));
-					}
-                    else
-                    {
-                        return BadRequest();
-                    }
-                }
-            }
-            
-   //         if (productFlowModel.MovementType == MovementType.WZ)
-   //         {
-   //             await _productFlowRepo.DeleteById(id);
-   //             return RedirectToAction(nameof(Index));
-   //         }  
+			//         if (productFlowModel.MovementType is MovementType.MM)
+			//         {
+			//             var itemCodeToDelete = productFlowModel.ProductId;
+			//             var coupleOfItems = prodFlowMoveIdList.Where(x => x.ProductId == itemCodeToDelete).ToList();
+			//             var itemCodeToCheck = coupleOfItems.Where(x => x.Quantity > 0).ToList();
+			//             var itemCodeIdToCheck = itemCodeToCheck[0].Id;
 
-			//if (await _productFlowRepo.IsReadyToDeleteProductFlow(id) && howManyItems > 1)
-   //         {
-   //             await _productFlowRepo.DeleteById(id);
-   //             return RedirectToAction(nameof(Index));
-   //         }
+			//             if (prodFlowMoveIdList.Count == 2)
+			//             {
+			//                 if (await _productFlowRepo.IsReadyToDeleteProductFlow(itemCodeIdToCheck))
+			//                 {
+			//			await _movementRepo.DeleteById(movementId);
+			//			return RedirectToAction(nameof(Index));
+			//		}
+			//                 else
+			//                 {
+			//                     return BadRequest();
+			//                 }
+			//             }
+			//             else
+			//             {
+			//                 if (await _productFlowRepo.IsReadyToDeleteProductFlow(itemCodeIdToCheck))
+			//                 {
+			//                     await _productFlowRepo.DeleteRange(coupleOfItems);
+			//			return RedirectToAction(nameof(Index));
+			//		}
+			//                 else
+			//                 {
+			//                     return BadRequest();
+			//                 }
+			//             }
+			//         }
 
-			//if (await _productFlowRepo.IsReadyToDeleteProductFlow(id) && howManyItems == 1)
-			//{
-			//	await _movementRepo.DeleteById(id);
-			//	return RedirectToAction(nameof(Index));
-			//}
+			//return BadRequest();
+			#endregion
 
-			return BadRequest();
-        }
+			if (await _productFlowRepo.IsReadyToDeleteItemRecordsForAllMoveTypes(id))
+			{
+				return RedirectToAction(nameof(Index));
+			}
+			else
+			{
+				return BadRequest();
+			}
+		}
 
-        public async Task<IActionResult> DeleteMmM(int id)
+		public async Task<IActionResult> DeleteMmM(int id)
         {
             var productFlow = await _productFlowRepo.GetById(id);
             int moveId = productFlow.MovementId;
@@ -121,62 +141,53 @@ namespace WebAppWare.Controllers
             return View(pairProductFlows);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DeleteMmPost(int id)
-        {
-			var productFlow = await _productFlowRepo.GetById(id);
-			int moveId = productFlow.MovementId;
-			int productId = (int)productFlow.ProductId;
-            DateTime whenInserted = productFlow.CreationDate;
+   //     [HttpPost]
+   //     public async Task<IActionResult> DeleteMmPost(int id)
+   //     {
+			//var productFlow = await _productFlowRepo.GetById(id);
+			//int moveId = productFlow.MovementId;
+			//int productId = (int)productFlow.ProductId;
+   //         DateTime whenInserted = productFlow.CreationDate;
 
-			var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
-			var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();
+			//var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
+			//var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();
 
-            int warehouseIdToCheck = (int)pairProductFlows[1].WarehouseId;
-            int qtyToCheck = pairProductFlows[1].Quantity;
+   //         int warehouseIdToCheck = (int)pairProductFlows[1].WarehouseId;
+   //         int qtyToCheck = pairProductFlows[1].Quantity;
 
-            var prodFlowsCumulative = await _productFlowRepo.GetAllCumulative(productId, warehouseIdToCheck);
-            var prodFlowsCumLimited = prodFlowsCumulative.Where(x => x.CreationDate > whenInserted).ToList();
+   //         var prodFlowsCumulative = await _productFlowRepo.GetAllCumulative(productId, warehouseIdToCheck);
+   //         var prodFlowsCumLimited = prodFlowsCumulative.Where(x => x.CreationDate > whenInserted).ToList();
 
-            int minValue = prodFlowsCumulative.FirstOrDefault(x => x.CreationDate == whenInserted).Cumulative;
+   //         int minValue = prodFlowsCumulative.FirstOrDefault(x => x.CreationDate == whenInserted).Cumulative;
 
-            if (prodFlowsCumLimited.Count > 0)
-            {
-                minValue = prodFlowsCumLimited.Min(x => x.Cumulative);
-            }
+   //         if (prodFlowsCumLimited.Count > 0)
+   //         {
+   //             minValue = prodFlowsCumLimited.Min(x => x.Cumulative);
+   //         }
 
-            if (minValue < qtyToCheck)
-            {
-                return BadRequest();
-            }
+   //         if (minValue < qtyToCheck)
+   //         {
+   //             return BadRequest();
+   //         }
 
-            if (productFlowsByMoveId.Count > 2)
-            {
-                await _productFlowRepo.DeleteRange(pairProductFlows);
-                return RedirectToAction(nameof(Index));
-			}
-            else if (productFlowsByMoveId.Count == 2)
-            {
-                await _movementRepo.DeleteById(moveId);
-                return RedirectToAction(nameof(Index));
-            }
+   //         if (productFlowsByMoveId.Count > 2)
+   //         {
+   //             await _productFlowRepo.DeleteRange(pairProductFlows);
+   //             return RedirectToAction(nameof(Index));
+			//}
+   //         else if (productFlowsByMoveId.Count == 2)
+   //         {
+   //             await _movementRepo.DeleteById(moveId);
+   //             return RedirectToAction(nameof(Index));
+   //         }
 
-			return RedirectToAction(nameof(Index));
-        }
+			//return RedirectToAction(nameof(Index));
+   //     }
 
         //[HttpPost]
         public async Task<IActionResult> Search(ProductFlowSearchModel model)
-        {
-            //model.Supplier = supplier;
-            //model.Warehouse = warehouse;
-            //model.ItemCode = ind;
-
-            //warehouse = model.Warehouse;
-            //ind = model.ItemCode;
-            //supplier = model.Supplier;
-            
+        {        
             var results = await _productFlowRepo.GetBySearch(model.Warehouse, model.ItemCode, model.Supplier);
-            //model.ProductsFlow = results;
             int totalRecords = results.Count();
             int recordsPerPage = 5;
             model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));

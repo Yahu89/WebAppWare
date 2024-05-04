@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebAppWare.Models;
 using WebAppWare.Repositories;
 using WebAppWare.Repositories.Interfaces;
+using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Controllers
 {
@@ -31,6 +32,8 @@ namespace WebAppWare.Controllers
 
         public async Task<OrderDetailsModelView> SetComboboxValue()
         {
+            //OrderStatus status = new OrderStatus();
+            
 			OrderDetailsModelView comboboxes = new OrderDetailsModelView()
 			{
 				Products = (await _productRepo.GetAll()).Select(x => new SelectListItem()
@@ -47,10 +50,10 @@ namespace WebAppWare.Controllers
 
                 StatusList = new List<SelectListItem>()
                 {
-                    new SelectListItem() { Text = "W przygotowaniu", Value = "W przygotowaniu" },
-					new SelectListItem() { Text = "Wysłano", Value = "Wysłano" },
-					new SelectListItem() { Text = "Zrealizowano", Value = "Zrealizowano" },
-					new SelectListItem() { Text = "Anulowano", Value = "Anulowano" }
+                    new SelectListItem() { Text = "W przygotowaniu", Value = "1" },
+					new SelectListItem() { Text = "Wysłano", Value = "2" },
+					new SelectListItem() { Text = "Zrealizowano", Value = "3" },
+					new SelectListItem() { Text = "Anulowano", Value = "4" }
 				}
 			};
 
@@ -68,11 +71,13 @@ namespace WebAppWare.Controllers
         [HttpPost]
         public async Task<IActionResult> ExecuteCreation(OrderDetailsModelView obj)
         {
+            //var stat = obj.Status;
+
             OrderModel orderModel = new OrderModel()
             {
                 Document = obj.Document,
                 SupplierId = obj.SupplierId,
-                Status = obj.Status,
+                StatusId = obj.StatusId,
                 CreationDate = obj.CreationDate,
                 Remarks = obj.Remarks
             };
@@ -89,12 +94,12 @@ namespace WebAppWare.Controllers
 					eachFieldFulfilled.ForEach(x => x.OrderId = id);
                     await _orderDetailsRepo.CreateRange(eachFieldFulfilled);
 
-					return RedirectToAction(nameof(Index));
+					return Json(new { redirectToUrl = Url.Action("Index", "Order") });
 				}               
 			}
 
-            return BadRequest();
-        }
+			return Json(new { redirectToUrl = Url.Action("Create", "Order") });
+		}
 
         public async Task<IActionResult> Remove(int id)
         {
@@ -106,6 +111,7 @@ namespace WebAppWare.Controllers
                 OrderId = id,
                 Document = order.Document,
                 SupplierName = order.SupplierName,
+                StatusId = order.StatusId,
                 Status = order.Status,
                 Remarks = order.Remarks,
                 CreationDate = order.CreationDate,
@@ -116,6 +122,10 @@ namespace WebAppWare.Controllers
                 })
                 .ToList()          
             };
+
+            modelView.Status = FromStatusIdToString(order.StatusId);
+
+            var suplier = modelView.SupplierName;
 
             return View(modelView);
         }
@@ -139,7 +149,7 @@ namespace WebAppWare.Controllers
                 OrderId = id,
 				Document = order.Document,
 				SupplierName = order.SupplierName,
-				Status = order.Status,
+				StatusId = order.StatusId,
 				Remarks = order.Remarks,
                 Products = comboboxes.Products,
                 Suppliers = comboboxes.Suppliers,
@@ -164,7 +174,7 @@ namespace WebAppWare.Controllers
 			{
 				Document = obj.Document,
 				SupplierId = obj.SupplierId,
-				Status = obj.Status,
+				StatusId = obj.StatusId,
                 CreationDate = obj.CreationDate,
                 Id = obj.OrderId,
 			};
@@ -202,7 +212,7 @@ namespace WebAppWare.Controllers
                 OrderDetails = orderDetails,
                 Document = order.Document,
                 SupplierName = order.SupplierName,
-                Status = order.Status,
+                StatusId = order.StatusId,
                 Remarks = order.Remarks,
                 CreationDate = order.CreationDate
             };
@@ -213,6 +223,46 @@ namespace WebAppWare.Controllers
 
 			return File(bytes, "application/pdf");
 		}
+
+        public string FromStatusIdToString(int statusId)
+        {
+            string statusName = string.Empty;
+
+            switch (statusId)
+            {
+                case 1:
+                    {
+                        statusName = "W przygotowaniu";
+                        break;
+                    }
+
+                case 2:
+                    {
+						statusName = "Wysłano";
+						break;
+					}
+
+                case 3:
+                    {
+						statusName = "Zrealizowano";
+						break;
+					}
+
+                case 4:
+                    {
+						statusName = "Anulowano";
+						break;
+					}
+
+                default:
+                    {
+                        statusName = "Error";
+                        break;
+                    }
+            }
+
+            return statusName;
+        }
 
 
     }

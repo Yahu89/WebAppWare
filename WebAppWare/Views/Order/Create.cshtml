@@ -3,7 +3,7 @@
 
 <h4 class="pb-2">Dodawanie zamówienia</h4>
 
-<form method="post" class="row" asp-controller="Order" asp-action="ExecuteCreation">
+@* <form method="post" class="row" asp-controller="Order" asp-action="ExecuteCreation">
 
 <div class="row">
 	<div class="col-2">
@@ -58,5 +58,260 @@
 	<button type="submit" class="btn btn-success form-control mb-2">Dodaj</button>
 	<a class="btn btn-secondary" asp-controller="Order" asp-action="Index">Wróć do listy</a>
 
+</form> *@
+
+<form id="form" class="row" data-url="@Url.Action("ExecuteCreation")">
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
+		<input id="Document" class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
+		<span class="text-danger" asp-validation-for="@Model.Document"></span>
+	</div>
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.SupplierName">Dostawca:</label>
+		<select id="SupplierId" class="form-select border-0 shadow mb-4" asp-items="@Model.Suppliers" asp-for="@Model.SupplierId">
+			<option disabled selected>-- Wybierz dostawcę --</option>
+		</select>
+	</div>
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.CreationDate">Data zamówienia:</label>
+		<input id="CreationDate" class="form-control border-0 shadow mb-2" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" asp-for="@Model.CreationDate" />
+	</div>
+
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
+		<select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.StatusId">
+			<option disabled selected>-- Wybierz status --</option>
+		</select>
+		@* <span class="text-danger" asp-validation-for="@Model.Status"></span> *@
+	</div>
+
+	<div class="col-2">
+		<input id="submitButton" type="button" class="btn btn-success" value="Zatwierdź" />
+	</div>
+
+	<h7 id="Warning" style="color: red"></h7>
+
+	<div class="row">
+		<label class="ms-2 pb-2" asp-for="@Model.Remarks">Uwagi do zamówienia:</label>
+		<textarea id="Remarks" class="form-control border-0 shadow mb-5" asp-for="@Model.Remarks"></textarea>
+	</div>
+
+	<table id="table" class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+		<th>
+			Index
+		</th>
+		@* <th>
+			Dostawca
+		</th> *@
+		<th>
+			Ilość
+		</th>
+		<th>
+			<input id="addRowButton" type="button" class="btn btn-success" value="Dodaj kolejny"/>
+		</th>
+		</thead>
+
+		<tbody id="parentTable">
+			<tr name="item">
+				<td>
+					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", toggle = "item-property" })
+				</td>
+				@* <td>
+					@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", toggle = "item-property" })
+				</td> *@
+				<td>
+					<input toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
+				</td>
+				<td>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<a class="btn btn-secondary" asp-controller="Order" asp-action="Index">Wróć do listy</a>
+
 </form>
 
+@section Scripts
+{
+	<script>
+		// () => {} to jest arrow function / anonimowa funckja / lambda expression
+		$(document).ready(function () {
+			const addRecord = () => {
+				let row = `
+											<tr name="item">
+												<td>
+						@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @toggle = "item-property" })
+												</td>
+												<td>
+													<input toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
+												</td>
+												<td>
+													<input type="button" class="btn btn-danger" value="Usuń" onclick="removeRecord(this)"/>
+												</td>
+											</tr>
+										`;
+
+				console.log('row', row);
+
+				$('#table tr:last').after(row);
+			}
+
+			$('#submitButton').click((e) => {
+				//e.preventDefault();
+				$('#Warning').text('');
+				onSubmit();
+			});
+
+			$('#addRowButton').click(() => {
+				addRecord();
+			});
+
+			// $('#removeButton').click((tr) => {
+			// 	removeRecord(this);
+			// });
+
+			let isCorrectData;
+
+			const onSubmit = () => {
+
+				isCorrectData = true;
+
+				const form = {
+					document: '',
+					supplierId: 0,
+					creationDate: '',
+					statusId: 0,
+					remarks: '',
+					orderDetails: []
+				};
+
+				console.log('document', $('#Document').val());
+				form.document = $('#Document').val();
+
+				console.log('SupplierId', $('#SupplierId').val());
+				form.supplierId = $('#SupplierId').val();
+
+				console.log('creationDate', $('#CreationDate').val());
+				form.creationDate = $('#CreationDate').val();
+
+				console.log('status', $('#Status').val());
+				form.statusId = $('#Status').val();
+
+				console.log('remarks', $('#Remarks').val());
+				form.remarks = $('#Remarks').val();
+
+				if (form.document.length == 0) {
+					isCorrectData = false;
+					$('#Warning').append('Uzupełnij nr dokumentu');
+				}
+
+				let sup = $('#SupplierId').val();
+				let stat = $('#Status').val();
+
+				if (sup === null) {
+					$('#Warning').append(' Wybierz dostawcę');
+					isCorrectData = false;
+				}
+
+				if (stat === null) {
+					$('#Warning').append(' Wybierz status');
+					isCorrectData = false;
+				}
+
+				// console.log('SupplierId', $('#SupplierId').val());
+				// form.supplierId = $('#SupplierId').val();
+
+				const items = $('tr[name="item"]');
+				// console.log(items);
+
+				const elements = [];
+
+				$.each(items, function () {
+					// elementy listy
+					console.log(this);
+
+					const properties = $(this).find('[toggle="item-property"]');
+					console.log('properties:');
+
+					const item = {};
+
+					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
+					let i = 0;
+					// let isCorrectData = true;
+
+					$.each(properties, function (index, element) {
+
+						if (i === 0) {
+							item.productId = $(element).val();
+						}
+
+						// if (i === 1) {
+						// 	item.supplierId = $(this).val();
+						// }
+
+						if (i === 1) {
+							item.quantity = $(this).val();
+							let c = parseInt(item.quantity);
+
+							//console.log(c);
+							if (isNaN(c) && c <= 0) {
+								//console.log('TRUE');
+								isCorrectData = false;
+								$(element).val('Niepoprawne dane');
+							}
+						}
+
+						i++;
+					});
+
+					elements.push(item);
+				});
+
+				console.log('FINAL:');
+				console.log(elements);
+
+				form.orderDetails = elements;
+
+				console.log('FORM:');
+				console.log(form);
+
+				const data = $('#form');
+				console.log(data.data('url'));
+
+
+				if (isCorrectData) {
+
+					console.log('isCorrectData:', isCorrectData);
+
+					$.ajax({
+						url: data.data('url'),
+						method: 'POST',
+						data: form,
+						success: function (response) {
+							console.log('zwrocono dane:');
+							console.log(response);
+							window.location.href = response.redirectToUrl;
+						},
+						error: function (error) {
+							console.log(error.error);
+						}
+
+					});
+				}
+			}
+		
+
+		});
+
+		function removeRecord(tr) {
+
+			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
+		}
+
+	</script>
+}

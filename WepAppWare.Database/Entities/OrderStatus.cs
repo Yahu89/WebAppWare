@@ -8,8 +8,9 @@ namespace WepAppWare.Database.Entities
 {
 	public enum OrderStatus
 	{
-		New,
-		InProgress,
+		InPreparation = 1,
+		Sent,
 		Completed,
+		Canceled
 	}
 }

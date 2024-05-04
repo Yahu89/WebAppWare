@@ -21,7 +21,7 @@ public class OrderRepo : IOrderRepo
 		SupplierName = x.Supplier.Name,
 		SupplierEmail = x.Supplier.Email,
 		CreationDate = x.CreationDate,
-		//Status = x.Status,
+		StatusId = x.Status,
 		Remarks = x.Remarks
 	};
 
@@ -31,7 +31,7 @@ public class OrderRepo : IOrderRepo
 		Document = x.Document,
 		SupplierId = x.SupplierId,
 		CreationDate = x.CreationDate,
-		//Status = x.Status,
+		Status = x.StatusId,
 		Remarks = x.Remarks
 	};
 	public OrderRepo(WarehouseBaseContext dbContext)
@@ -83,7 +83,7 @@ public class OrderRepo : IOrderRepo
 
 	public bool IsOrderReadyToInsert(OrderModel model)
 	{
-		if (model.SupplierId != 0 && !string.IsNullOrEmpty(model.Status) && !string.IsNullOrEmpty(model.Document))
+		if (model.SupplierId != 0 && !string.IsNullOrEmpty(model.Document))
 		{
 			return true;
 		}
