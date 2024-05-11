@@ -1,102 +1,230 @@
 ﻿@model OrderDetailsModelView
 
-
 <h4 class="pb-2">Edycja zamówienia</h4>
 
-<form method="post" class="row" asp-controller="Order" asp-action="ExecuteEditing">
+<form id="form" class="row" data-url="@Url.Action("ExecuteEditing")">
 
-	<div class="row">
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
-			<input class="form-control border-0 shadow mb-2" value="@Model.Document" asp-for="@Model.Document" />
-			@* <span class="text-danger" asp-validation-for="@Model.Document"></span> *@
-		</div>
-
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.SupplierName">Dostawca:</label>
-			<select class="form-select border-0 shadow mb-2" asp-for="@Model.SupplierId">
-
-				@foreach (var item in Model.Suppliers)
-				{
-					if (item.Equals(Model.SupplierName))
-					{
-						<option value="@item.Value" selected>@item.Text</option>
-					}
-
-					<option value="@item.Value">@item.Text</option>
-				}
-
-			</select>
-			@* <span class="text-danger" asp-validation-for="@Model.SupplierName"></span> *@
-		</div>
-
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
-			<select class="form-select border-0 shadow mb-2" asp-for="@Model.Status">
-			@* <option disabled selected>@Model.Status</option>
-			<option>W przygotowaniu</option>
-			<option>Wysłano</option>
-			<option>Zrealizowane</option>
-			<option>Anulowane</option> *@
-			
-			@* <span class="text-danger" asp-validation-for="@Model.Status"></span> *@
-
-				@foreach (var item in Model.StatusList)
-				{
-					if (item.Equals(Model.Status))
-					{
-						<option value="@item.Value" selected>@item.Text</option>
-					}
-
-					<option value="@item.Value">@item.Text</option>
-				}
-
-			</select>
-		</div>
-
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.CreationDate">Data zamówienia:</label>
-			<input class="form-control border-0 shadow mb-2" type="date" value="@Model.CreationDate.Date.ToString("yyyy-MM-dd")" asp-for="@Model.CreationDate" />
-		</div>
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
+		<input id="Document" class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
+		<span class="text-danger" asp-validation-for="@Model.Document"></span>
 	</div>
 
-	<div id="items" class="d-flex">
-		@for (var i = 0; i < Model.OrderDetails.Count(); i++)
-		{
-			<div class="col-2 row form-group m-lg-2">
+	<div class="col-2">
+		<label class="ms-2 pb-2">Dostawca:</label>
+		<input id="SupplierId" class="form-control border-0 shadow mb-4" asp-for="@Model.SupplierName" />
+		@* <select id="SupplierId" class="form-select border-0 shadow mb-4" asp-items="@Model.Suppliers" value="@Model.SupplierName">
+			<option selected value="@Model.SupplierId">@Model.SupplierName</option>
+		</select> *@
+	</div>
 
-				<label class="ms-2 pb-2" asp-for="@Model.OrderDetails[i].ProductId">Indeks:</label>
-				<select class="form-select border-0 shadow mb-2" asp-for="@Model.OrderDetails[i].ProductId">
-			@* <option disabled selected>@Model.OrderDetails[i].ProductItemCode</option> *@
+	<div class="col-2">
+		<label class="ms-2 pb-2" asp-for="@Model.CreationDate">Data zamówienia:</label>
+		<input id="CreationDate" class="form-control border-0 shadow mb-2" type="date" asp-for="@Model.CreationDate" />
+	</div>
 
-					@foreach (var item in Model.Products)
-					{
-						if (item.Text.Equals(Model.OrderDetails[i].ProductItemCode))
-						{
-							<option value="@item.Value" selected>@item.Text</option>
-						}
-
-						<option value="@item.Value">@item.Text</option>
-					}
-			
-			</select>
-
-				<label class="ms-2 pb-2" asp-for="@Model.OrderDetails[i].Quantity">Ilość:</label>
-				<input class="form-control border-0 shadow mb-2" asp-for="@Model.OrderDetails[i].Quantity" />
-
-			</div>
+	<div class="col-2">
+		@{
+			string propertyName = nameof(Model.Status);
+			string propertyValue = Model.Status;
 		}
+
+		<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
+		<input id="Status" class="form-control border-0 shadow mb-4" value="@Model.Status" asp-for="@Model.Status" />
+		@* @Html.DropDownListFor(m => propertyValue, Model.StatusList as List<SelectListItem>, new { @id = propertyName, @class = "form-select border-0 shadow mb-2" }) *@
+		@* @Html.DropDownListFor(m => m.Status, new List<SelectListItem>(Model.StatusList), "Wybierz status", new { @class = "form-select border-0 shadow mb-2", @value = "status"}) *@
+		@* <select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.Status">
+		</select> *@
+		@* <span class="text-danger" asp-validation-for="@Model.Status"></span> *@
 	</div>
+
+	<div class="col-2">
+		<input id="submitButton" type="button" class="btn btn-info" value="Zatwierdź zmiany" />
+	</div>
+
+	<h7 id="Warning" style="color: red"></h7>
 
 	<div class="row">
 		<label class="ms-2 pb-2" asp-for="@Model.Remarks">Uwagi do zamówienia:</label>
-		<textarea class="form-control border-0 shadow mb-2" asp-for="@Model.Remarks"></textarea>
+		<textarea id="Remarks" class="form-control border-0 shadow mb-5" value="@Model.Remarks" asp-for="@Model.Remarks"></textarea>
 	</div>
 
-	<button type="submit" class="btn btn-info form-control mb-2">Edytuj</button>
+	<input id="OrderId" hidden class="form-control border-0 shadow mb-2" type="text" name="OrderId" value="@Model.OrderId" asp-for="@Model.OrderId" />
+
+	<table id="table" class="table table-bordered table-striped" style="width: 100%">
+		<thead>
+		<th>
+			Index
+		</th>
+		<th>
+			Ilość
+		</th>
+		</thead>
+
+		<tbody id="parentTable">
+			@foreach (var item in Model.OrderDetails)
+			{
+				<tr name="item">
+					<td>
+						<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@Model.Products" toggle="item-property" asp-for="@item.ProductId">
+							<option selected>@item.ProductItemCode</option>
+						</select>
+					</td>
+					<td>
+						<input class="form-control border-0 shadow mb-2" type="text" value="@item.Quantity" toggle="item-property" />
+					</td>
+				</tr>
+			}
+
+		</tbody>
+	</table>
+
 	<a class="btn btn-secondary" asp-controller="Order" asp-action="Index">Wróć do listy</a>
 
-	<input class="form-control border-0 shadow mb-2" hidden value="@Model.OrderId" asp-for="@Model.OrderId" />
-
 </form>
+
+@section Scripts
+{
+	<script>
+		$(document).ready(function() {
+
+			$('#submitButton').click((e) => {
+				//e.preventDefault();
+				$('#Warning').text('');
+				onSubmit();
+			});
+
+			let isCorrectData;
+
+			const onSubmit = () => {
+
+				isCorrectData = true;
+
+				const form = {
+					document: '',
+					supplierId: '',
+					creationDate: '',
+					statusId: '',
+					remarks: '',
+					orderDetails: [],
+					orderId: 0
+				};
+
+				console.log('document', $('#Document').val());
+				form.document = $('#Document').val();
+
+				console.log('SupplierId', $('#SupplierId').val());
+				form.supplierId = $('#SupplierId').val();
+
+				console.log('creationDate', $('#CreationDate').val());
+				form.creationDate = $('#CreationDate').val();
+
+				console.log('status', $('#Status').val());
+				form.statusId = $('#Status').val();
+
+				console.log('remarks', $('#Remarks').val());
+				form.remarks = $('#Remarks').val();
+
+				console.log('orderId', $('#OrderId').val());
+				form.orderId = $('#OrderId').val();
+
+				if (form.document.length == 0) {
+					isCorrectData = false;
+					$('#Warning').append('Uzupełnij nr dokumentu');
+				}
+
+				if (form.supplierId.length == 0) {
+					isCorrectData = false;
+					$('#Warning').append('Uzupełnij dostawcę');
+				}
+
+				if (form.statusId.length == 0) {
+					isCorrectData = false;
+					$('#Warning').append('Uzupełnij status');
+				}
+
+				const items = $('tr[name="item"]');
+				// console.log(items);
+
+				const elements = [];
+
+				$.each(items, function () {
+					// elementy listy
+					console.log(this);
+
+					const properties = $(this).find('[toggle="item-property"]');
+					console.log('properties:');
+
+					const item = {};
+
+					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
+					let i = 0;
+					// let isCorrectData = true;
+
+					$.each(properties, function (index, element) {
+
+						if (i === 0) {
+							item.productId = $(element).val();
+						}
+
+						// if (i === 1) {
+						// 	item.supplierId = $(this).val();
+						// }
+
+						if (i === 1) {
+							item.quantity = $(this).val();
+							let c = parseInt(item.quantity);
+
+							//console.log(c);
+							if (isNaN(c) && c <= 0) {
+								//console.log('TRUE');
+								isCorrectData = false;
+								$(element).val('Niepoprawne dane');
+							}
+						}
+
+						i++;
+					});
+
+					elements.push(item);
+				});
+
+				console.log('FINAL:');
+				console.log(elements);
+
+				form.orderDetails = elements;
+
+				console.log('FORM:');
+				console.log(form);
+
+				const data = $('#form');
+				console.log(data.data('url'));
+
+				if (isCorrectData) {
+
+					console.log('isCorrectData:', isCorrectData);
+
+					$.ajax({
+						url: data.data('url'),
+						method: 'POST',
+						data: form,
+						success: function (response) {
+							console.log('zwrocono dane:');
+							console.log(response);
+							window.location.href = response.redirectToUrl;
+						},
+						error: function (error) {
+							console.log(error.error);
+						}
+
+					});
+				}
+			}
+
+
+
+		})
+	</script>
+}
+
 

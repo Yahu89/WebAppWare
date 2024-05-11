@@ -73,9 +73,9 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 		return results;
 	}
 
-	public bool IsDataCorrect(OrderDetailsModelView model)
+	public bool IsDataCorrect(List<OrderDetailsModel> model)
 	{
-		var eachFieldFulfilled = model.OrderDetails.Where(x => x.ProductId != 0															
+		var eachFieldFulfilled = model.Where(x => x.ProductId != 0															
 															&& x.Quantity > 0).ToList();
 
 		if (eachFieldFulfilled.Count() > 0)

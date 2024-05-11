@@ -31,9 +31,7 @@ namespace WebAppWare.Controllers
         }
 
         public async Task<OrderDetailsModelView> SetComboboxValue()
-        {
-            //OrderStatus status = new OrderStatus();
-            
+        {          
 			OrderDetailsModelView comboboxes = new OrderDetailsModelView()
 			{
 				Products = (await _productRepo.GetAll()).Select(x => new SelectListItem()
@@ -71,8 +69,6 @@ namespace WebAppWare.Controllers
         [HttpPost]
         public async Task<IActionResult> ExecuteCreation(OrderDetailsModelView obj)
         {
-            //var stat = obj.Status;
-
             OrderModel orderModel = new OrderModel()
             {
                 Document = obj.Document,
@@ -82,9 +78,11 @@ namespace WebAppWare.Controllers
                 Remarks = obj.Remarks
             };
 
+            List<OrderDetailsModel> listModel = obj.OrderDetails;
+
             if (_orderRepo.IsOrderReadyToInsert(orderModel))
             {
-                if (_orderDetailsRepo.IsDataCorrect(obj))
+                if (_orderDetailsRepo.IsDataCorrect(listModel))
                 {
                     int id = (await _orderRepo.Create(orderModel));
 
@@ -153,7 +151,7 @@ namespace WebAppWare.Controllers
 				Remarks = order.Remarks,
                 Products = comboboxes.Products,
                 Suppliers = comboboxes.Suppliers,
-                CreationDate= order.CreationDate,
+                CreationDate = order.CreationDate,
                 StatusList = comboboxes.StatusList,
 				OrderDetails = details.Select(x => new OrderDetailsModel()
 				{
@@ -163,6 +161,8 @@ namespace WebAppWare.Controllers
 				})
 				.ToList()
 			};
+
+			modelView.Status = FromStatusIdToString(order.StatusId);
 
 			return View(modelView);
 		}
@@ -181,9 +181,14 @@ namespace WebAppWare.Controllers
 
             var details = await _orderDetailsRepo.GetByOrderId(obj.OrderId);
 
+            if (obj.SupplierId == 0)
+            {
+                orderModel.SupplierId = details[0].SupplierId;
+            }
+
 			if (_orderRepo.IsOrderReadyToInsert(orderModel))
             {
-                if (_orderDetailsRepo.IsDataCorrect(obj))
+                if (_orderDetailsRepo.IsDataCorrect(details))
                 {
                     obj.OrderId = details[0].OrderId;
 
@@ -194,14 +199,15 @@ namespace WebAppWare.Controllers
 					}
 
 					await _orderRepo.Edit(orderModel);
-                    await _orderDetailsRepo.EditRange(obj.OrderDetails);
+                    await _orderDetailsRepo.EditRange(details);
 
-					return RedirectToAction(nameof(Index));
+                    //return RedirectToAction(nameof(Index));
+                    return Json(new { redirectToUrl = Url.Action("Index", "Order") });
 				}
             }
 
-            return BadRequest();
-        }
+			return Json(new { redirectToUrl = Url.Action("Edit", "Order") });
+		}
 
         public async Task<IActionResult> PdfGenerate(int id)
         {

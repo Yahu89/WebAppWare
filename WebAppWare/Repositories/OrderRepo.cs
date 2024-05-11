@@ -22,7 +22,7 @@ public class OrderRepo : IOrderRepo
 		SupplierEmail = x.Supplier.Email,
 		CreationDate = x.CreationDate,
 		StatusId = x.Status,
-		Remarks = x.Remarks
+		Remarks = x.Remarks,
 	};
 
 	private Expression<Func<OrderModel, Order>> MapToEntity = x => new Order()

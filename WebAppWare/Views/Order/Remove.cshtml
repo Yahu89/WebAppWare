@@ -1,57 +1,6 @@
 ﻿@model OrderDetailsModelView
 
-
 <h4 class="pb-2">Usuwanie zamówienia</h4>
-
-@* <form method="post" class="row" asp-controller="Order" asp-action="ExecuteRemoving" asp-route-id="@Model.OrderId">
-
-	<div class="row">
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
-			<input class="form-control border-0 shadow mb-2" disabled value="@Model.Document" asp-for="@Model.Document" />
-		</div>
-
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.SupplierName">Dostawca:</label>
-			<input class="form-control border-0 shadow mb-2" disabled value="@Model.SupplierName" asp-for="@Model.SupplierName" />
-		</div>
-
-		<div class="col-2">
-			<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
-			<input class="form-control border-0 shadow mb-2" disabled value="@Model.Status" asp-for="@Model.Status" />
-		</div>
-
-		<div class="col-2">
-		<label class="ms-2 pb-2" asp-for="@Model.CreationDate">Data zamówienia:</label>
-		<input class="form-control border-0 shadow mb-2" type="text" disabled value="@Model.CreationDate.Date.ToString()" asp-for="@Model.CreationDate" />
-		</div>
-
-	</div>
-
-	<div id="items" class="d-flex">
-		@for (var i = 0; i < Model.OrderDetails.Count(); i++)
-		{
-			<div class="col-2 row form-group m-lg-2">
-
-				<label class="ms-2 pb-2" asp-for="@Model.OrderDetails[i].ProductId">Indeks:</label>
-				<input class="form-control border-0 shadow mb-2" disabled value="@Model.OrderDetails[i].ProductItemCode" asp-for="@Model.OrderDetails[i].ProductItemCode" />
-
-				<label class="ms-2 pb-2" asp-for="@Model.OrderDetails[i].Quantity">Ilość:</label>
-				<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.OrderDetails[i].Quantity" />
-
-			</div>
-		}
-	</div>
-
-	<div class="row">
-		<label class="ms-2 pb-2" asp-for="@Model.Remarks">Uwagi do zamówienia:</label>
-		<input class="form-control border-0 shadow mb-2" value="@Model.Remarks" disabled asp-for="@Model.Remarks" />
-	</div>
-
-	<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
-	<a class="btn btn-secondary" asp-controller="Order" asp-action="Index">Wróć do listy</a>
-
-</form> *@
 
 <form method="post" class="row" asp-controller="Order" asp-action="ExecuteRemoving" asp-route-id="@Model.OrderId">
 
