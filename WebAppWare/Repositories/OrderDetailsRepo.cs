@@ -37,20 +37,23 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 		Quantity = x.Quantity
 	};
 	public OrderDetailsRepo(WarehouseBaseContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-	public async Task CreateRange(IEnumerable<OrderDetailsModel> model)
 	{
+		_dbContext = dbContext;
+	}
+
+	public async Task CreateRange(IEnumerable<OrderDetailsModel> model, int orderId)
+	{
+
 		var results = model.Select(MapToEntity.Compile()).ToList();
+		results.ForEach(x => x.OrderId = orderId);
 		_dbContext.OrderItems.AddRange(results);
 		await _dbContext.SaveChangesAsync();
 	}
 
-	public async Task EditRange(IEnumerable<OrderDetailsModel> model)
+	public async Task EditRange(IEnumerable<OrderDetailsModel> model, int orderId)
 	{
 		var results = model.Select(MapToEntity.Compile()).ToList();
+		results.ForEach(x => x.OrderId = orderId);
 		_dbContext.OrderItems.UpdateRange(results);
 		await _dbContext.SaveChangesAsync();
 	}
@@ -63,7 +66,11 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 
 	public async Task<List<OrderDetailsModel>> GetByOrderId(int id)
 	{
-		var results = await _dbContext.OrderItems.Select(MapToModel).Where(x => x.OrderId == id).ToListAsync();
+		var results = await _dbContext.OrderItems
+			.Include(x => x.Order)
+			.Select(MapToModel)
+			.Where(x => x.OrderId == id)
+			.ToListAsync();
 
 		if (results.Count == 0)
 		{
@@ -75,8 +82,7 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 
 	public bool IsDataCorrect(List<OrderDetailsModel> model)
 	{
-		var eachFieldFulfilled = model.Where(x => x.ProductId != 0															
-															&& x.Quantity > 0).ToList();
+		var eachFieldFulfilled = model.Where(x => x.ProductId != 0 && x.Quantity > 0).ToList();
 
 		if (eachFieldFulfilled.Count() > 0)
 		{

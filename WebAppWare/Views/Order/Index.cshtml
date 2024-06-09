@@ -46,39 +46,6 @@
 			{
 				string color = "white";
 
-				switch (order.StatusId)
-				{
-					case 1:
-					{
-							//"W przygotowaniu";
-							order.Status = "W przygotowaniu";
-							color = "gray";
-						break;
-					}
-
-					case 2:
-					{
-							order.Status = "Wysłano";
-						color = "yellow";
-						break;
-					}
-
-					case 3:
-					{
-							order.Status = "Zrealizowano";
-						color = "green";
-						break;
-					}
-
-					case 4:
-					{
-							order.Status = "Anulowano";
-						color = "red";
-						break;
-					}
-				}
-
-
 				<tr>
 					<td>
 						@order.Id

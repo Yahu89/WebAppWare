@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
@@ -20,10 +21,17 @@ namespace WebAppWare.Controllers
 			_webHostEnvironment = webHostEnvironment;
 			_imageRepo = imageRepo;
 		}
-		public async Task<ActionResult<List<ProductModel>>> Index()
+		public async Task<ActionResult> Index()
 		{
-			var products = await _productRepo.GetAll();
-			return View(products);
+			try
+			{
+				var products = await _productRepo.GetAll();
+				return View(products);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.ToString());
+			}	
 		}
 
 		public IActionResult Create()
@@ -36,9 +44,15 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				await _imageRepo.Create(product);
-
-				return RedirectToAction(nameof(Index));
+				try
+				{
+					await _imageRepo.Create(product);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (Exception ex)
+				{
+					return Json(ex.ToString());
+				}
 			}
 
 			return View();
@@ -46,8 +60,15 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Edit(int id)
 		{
-			var product = await _productRepo.GetById(id);
-			return View(product);
+			try
+			{
+				var product = await _productRepo.GetById(id);
+				return View(product);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.ToString());
+			}
 		}
 
 		[HttpPost]
@@ -55,8 +76,16 @@ namespace WebAppWare.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				await _productRepo.Update(product);
-				return RedirectToAction("Index");
+				try
+				{
+					await _productRepo.Update(product);
+					return RedirectToAction(nameof(Index));
+				}
+				catch (Exception ex)
+				{
+					return Json(ex.ToString());
+				}
+				
 			}
 
 			return View();
@@ -64,15 +93,29 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Delete(int id)
 		{
-			var product = await _productRepo.GetById(id);
-			return View(product);
+			try
+			{
+				var product = await _productRepo.GetById(id);
+				return View(product);
+			}
+			catch(Exception ex)
+			{
+				return Json(ex.ToString());
+			}		
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Delete(ProductModel product)
 		{
-			await _productRepo.Delete(product);
-			return RedirectToAction("Index");
+			try
+			{
+				await _productRepo.Delete(product);
+				return RedirectToAction(nameof(Index));
+			}
+			catch(Exception ex)
+			{
+				return Json(ex.ToString());
+			}
 		}
 	}
 }

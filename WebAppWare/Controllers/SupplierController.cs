@@ -14,44 +14,37 @@ namespace WebAppWare.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var suppliers = await _supplierRepo.GetAll();
-            return View(suppliers);
+            try
+            {
+				var suppliers = await _supplierRepo.GetAll();
+				return View(suppliers);
+			}
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(SupplierModel suplier)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _supplierRepo.Create(suplier);
-        //        return RedirectToAction("Index");
-        //    }
-            
-        //    return View();
-        //}
-
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var supplier = await _supplierRepo.GetById(id);
-            return View(supplier);
+            try
+            {
+				var supplier = await _supplierRepo.GetById(id);
+				return View(supplier);
+			}
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }   
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(SupplierModel supplier)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _supplierRepo.Update(supplier);
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    return View();           
-        //}
 
         [HttpPost]
         public async Task<IActionResult> Upsert(SupplierModel model)
@@ -75,15 +68,29 @@ namespace WebAppWare.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var supplier = await _supplierRepo.GetById(id);
-            return View(supplier);
+            try
+            {
+				var supplier = await _supplierRepo.GetById(id);
+				return View(supplier);
+			}
+            catch(Exception ex)
+            {
+                return Json($"{ex.Message}");
+            }         
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(SupplierModel supplier)
         {
-            await _supplierRepo.Delete(supplier);
-            return RedirectToAction("Index");
+            try
+            {
+				await _supplierRepo.Delete(supplier);
+				return RedirectToAction(nameof(Index));
+			}
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }        
         }
     }
 }

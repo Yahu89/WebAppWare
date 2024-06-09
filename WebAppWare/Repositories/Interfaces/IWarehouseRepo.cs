@@ -15,5 +15,5 @@ public interface IWarehouseRepo
 	Task Update(WarehouseModel warehouse);
 	Task<WarehouseModel> GetById(int id);
 	Task Delete(WarehouseModel model);
-	Task<List<ProductsAmountModel>> GetProductsAmount();
+	Task<List<ProductFlowModel>> GetProductsAmount();
 }

@@ -1,0 +1,29 @@
+﻿@model LoginModelDto
+
+<h4 class="pb-4">Logowanie</h4>
+
+<form id="form" class="row" method="post" asp-controller="Home" asp-action="Login">
+	<div>
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.UserName">Nazwa użytkownika:</label>
+			<input id="UserName" class="form-control border-0 shadow mb-4" asp-for="@Model.UserName" />
+		</div>
+
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.Password">Hasło:</label>
+			<input id="Password" class="form-control border-0 shadow mb-4" asp-for="@Model.Password" />
+		</div>
+
+		<div class="col-2">
+			<label class="ms-2 pb-2" asp-for="@Model.Email">Adress e-mail:</label>
+			<input id="Email" class="form-control border-0 shadow mb-4" asp-for="@Model.Email" />
+		</div>
+
+		<div class="col-2">
+			<input id="submitButton" type="submit" class="btn btn-success" value="Zatwierdź" />
+		</div>
+
+	</div>
+
+
+</form>

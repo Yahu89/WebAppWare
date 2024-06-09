@@ -1,4 +1,6 @@
-﻿namespace WebAppWare.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace WebAppWare.Models;
 
 public class OrderDetailsModel
 {
@@ -14,4 +16,5 @@ public class OrderDetailsModel
     public string Status { get; set; }
     public string Remarks { get; set; }
     public int Quantity { get; set; }
+    public IEnumerable<SelectListItem> Items { get; set; }
 }

@@ -41,19 +41,9 @@ public class ProductFlowRepo : IProductFlowRepo
 
 	};
 
-	//private Expression<Func<Form, ProductFlowModel>> MapFromFormToProductFlowModel = x => new ProductFlowModel()
-	//{
-	//	Id = x.Id,
-	//	DocumentNumber = x.Document,
-	//	WarehouseId = x.WarehouseId,
-	//	ProductId = x.ProductFlowModels
-	//}
-
-
     public ProductFlowRepo(WarehouseBaseContext dbContext)
     {
         _dbContext = dbContext;
-		//_movementRepo = movementRepo;
     }
 
 	public async Task CreateRange(IEnumerable<ProductFlowModel> model, int id)

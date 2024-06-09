@@ -1,275 +1,235 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using WebAppWare.Database.Entities;
+using WebAppWare.Database.Entities.Enums;
 using WebAppWare.Models;
 using WebAppWare.Repositories;
 using WebAppWare.Repositories.Interfaces;
+using WebAppWare.Utils;
 using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Controllers
 {
-    public class OrderController : Controller
-    {
+	[Authorize(Roles = "purchase")]
+	public class OrderController : Controller
+	{
 		private readonly IOrderRepo _orderRepo;
 		private readonly ISupplierRepo _supplierRepo;
 		private readonly IProductRepo _productRepo;
 		private readonly IOrderDetailsRepo _orderDetailsRepo;
-		public OrderController(IOrderRepo orderRepo, 
-                                ISupplierRepo supplierRepo, 
-                                IProductRepo productRepo,
-                                IOrderDetailsRepo orderDetailsRepo)
-        {
-            _orderRepo = orderRepo;
-            _supplierRepo = supplierRepo;
-            _productRepo = productRepo;
-            _orderDetailsRepo = orderDetailsRepo;
-        }
-
-        public async Task<IActionResult> Index()
-        {
-            var result = await _orderRepo.GetAll();
-            return View(result);
-        }
-
-        public async Task<OrderDetailsModelView> SetComboboxValue()
-        {          
-			OrderDetailsModelView comboboxes = new OrderDetailsModelView()
-			{
-				Products = (await _productRepo.GetAll()).Select(x => new SelectListItem()
-				{
-					Text = x.ItemCode,
-					Value = x.Id.ToString()
-				}),
-
-				Suppliers = (await _supplierRepo.GetAll()).Select(x => new SelectListItem()
-				{
-					Text = x.Name,
-					Value = x.Id.ToString()
-				}),
-
-                StatusList = new List<SelectListItem>()
-                {
-                    new SelectListItem() { Text = "W przygotowaniu", Value = "1" },
-					new SelectListItem() { Text = "Wysłano", Value = "2" },
-					new SelectListItem() { Text = "Zrealizowano", Value = "3" },
-					new SelectListItem() { Text = "Anulowano", Value = "4" }
-				}
-			};
-
-            return comboboxes;
+		public OrderController(IOrderRepo orderRepo,
+								ISupplierRepo supplierRepo,
+								IProductRepo productRepo,
+								IOrderDetailsRepo orderDetailsRepo)
+		{
+			_orderRepo = orderRepo;
+			_supplierRepo = supplierRepo;
+			_productRepo = productRepo;
+			_orderDetailsRepo = orderDetailsRepo;
 		}
 
-        public async Task<IActionResult> Create()
-        {
-            var comboboxes = await SetComboboxValue();
-            comboboxes.Document = await _orderRepo.SetOrderNumber(DateTime.Today);
+		[HttpGet]
+		//[Authorize(Roles = "purchase")]
+		public async Task<IActionResult> Index()
+		{
+			try
+			{
+				var result = await _orderRepo.GetAll();
+				return View(result);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.ToString());
+			}
+		}
 
-			return View(comboboxes);
-        }
+		[HttpGet]
+		public async Task<IActionResult> Create()
+		{
+			var model = new OrderModel();
 
-        [HttpPost]
-        public async Task<IActionResult> ExecuteCreation(OrderDetailsModelView obj)
-        {
-            OrderModel orderModel = new OrderModel()
-            {
-                Document = obj.Document,
-                SupplierId = obj.SupplierId,
-                StatusId = obj.StatusId,
-                CreationDate = obj.CreationDate,
-                Remarks = obj.Remarks
-            };
+			await SetComboboxValue(model);
 
-            List<OrderDetailsModel> listModel = obj.OrderDetails;
+			model.Document = await _orderRepo.SetOrderNumber(DateTime.Today);
 
-            if (_orderRepo.IsOrderReadyToInsert(orderModel))
-            {
-                if (_orderDetailsRepo.IsDataCorrect(listModel))
-                {
-                    int id = (await _orderRepo.Create(orderModel));
+			return View(nameof(Edit), model);
+		}
 
-					var eachFieldFulfilled = obj.OrderDetails.Where(x => x.ProductId != 0
-															&& x.Quantity > 0).ToList();
+		[HttpPost]
+		public async Task<IActionResult> Create(OrderModel model)
+		{
+			try
+			{
+				await _orderRepo.ValidateModel(model);
+				int id = await _orderRepo.Create(model);
 
-					eachFieldFulfilled.ForEach(x => x.OrderId = id);
-                    await _orderDetailsRepo.CreateRange(eachFieldFulfilled);
+				await _orderDetailsRepo.CreateRange(model.OrderDetails, id);
 
-					return Json(new { redirectToUrl = Url.Action("Index", "Order") });
-				}               
+				return Json(new { redirectToUrl = Url.Action(nameof(Index), "Order") });
+
+			}
+			catch (Exception ex)
+			{
+				return Json(new { redirectToUrl = Url.Action(nameof(Create), "Order") });
+			}
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> Remove(int id)
+		{
+			try
+			{
+				var model = await _orderRepo.GetById(id);
+
+				return View(model);
+			}
+			catch (NullReferenceException ex)
+			{
+				// logowanie bledow
+				Console.WriteLine(ex.ToString());
+
+
+				// TODO: wyswietl komunikat na stronie z bledem!
+				// tutaj kiedys wyswietlimy komunikat "Brak zamowienia o id: XXXX"
+
+				return Json(new { redirectToUrl = Url.Action(nameof(Index), ex.Message) });
+			}
+			catch (Exception ex)
+			{
+				// logowanie bledow
+				Console.WriteLine(ex.ToString());
+
+				// TODO: wyswietl komunikat na stronie z bledem!
+				// tutaj kiedys wyswietlimy komunikat "Cos poszlo nie tak :("
+
+				return Json(new { redirectToUrl = Url.Action(nameof(Index), "Something went wrong...") });
+			}
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Remove(OrderModel model)
+		{
+			try
+			{
+				await _orderRepo.DeleteById(model.Id);
+				return RedirectToAction(nameof(Index));
+			}
+			catch (Exception ex)
+			{
+				return Json(new { redirectToUrl = Url.Action(nameof(Index), "Something went wrong...") });
+			}
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> Edit(int id)
+		{
+			var model = await _orderRepo.GetById(id);
+
+			//model.OrderDetails = await _orderDetailsRepo.GetByOrderId(model.Id);
+
+			await SetComboboxValueWhenEdit(model);
+
+			model.IsEdit = true;
+			return View(model);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Edit(OrderModel model)
+		{
+			try
+			{
+				await _orderRepo.ValidateModel(model);
+
+				await _orderRepo.Edit(model);
+				await _orderDetailsRepo.EditRange(model.OrderDetails, model.Id);
+
+				return Json(new { redirectToUrl = Url.Action(nameof(Index), "Order") });
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.ToString());
 			}
 
-			return Json(new { redirectToUrl = Url.Action("Create", "Order") });
+			//return Json(new { redirectToUrl = Url.Action("Edit", "Order") });
 		}
 
-        public async Task<IActionResult> Remove(int id)
-        {
-            var order = await _orderRepo.GetById(id);
-            var details = await _orderDetailsRepo.GetByOrderId(id);
-
-            OrderDetailsModelView modelView = new OrderDetailsModelView()
-            {
-                OrderId = id,
-                Document = order.Document,
-                SupplierName = order.SupplierName,
-                StatusId = order.StatusId,
-                Status = order.Status,
-                Remarks = order.Remarks,
-                CreationDate = order.CreationDate,
-                OrderDetails = details.Select(x => new OrderDetailsModel()
-                {
-                    ProductItemCode = x.ProductItemCode,
-                    Quantity = x.Quantity
-                })
-                .ToList()          
-            };
-
-            modelView.Status = FromStatusIdToString(order.StatusId);
-
-            var suplier = modelView.SupplierName;
-
-            return View(modelView);
-        }
-
-        [HttpPost]
-		public async Task<IActionResult> ExecuteRemoving(int id)
+		public async Task<IActionResult> PdfGenerate(int id)
 		{
-			await _orderRepo.DeleteById(id);
-			return RedirectToAction(nameof(Index));
-		}
-
-        public async Task<IActionResult> Edit(int id)
-        {
 			var order = await _orderRepo.GetById(id);
-			var details = await _orderDetailsRepo.GetByOrderId(id);
-
-            var comboboxes = await SetComboboxValue();
-
-			OrderDetailsModelView modelView = new OrderDetailsModelView()
-			{
-                OrderId = id,
-				Document = order.Document,
-				SupplierName = order.SupplierName,
-				StatusId = order.StatusId,
-				Remarks = order.Remarks,
-                Products = comboboxes.Products,
-                Suppliers = comboboxes.Suppliers,
-                CreationDate = order.CreationDate,
-                StatusList = comboboxes.StatusList,
-				OrderDetails = details.Select(x => new OrderDetailsModel()
-				{
-					ProductItemCode = x.ProductItemCode,
-					Quantity = x.Quantity,
-                    Id = x.OrderId
-				})
-				.ToList()
-			};
-
-			modelView.Status = FromStatusIdToString(order.StatusId);
-
-			return View(modelView);
-		}
-
-        [HttpPost]
-        public async Task<IActionResult> ExecuteEditing(OrderDetailsModelView obj)
-        {
-			OrderModel orderModel = new OrderModel()
-			{
-				Document = obj.Document,
-				SupplierId = obj.SupplierId,
-				StatusId = obj.StatusId,
-                CreationDate = obj.CreationDate,
-                Id = obj.OrderId,
-			};
-
-            var details = await _orderDetailsRepo.GetByOrderId(obj.OrderId);
-
-            if (obj.SupplierId == 0)
-            {
-                orderModel.SupplierId = details[0].SupplierId;
-            }
-
-			if (_orderRepo.IsOrderReadyToInsert(orderModel))
-            {
-                if (_orderDetailsRepo.IsDataCorrect(details))
-                {
-                    obj.OrderId = details[0].OrderId;
-
-					for (int i = 0; i < obj.OrderDetails.Count(); i++)
-					{
-						obj.OrderDetails[i].Id = details[i].Id;
-                        obj.OrderDetails[i].OrderId = details[i].OrderId;
-					}
-
-					await _orderRepo.Edit(orderModel);
-                    await _orderDetailsRepo.EditRange(details);
-
-                    //return RedirectToAction(nameof(Index));
-                    return Json(new { redirectToUrl = Url.Action("Index", "Order") });
-				}
-            }
-
-			return Json(new { redirectToUrl = Url.Action("Edit", "Order") });
-		}
-
-        public async Task<IActionResult> PdfGenerate(int id)
-        {
-            var order = await _orderRepo.GetById(id);
-            var orderDetails = await _orderDetailsRepo.GetByOrderId(id);
-            var orderDetailsModelView = new OrderDetailsModelView()
-            {
-                OrderDetails = orderDetails,
-                Document = order.Document,
-                SupplierName = order.SupplierName,
-                StatusId = order.StatusId,
-                Remarks = order.Remarks,
-                CreationDate = order.CreationDate
-            };
-           		
-
-			OrderPdfReport report = new OrderPdfReport();
-			byte[] bytes = report.PrepareReport(orderDetailsModelView);
+			var report = new OrderPdfReport();
+			var bytes = report.PrepareReport(order);
 
 			return File(bytes, "application/pdf");
 		}
 
-        public string FromStatusIdToString(int statusId)
-        {
-            string statusName = string.Empty;
+		private async Task SetComboboxValue(OrderModel model)
+		{
+			model.Products = (await _productRepo.GetAll()).Select(x => new SelectListItem()
+			{
+				Text = x.ItemCode,
+				Value = x.Id.ToString(),
+			});
+			model.Suppliers = (await _supplierRepo.GetAll()).Select(x => new SelectListItem()
+			{
+				Text = x.Name,
+				Value = x.Id.ToString(),
+			});
+			model.StatusList = EnumExtensions.ToSelectList<OrderStatus>(
+					translate: x => x.DisplayName(),
+					selected: x => x == model.Status
+				);
+		}
 
-            switch (statusId)
-            {
-                case 1:
-                    {
-                        statusName = "W przygotowaniu";
-                        break;
-                    }
+		private async Task SetComboboxValueWhenEdit(OrderModel model)
+		{
+			model.Products = (await _productRepo.GetAll()).Select(x => new SelectListItem()
+			{
+				Text = x.ItemCode,
+				Value = x.Id.ToString()
+			});
 
-                case 2:
-                    {
-						statusName = "Wysłano";
-						break;
-					}
+			foreach (var item in model.OrderDetails)
+			{
+				item.Items = await SetItemComboWhenEdit(model, item.ProductItemCode);
+			}
 
-                case 3:
-                    {
-						statusName = "Zrealizowano";
-						break;
-					}
+			model.Suppliers = await SetSupplierComboWhenEdit(model);
 
-                case 4:
-                    {
-						statusName = "Anulowano";
-						break;
-					}
+			model.StatusList = EnumExtensions.ToSelectList<OrderStatus>(
+					translate: x => x.DisplayName(),
+					selected: x => x == model.Status
+				);
+		}
 
-                default:
-                    {
-                        statusName = "Error";
-                        break;
-                    }
-            }
+		private async Task<IEnumerable<SelectListItem>> SetSupplierComboWhenEdit(OrderModel model)
+		{
+			var supplier = model.SupplierName;
 
-            return statusName;
-        }
+			var allSupplierList = await _supplierRepo.GetAll();
 
+			var result = allSupplierList.Select(x => new SelectListItem()
+			{
+				Value = x.Id.ToString(),
+				Text = x.Name,
+				Selected = supplier == x.Name ? true : false
+			});
 
-    }
+			return result;
+		}
+
+		private async Task<IEnumerable<SelectListItem>> SetItemComboWhenEdit(OrderModel model, string item)
+		{
+			var allItems = await _productRepo.GetAll();
+
+			var result = allItems.Select(x => new SelectListItem()
+			{
+				Value = x.Id.ToString(),
+				Text = x.ItemCode,
+				Selected = x.ItemCode == item ? true : false
+			});
+
+			return result;
+		}
+	}
 }

@@ -1,8 +1,21 @@
-﻿@model OrderDetailsModelView
+﻿@model OrderModel
 
-<h4 class="pb-2">Edycja zamówienia</h4>
+@if (Model.IsEdit)
+{
+	<h4 class="pb-2">Edycja zamówienia</h4>
+}
+else
+{
+	<h4 class="pb-2">Dodawanie zamówienia</h4>
+}
 
-<form id="form" class="row" data-url="@Url.Action("ExecuteEditing")">
+@{
+	//var jsonModel = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+}
+
+@* <input id="currentSupplier" hidden asp-for="@Model.SupplierEmail"/> *@
+
+<form id="form" class="row" data-url="@(Model.IsEdit ? Url.Action("Edit") : Url.Action("Create"))">
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
@@ -12,10 +25,15 @@
 
 	<div class="col-2">
 		<label class="ms-2 pb-2">Dostawca:</label>
-		<input id="SupplierId" class="form-control border-0 shadow mb-4" asp-for="@Model.SupplierName" />
-		@* <select id="SupplierId" class="form-select border-0 shadow mb-4" asp-items="@Model.Suppliers" value="@Model.SupplierName">
-			<option selected value="@Model.SupplierId">@Model.SupplierName</option>
-		</select> *@
+		@* <input id="SupplierId" class="form-control border-0 shadow mb-4" asp-for="@Model.SupplierName" /> *@
+		@* @if (!Model.IsEdit)
+		{
+			<select id="SupplierId" class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.SupplierId">
+			</select>
+		} *@
+
+		<select id="SupplierId" class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.SupplierId">
+		</select>
 	</div>
 
 	<div class="col-2">
@@ -24,23 +42,26 @@
 	</div>
 
 	<div class="col-2">
-		@{
-			string propertyName = nameof(Model.Status);
-			string propertyValue = Model.Status;
-		}
-
 		<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
-		<input id="Status" class="form-control border-0 shadow mb-4" value="@Model.Status" asp-for="@Model.Status" />
-		@* @Html.DropDownListFor(m => propertyValue, Model.StatusList as List<SelectListItem>, new { @id = propertyName, @class = "form-select border-0 shadow mb-2" }) *@
-		@* @Html.DropDownListFor(m => m.Status, new List<SelectListItem>(Model.StatusList), "Wybierz status", new { @class = "form-select border-0 shadow mb-2", @value = "status"}) *@
-		@* <select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.Status">
-		</select> *@
-		@* <span class="text-danger" asp-validation-for="@Model.Status"></span> *@
+		<select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.Status">
+		</select>
 	</div>
 
-	<div class="col-2">
-		<input id="submitButton" type="button" class="btn btn-info" value="Zatwierdź zmiany" />
-	</div>
+	@if (Model.IsEdit)
+	{
+		<div class="col-2">
+			<input id="submitButton" type="button" class="btn btn-info" value="Zatwierdź zmiany" />
+		</div>
+
+		<input id="OrderId" class="form-control border-0 shadow mb-2" type="text" asp-for="@Model.Id" />
+	}
+	else
+	{
+		<div class="col-2">
+			<input id="submitButton" type="button" class="btn btn-success" value="Dodaj zamówienie" />
+		</div>
+	}
+
 
 	<h7 id="Warning" style="color: red"></h7>
 
@@ -49,7 +70,7 @@
 		<textarea id="Remarks" class="form-control border-0 shadow mb-5" value="@Model.Remarks" asp-for="@Model.Remarks"></textarea>
 	</div>
 
-	<input id="OrderId" hidden class="form-control border-0 shadow mb-2" type="text" name="OrderId" value="@Model.OrderId" asp-for="@Model.OrderId" />
+	@* <input id="OrderId" hidden class="form-control border-0 shadow mb-2" type="text" name="OrderId" value="@Model.Id" asp-for="@Model.Id" /> *@
 
 	<table id="table" class="table table-bordered table-striped" style="width: 100%">
 		<thead>
@@ -59,22 +80,45 @@
 		<th>
 			Ilość
 		</th>
+			@if (!Model.IsEdit)
+			{
+			<th>
+				<input id="addRowButton" type="button" class="btn btn-success" value="Dodaj kolejny" />
+			</th>
+			}
 		</thead>
 
 		<tbody id="parentTable">
-			@foreach (var item in Model.OrderDetails)
+			@if (Model.IsEdit)
+			{
+				@foreach (var item in Model.OrderDetails)
+				{
+					<tr name="item">
+						<td>
+							<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@item.Items" toggle="item-property">
+								@* <option selected>@item.ProductItemCode</option> *@
+							</select>
+						</td>
+						<td>
+							<input class="form-control border-0 shadow mb-2" type="text" value="@item.Quantity" toggle="item-property" />
+						</td>
+					</tr>
+				}
+			}
+			else
 			{
 				<tr name="item">
 					<td>
-						<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@Model.Products" toggle="item-property" asp-for="@item.ProductId">
-							<option selected>@item.ProductItemCode</option>
+						<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@Model.Products" toggle="item-property">
+							@* <option selected>@item.ProductItemCode</option> *@
 						</select>
 					</td>
 					<td>
-						<input class="form-control border-0 shadow mb-2" type="text" value="@item.Quantity" toggle="item-property" />
+						<input class="form-control border-0 shadow mb-2" type="text" toggle="item-property" name="items-property" />
 					</td>
 				</tr>
 			}
+			
 
 		</tbody>
 	</table>
@@ -86,7 +130,44 @@
 @section Scripts
 {
 	<script>
-		$(document).ready(function() {
+		$(document).ready(function () {
+			const addRecord = () => {
+				let row = `
+								<tr name="item">
+								<td>
+									@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @toggle = "item-property" })
+								</td>
+								<td>
+									<input toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
+								</td>
+								<td>
+									<input type="button" class="btn btn-danger" value="Usuń" onclick="removeRecord(this)"/>
+								</td>
+								</tr>
+									`;
+
+				console.log('row', row);
+
+				$('#table tr:last').after(row);
+			}
+
+			$('#addRowButton').click(() => {
+				addRecord();
+			});
+
+			// let supplierValue = $('#currentSupplier').val();
+
+			// if (supplierValue != null)
+			// {
+			// 	$('#supplierId').val() = supplierValue;
+			// }
+
+
+			
+
+			const select = $('#Status');
+			console.log(select.data('default'));
+			$('#Status').val(select.data('default'));
 
 			$('#submitButton').click((e) => {
 				//e.preventDefault();
@@ -220,10 +301,15 @@
 					});
 				}
 			}
+		});
+
+		function removeRecord(tr) {
+
+			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
+		}
 
 
 
-		})
 	</script>
 }
 

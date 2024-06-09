@@ -16,16 +16,34 @@ namespace WebAppWare.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var allProductFlows = await _productFlowRepo.GetAll();
+			List<ProductFlowModel>? allProductFlows = new List<ProductFlowModel>();
+
+			try
+			{
+				allProductFlows = await _productFlowRepo.GetAll();
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.ToString());
+			}
+            
             ProductFlowSearchModel model = new ProductFlowSearchModel();
             model.ProductsFlow = allProductFlows;
             return View(model);
         }
 
+		[HttpGet]
 		public async Task<IActionResult> Delete(int id)
         {
-            var result = await _productFlowRepo.GetById(id);
-            return View(result);
+			try
+			{
+				var result = await _productFlowRepo.GetById(id);
+				return View(result);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.ToString());
+			}  
         }
 
         [HttpPost]
@@ -126,10 +144,22 @@ namespace WebAppWare.Controllers
 			}
 		}
 
+		//[HttpPost]
 		public async Task<IActionResult> DeleteMmM(int id)
         {
-            var productFlow = await _productFlowRepo.GetById(id);
-            int moveId = productFlow.MovementId;
+			ProductFlowModel productFlow = new ProductFlowModel();
+			int moveId;
+
+			try
+			{
+				productFlow = await _productFlowRepo.GetById(id);
+				moveId = productFlow.MovementId;
+			}
+			catch(Exception ex)
+			{
+				return Json(ex.ToString());
+			}
+         
             int? productId = productFlow.ProductId;
             var movement = await _movementRepo.GetById(moveId);
             string docNumber = movement.Document;
@@ -186,10 +216,20 @@ namespace WebAppWare.Controllers
 
         //[HttpPost]
         public async Task<IActionResult> Search(ProductFlowSearchModel model)
-        {        
-            var results = await _productFlowRepo.GetBySearch(model.Warehouse, model.ItemCode, model.Supplier);
+        {     
+			IEnumerable<ProductFlowModel> results = new List<ProductFlowModel>();
+
+			try
+			{
+				results = await _productFlowRepo.GetBySearch(model.Warehouse, model.ItemCode, model.Supplier);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.Message.ToString());
+			}
+
             int totalRecords = results.Count();
-            int recordsPerPage = 5;
+            int recordsPerPage = 20;
             model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));
 
             model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage).Take(recordsPerPage);

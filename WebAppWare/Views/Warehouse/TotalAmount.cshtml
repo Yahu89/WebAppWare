@@ -1,4 +1,4 @@
-﻿@model List<ProductsAmountModel>
+﻿@model List<ProductFlowModel>
 
 <div class="col-10 row">
 	<h4 class="mb-2">Podsumowanie produktów: </h4>
@@ -21,13 +21,13 @@
 			{
 				<tr>
 					<td>
-						@item.ItemCode
+						@item.ProductItemCode
 					</td>
 					<td>
 						@item.Warehouse
 					</td>
 					<td>
-						@item.TotalAmount
+						@item.Cumulative
 					</td>
 				</tr>
 			}

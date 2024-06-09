@@ -1,8 +1,8 @@
-﻿@model OrderDetailsModelView
+﻿@model OrderModel
 
 <h4 class="pb-2">Usuwanie zamówienia</h4>
 
-<form method="post" class="row" asp-controller="Order" asp-action="ExecuteRemoving" asp-route-id="@Model.OrderId">
+<form method="post" class="row" asp-controller="Order" asp-action="Remove" asp-route-id="@Model.Id">
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>

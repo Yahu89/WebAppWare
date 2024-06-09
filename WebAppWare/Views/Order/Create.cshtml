@@ -1,4 +1,4 @@
-﻿@model OrderDetailsModelView
+﻿@model OrderModel
 
 <h4 class="pb-2">Dodawanie zamówienia</h4>
 
@@ -24,7 +24,7 @@
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
-		<select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.StatusId">
+		<select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.Status">
 			<option disabled selected>-- Wybierz status --</option>
 		</select>
 	</div>
@@ -45,9 +45,6 @@
 		<th>
 			Index
 		</th>
-		@* <th>
-			Dostawca
-		</th> *@
 		<th>
 			Ilość
 		</th>

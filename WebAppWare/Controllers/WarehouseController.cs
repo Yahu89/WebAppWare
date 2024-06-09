@@ -12,10 +12,19 @@ namespace WebAppWare.Controllers
         {
 			_warehouseRepo = warehouseRepo;
         }
-        public async Task<ActionResult<List<WarehouseModel>>> Index()
+
+		[HttpGet]
+        public async Task<ActionResult> Index()
 		{
-			var warehouses = await _warehouseRepo.GetAll();
-			return View(warehouses);
+			try
+			{
+				var warehouses = await _warehouseRepo.GetAll();
+				return View(warehouses);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.Message);
+			}			
 		}
 
 		public IActionResult Create()
@@ -23,35 +32,21 @@ namespace WebAppWare.Controllers
 			return View();
 		}
 
-		//[HttpPost]
-		//public async Task<IActionResult> Create(WarehouseModel model)
-		//{
-		//	if (ModelState.IsValid)
-		//	{
-		//		await _warehouseRepo.Add(model);
-		//		return RedirectToAction("Index");
-		//	}
-	
-		//	return View();
-		//}
 
+		[HttpGet]
 		public async Task<IActionResult> Edit(int id)
 		{
-			var warehouse = await _warehouseRepo.GetById(id);
-			return View(warehouse);
+			try
+			{
+				var warehouse = await _warehouseRepo.GetById(id);
+				return View(warehouse);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.Message);
+			}			
 		}
 
-		//[HttpPost]
-		//public async Task<IActionResult> Edit(WarehouseModel warehouse)
-		//{
-		//	if (ModelState.IsValid)
-		//	{
-  //              await _warehouseRepo.Update(warehouse);
-  //              return RedirectToAction("Index");
-  //          }
-
-		//	return View();
-		//}
 
 		[HttpPost]
 		public async Task<IActionResult> Upsert(WarehouseModel model)
@@ -78,23 +73,46 @@ namespace WebAppWare.Controllers
             }
 		}
 
+		[HttpGet]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var warehouse = await _warehouseRepo.GetById(id);
-			return View(warehouse);
+			try
+			{
+				var warehouse = await _warehouseRepo.GetById(id);
+				return View(warehouse);
+			}
+			catch(Exception ex)
+			{
+				return Json(ex.Message);
+			}			
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Delete(WarehouseModel model)
 		{
-			await _warehouseRepo.Delete(model);
-			return RedirectToAction("Index");
+			try
+			{
+				await _warehouseRepo.Delete(model);
+				return RedirectToAction(nameof(Index));
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.Message);
+			}			
 		}
 
+		[HttpGet]
 		public async Task<IActionResult> TotalAmount()
 		{
-			var totalAmount = await _warehouseRepo.GetProductsAmount();
-			return View(totalAmount);
+			try
+			{
+				var totalAmount = await _warehouseRepo.GetProductsAmount();
+				return View(totalAmount);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.Message);
+			}		
 		}
 	}
 }

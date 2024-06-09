@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
 using System.Collections;
@@ -37,6 +38,8 @@ namespace WebAppWare.Controllers
 			_imageRepository = imageRepository;
 			_db = db;
 		}
+
+		//[Authorize(Roles = "pruchase")]
 		public async Task<IActionResult> Index()
 		{
 			var movements = await _movementRepo.GetAll();
@@ -78,7 +81,6 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> CreateMm()
 		{
-			//MovementType mm = MovementType.MM;
 			return View(await SetComboBoxForMovement(MovementType.MM));
 		}
 
@@ -122,13 +124,29 @@ namespace WebAppWare.Controllers
 
 			if (movement.MovementType == MovementType.WZ)
 			{
-				await _movementRepo.DeleteById(id);
+				try
+				{
+					await _movementRepo.DeleteById(id);
+				}
+				catch (Exception ex)
+				{
+					throw new InvalidOperationException(ex.Message);
+				}
+				
 				return RedirectToAction(nameof(Index));
 			}
 
 			if (await _movementRepo.IsPossibleToDeletePzWz(id))
 			{
-				await _movementRepo.DeleteById(id);
+				try
+				{
+					await _movementRepo.DeleteById(id);
+				}
+				catch (Exception ex)
+				{
+					throw new InvalidOperationException(ex.Message);
+				}
+				
 				return RedirectToAction(nameof(Index));
 			}
 
@@ -197,20 +215,6 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> AddProductFlows() // for test only
 		{
-			//List<ProductFlowModel> products = new List<ProductFlowModel>()
-			//{
-			//	new ProductFlowModel()
-			//	{
-			//		ProductId = 16,
-			//		SupplierId = 2,
-			//		Quantity = 50,
-			//		MovementId = 40,
-			//		WarehouseId = 1
-			//	}
-			//};
-
-			//await _productFlowRepo.CreateRange(products, 40);
-
 			ProductsFlow model = new ProductsFlow()
 			{
 				ProductId = 15,
@@ -222,7 +226,7 @@ namespace WebAppWare.Controllers
 
 			_db.ProductsFlows.Add(model);
 			await _db.SaveChangesAsync();
-			
+
 			return Json(model);
 		}
 

@@ -1,24 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database;
 using WebAppWare.Database.Entities;
-using WepAppWare.Database.Entities;
-
+using WebAppWare.Database.Entities.Enums;
 
 
 namespace WepAppWare.Database
 {
-    public class WarehouseDbInitializer
+	public class WarehouseDbInitializer
 	{
 		private readonly WarehouseBaseContext _dbContext;
+
 
 		public WarehouseDbInitializer(WarehouseBaseContext dbContext)
 		{
 			_dbContext = dbContext;
+			//_userAuthenticationService = userAuthenticationService;
 		}
 
 		public async Task SeedData()
@@ -30,7 +27,6 @@ namespace WepAppWare.Database
 
 			if (productsCount > 0)
 				return;
-
 
 			var productImage = new Image()
 			{
@@ -103,7 +99,7 @@ namespace WepAppWare.Database
 			{
 				Document = "PO20022401",
 				SupplierId = 1,
-				Status = (int)OrderStatus.InPreparation,
+				Status = OrderStatus.InProgress,
 			};
 
 			var order1Items = new List<OrderItem>
@@ -126,7 +122,7 @@ namespace WepAppWare.Database
 			{
 				Document = "PO20022402",
 				SupplierId = 2,
-				Status = (int)OrderStatus.InPreparation,
+				Status = OrderStatus.InProgress,
 			};
 
 			var order2Items = new List<OrderItem>
@@ -187,5 +183,58 @@ namespace WepAppWare.Database
 
 			await _dbContext.SaveChangesAsync();
 		}
+
+		//public async Task<bool> IsNeededToSetUsersOrRoles()
+		//{
+		//	//_userManager = new UserManager<IdentityUser>();
+		//	var users = await _userManager.Users.ToListAsync();
+
+		//	if (users == null)
+		//	{
+		//		return true;
+		//	}
+
+		//	var roles = await _roleManager.Roles.ToListAsync();
+
+		//	if (roles == null)
+		//	{
+		//		return true;
+		//	}
+
+		//	return false;
+		//}
+
+		//public async Task CreateUsersAndRoles()
+		//{
+		//	var admin = new IdentityUser()
+		//	{
+		//		SecurityStamp = Guid.NewGuid().ToString(),
+		//		UserName = "admin"
+		//	};
+
+		//	var purchaseUser = new IdentityUser()
+		//	{
+		//		SecurityStamp = Guid.NewGuid().ToString(),
+		//		UserName = "purchaseUser"
+		//	};
+
+		//	var warehouseUser = new IdentityUser()
+		//	{
+		//		SecurityStamp = Guid.NewGuid().ToString(),
+		//		UserName = "warehouseUser"
+		//	};
+
+		//	await _userManager.CreateAsync(admin, "admin01");
+		//	await _userManager.CreateAsync(purchaseUser, "purchase01");
+		//	await _userManager.CreateAsync(warehouseUser, "warehouse01");
+
+		//	await _roleManager.CreateAsync(new IdentityRole("admin"));
+		//	await _roleManager.CreateAsync(new IdentityRole("purchase"));
+		//	await _roleManager.CreateAsync(new IdentityRole("warehouse"));
+
+		//	await _userManager.AddToRoleAsync(admin, "admin");
+		//	await _userManager.AddToRoleAsync(purchaseUser, "purchase");
+		//	await _userManager.AddToRoleAsync(warehouseUser, "warehouse");
+		//}
 	}
 }

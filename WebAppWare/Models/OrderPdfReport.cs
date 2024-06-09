@@ -12,11 +12,11 @@ public class OrderPdfReport
 	PdfPTable _table = new PdfPTable(3);
 	PdfPCell _cell;
 	MemoryStream _stream = new MemoryStream();
-	OrderDetailsModelView _orderDetails = new OrderDetailsModelView();
+	OrderModel _orderDetails = new OrderModel();
 	string _orderNumber;
 	DateTime _creationDate;
 
-	public byte[] PrepareReport(OrderDetailsModelView model)
+	public byte[] PrepareReport(OrderModel model)
 	{
 		_orderDetails = model;
 		_orderNumber = _orderDetails.Document;

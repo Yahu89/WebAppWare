@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WebAppWare.Database.Entities.Enums;
 using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;
@@ -14,7 +15,7 @@ public partial class Order : BaseEntity
 
     public DateTime CreationDate { get; set; }
 
-    public int Status { get; set; }
+    public OrderStatus Status { get; set; }
 
     public string? Remarks { get; set; }
 

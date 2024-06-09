@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database.Entities;
 
 namespace WebAppWare.Database;
 
-public partial class WarehouseBaseContext : DbContext
+public partial class WarehouseBaseContext : IdentityDbContext
 {
-    public WarehouseBaseContext()
-    {
-    }
-
     public WarehouseBaseContext(DbContextOptions<WarehouseBaseContext> options)
         : base(options)
     {
@@ -32,12 +29,13 @@ public partial class WarehouseBaseContext : DbContext
 
     public virtual DbSet<WarehouseMovement> WarehouseMovements { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+    protected void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Data source=localhost\\SQLEXPRESS; Trusted_Connection=true; Initial Catalog=WarehouseBase; TrustServerCertificate=true; Integrated Security=true");
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Order>(entity =>
         {
             entity.HasIndex(e => e.SupplierId, "IX_Orders_SupplierId");

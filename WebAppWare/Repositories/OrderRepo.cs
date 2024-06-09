@@ -5,13 +5,14 @@ using WebAppWare.Database;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
-using WepAppWare.Database.Entities;
+using WebAppWare.Utils;
 
 namespace WebAppWare.Repositories;
 
 public class OrderRepo : IOrderRepo
 {
 	private readonly WarehouseBaseContext _dbContext;
+	private readonly IOrderDetailsRepo _orderDetailsRepo;
 
 	private Expression<Func<Order, OrderModel>> MapToModel = x => new OrderModel()
 	{
@@ -21,7 +22,8 @@ public class OrderRepo : IOrderRepo
 		SupplierName = x.Supplier.Name,
 		SupplierEmail = x.Supplier.Email,
 		CreationDate = x.CreationDate,
-		StatusId = x.Status,
+		Status = x.Status,
+		StatusName = x.Status.DisplayName(),
 		Remarks = x.Remarks,
 	};
 
@@ -31,20 +33,34 @@ public class OrderRepo : IOrderRepo
 		Document = x.Document,
 		SupplierId = x.SupplierId,
 		CreationDate = x.CreationDate,
-		Status = x.StatusId,
+		Status = x.Status,
 		Remarks = x.Remarks
 	};
-	public OrderRepo(WarehouseBaseContext dbContext)
+	public OrderRepo(
+		WarehouseBaseContext dbContext,
+		IOrderDetailsRepo orderDetailsRepo
+		)
     {
         _dbContext = dbContext;
-    }
+		_orderDetailsRepo = orderDetailsRepo;
+	}
 
-	public async Task<int> Create(OrderModel order)
+	public async Task<int> Create(OrderModel model)
 	{
-		var result = MapToEntity.Compile().Invoke(order);
-		_dbContext.Orders.Add(result);
+		// jesli wyslesz poprawnie SupplierId to powinno juz dzialac
+
+		var entity = MapToEntity.Compile().Invoke(model);
+
+		_dbContext.Orders.Add(entity);
+
 		await _dbContext.SaveChangesAsync();
-		return result.Id;
+
+		//var eachFieldFulfilled = model.OrderDetails.Where(x => x.ProductId != 0 && x.Quantity > 0).ToList();
+		//eachFieldFulfilled.ForEach(x => x.OrderId = id);
+
+		//await _orderDetailsRepo.CreateRange(model.OrderDetails);
+
+		return entity.Id;
 	}
 
 	public async Task DeleteById(int id)
@@ -57,38 +73,55 @@ public class OrderRepo : IOrderRepo
 	public async Task Edit(OrderModel model)
 	{
 		var order = MapToEntity.Compile().Invoke(model);
+		//var orderItems = order.OrderItems.ToList();
 		_dbContext.Orders.Update(order);
+
 		await _dbContext.SaveChangesAsync();
+
+		//await _orderDetailsRepo.EditRange(model.OrderDetails, model.Id);
 	}
 
 	public async Task<IEnumerable<OrderModel>> GetAll()
 	{
-		var result = await _dbContext.Orders.Select(MapToModel)
-											.OrderByDescending(x => x.CreationDate)
-											.ToListAsync();
+		var result = await _dbContext.Orders
+			.Select(MapToModel)
+			.OrderByDescending(x => x.CreationDate)
+			.ToListAsync();
+
 		return result;
 	}
 
 	public async Task<OrderModel> GetById(int id)
 	{
-		var order = await _dbContext.Orders.Select(MapToModel).FirstOrDefaultAsync(x => x.Id == id);
+		var order = await _dbContext.Orders
+			//.AsNoTracking()
+			//.Include(x => x.OrderItems)
+			.Select(MapToModel)
+			
+			.FirstOrDefaultAsync(x => x.Id == id);
 
 		if (order == null)
 		{
 			throw new NullReferenceException(nameof(order));
 		}
 
+		order.OrderDetails = await _orderDetailsRepo.GetByOrderId(id);
+
 		return order;
 	}
 
-	public bool IsOrderReadyToInsert(OrderModel model)
+	public async Task ValidateModel(OrderModel model)
 	{
-		if (model.SupplierId != 0 && !string.IsNullOrEmpty(model.Document))
+		if (model.SupplierId == 0 || string.IsNullOrEmpty(model.Document))
 		{
-			return true;
+			//TODO: napisz odpowiedni komunikat
+			throw new Exception("Nieprawidłowe dane");
 		}
 
-		return false;
+		if (!_orderDetailsRepo.IsDataCorrect(model.OrderDetails))
+		{
+			throw new Exception("");
+		}
 	}
 
 	public async Task<string> SetOrderNumber(DateTime date)

@@ -15,7 +15,8 @@ namespace WebAppWare.Repositories;
 public class WarehouseRepo : IWarehouseRepo
 {
 	private readonly WarehouseBaseContext _dbContext;
-
+	private readonly IProductFlowRepo _productFlowRepo;
+	private readonly IProductRepo _productRepo;
 	private Expression<Func<Warehouse, WarehouseModel>> MapToModel = x => new WarehouseModel()
 	{
 		Id = x.Id,
@@ -37,9 +38,13 @@ public class WarehouseRepo : IWarehouseRepo
 		TotalAmount = (int)x.TotalAmount
 	};
 
-	public WarehouseRepo(WarehouseBaseContext dbContext)
+	public WarehouseRepo(WarehouseBaseContext dbContext, 
+							IProductFlowRepo productFlowRepo,
+							IProductRepo productRepo)
     {
         _dbContext = dbContext;
+		_productFlowRepo = productFlowRepo;
+		_productRepo = productRepo;
     }
 
 	public async Task Add(WarehouseModel model)
@@ -74,10 +79,38 @@ public class WarehouseRepo : IWarehouseRepo
 		return warehouse;
 	}
 
-	public async Task<List<ProductsAmountModel>> GetProductsAmount()
+	public async Task<List<ProductFlowModel>> GetProductsAmount()
 	{
-		//var result = await _dbContext.ProductSummaryModels.Select(ProductAmountMapToModel).ToListAsync();
-		return null;
+		var allRecords = await _productFlowRepo.GetAll();
+		var allProducts = await _productRepo.GetAll();
+		var allWarehouses = await GetAll();
+
+		int sum = 0;
+		var singleRecord = await _productFlowRepo.GetAll();
+		List<ProductFlowModel> productsAmount = new List<ProductFlowModel>();
+
+		foreach (var item in allProducts)
+		{
+			foreach (var ware in allWarehouses)
+			{
+				var currentRecord = singleRecord.Where(x => x.Warehouse == ware.Name)
+											.Where(x => x.ProductItemCode == item.ItemCode)
+											.ToList();
+
+				sum = currentRecord.Sum(x => x.Quantity);
+
+				var newItem = new ProductFlowModel()
+				{
+					ProductItemCode = item.ItemCode,
+					Warehouse = ware.Name,
+					Cumulative = sum
+				};
+
+				productsAmount.Add(newItem);
+			}
+		}
+
+		return productsAmount;
 	}
 
 	public async Task<int> GetWarehouseIdByName(string name)
