@@ -15,7 +15,8 @@
 		<a class="btn btn-secondary" asp-controller="Product" asp-action="Index">Wróć do listy</a>
 
 		<label class="ms-2 pb-2">Zdjęcie:</label>
-		<input class="form-control border-0 shadow mb-2" type="file" asp-for="@Model.ImagePath" value="@Model.ImagePath" name="@Model.ImagePath" />
+		<input class="form-control border-0 shadow mb-2" type="file" asp-for="@Model.ImageFile" />
+		<input hidden asp-for="@Model.ImageId" />
 
 	</form>
 </div>

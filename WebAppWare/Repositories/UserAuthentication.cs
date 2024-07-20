@@ -112,8 +112,6 @@ public class UserAuthentication : IUserAuthentication
 		await _userManager.CreateAsync(purchaseUser, "Purchase01_");
 		await _userManager.CreateAsync(warehouseUser, "Warehouse01_");
 
-
-
 		await _roleManager.CreateAsync(new IdentityRole("admin"));
 		await _roleManager.CreateAsync(new IdentityRole("purchase"));
 		await _roleManager.CreateAsync(new IdentityRole("warehouse"));

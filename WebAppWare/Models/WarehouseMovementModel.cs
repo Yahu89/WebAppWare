@@ -10,7 +10,6 @@ public class WarehouseMovementModel
 	public int WarehouseId { get; set; }
     public Warehouse Warehouse { get; set; }
     public int WarehouseToId { get; set; }
-    //public Warehouse WarehouseTo { get; set; }
 
     [Required(ErrorMessage = "Pole wymagane")]
     public string Document { get; set; }

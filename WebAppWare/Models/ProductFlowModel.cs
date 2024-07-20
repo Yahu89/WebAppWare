@@ -16,7 +16,7 @@ public class ProductFlowModel
     public Product Product { get; set; }
 
     public string ProductItemCode { get; set; }
-	public int? ProductId { get; set; }
+	public int ProductId { get; set; }
 
 	public int Quantity { get; set; }
 

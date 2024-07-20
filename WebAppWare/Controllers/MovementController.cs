@@ -11,6 +11,7 @@ using static iTextSharp.text.pdf.AcroFields;
 
 namespace WebAppWare.Controllers
 {
+	[Authorize(Roles = "admin,warehouse")]
 	public class MovementController : Controller
 	{
 		private readonly IMovementRepo _movementRepo;
@@ -38,15 +39,20 @@ namespace WebAppWare.Controllers
 			_imageRepository = imageRepository;
 			_db = db;
 		}
-
-		//[Authorize(Roles = "pruchase")]
 		public async Task<IActionResult> Index()
 		{
-			var movements = await _movementRepo.GetAll();
-			return View(movements);
+			try
+			{
+				var movements = await _movementRepo.GetAll();
+				return View(movements);
+			}
+			catch ( Exception ex )
+			{
+				return Json(ex.Message);
+			}			
 		}
 
-		public async Task<ProductFlowMovementModel> SetComboBoxForMovement(MovementType moveType)
+		private async Task<ProductFlowMovementModel> SetComboBoxForMovement(MovementType moveType)
 		{
 			return new ProductFlowMovementModel()
 			{
@@ -189,7 +195,6 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> PdfGenerate(int id)
 		{
-			//var movement = _movementRepo.GetById(id);
 			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
 
 			MovementPdfReport report = new MovementPdfReport(_imageRepository);
@@ -237,7 +242,6 @@ namespace WebAppWare.Controllers
 				Document = "PZ03052401",
 				CreationDate = DateTime.Now,
 				MovementType = 1,
-				//WarehouseId = 1
 			};
 
 			_db.WarehouseMovements.Add(model);

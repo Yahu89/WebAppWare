@@ -2,7 +2,7 @@
 
 <h4 class="pb-2">Dodawanie zamówienia</h4>
 
-<form id="form" class="row" data-url="@Url.Action("ExecuteCreation")">
+<form id="form" class="row" data-url="@Url.Action("Create")">
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
@@ -123,7 +123,7 @@
 					document: '',
 					supplierId: 0,
 					creationDate: '',
-					statusId: 0,
+					statusId: '',
 					remarks: '',
 					orderDetails: []
 				};

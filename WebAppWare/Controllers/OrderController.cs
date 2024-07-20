@@ -11,7 +11,7 @@ using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Controllers
 {
-	[Authorize(Roles = "purchase")]
+	[Authorize(Roles = "purchase,admin")]
 	public class OrderController : Controller
 	{
 		private readonly IOrderRepo _orderRepo;
@@ -30,7 +30,6 @@ namespace WebAppWare.Controllers
 		}
 
 		[HttpGet]
-		//[Authorize(Roles = "purchase")]
 		public async Task<IActionResult> Index()
 		{
 			try
@@ -126,8 +125,6 @@ namespace WebAppWare.Controllers
 		{
 			var model = await _orderRepo.GetById(id);
 
-			//model.OrderDetails = await _orderDetailsRepo.GetByOrderId(model.Id);
-
 			await SetComboboxValueWhenEdit(model);
 
 			model.IsEdit = true;
@@ -150,8 +147,6 @@ namespace WebAppWare.Controllers
 			{
 				return Json(ex.ToString());
 			}
-
-			//return Json(new { redirectToUrl = Url.Action("Edit", "Order") });
 		}
 
 		public async Task<IActionResult> PdfGenerate(int id)

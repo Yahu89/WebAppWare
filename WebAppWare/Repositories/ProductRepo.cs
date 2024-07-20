@@ -15,18 +15,21 @@ public class ProductRepo : IProductRepo
 {
 	private readonly WarehouseBaseContext _dbContext;
 
+
 	private Expression<Func<Product, ProductModel>> MapToModel = e => new ProductModel
 	{
 		Id = e.Id,
 		Description = e.Description,
 		ItemCode = e.ItemCode,
-		ImagePath = e.Image != null ? e.Image.Path : ""
+		ImagePath = e.Image != null ? e.Image.Path : "",
+		ImageId = e.ImageId
 	};
 	private Expression<Func<ProductModel, Product>> MapToEntity = e => new Product()
 	{
 		Id = e.Id,
 		Description = e.Description,
 		ItemCode = e.ItemCode,
+		ImageId = e.ImageId
 	};
 
 	public ProductRepo(WarehouseBaseContext dbContext)
@@ -63,7 +66,7 @@ public class ProductRepo : IProductRepo
 
 	public async Task<ProductModel> GetById(int id)
 	{
-		var result = await _dbContext.Products
+		var result = await _dbContext.Products.Include(x => x.Image)
 			.Select(MapToModel)
 			.FirstOrDefaultAsync(p => p.Id == id);
 
@@ -82,7 +85,16 @@ public class ProductRepo : IProductRepo
 
 	public async Task Update(ProductModel model)
 	{
+		var tempId = model.ImageId;
+		//int? imageId = null;
+
+		//if (model.ImageFile != null)
+		//{
+		//	//imageId = await _imageRepository.CreateImage(model);
+		//}
+
 		var entity = MapToEntity.Compile().Invoke(model);
+		entity.ImageId = model.ImageId;
 
 		_dbContext.Products.Update(entity);
 		await _dbContext.SaveChangesAsync();

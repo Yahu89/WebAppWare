@@ -6,8 +6,6 @@ namespace WebAppWare.Database.Entities;
 
 public partial class Image : BaseEntity
 {
-    //public int Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string Path { get; set; } = null!;

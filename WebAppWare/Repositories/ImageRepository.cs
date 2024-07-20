@@ -20,43 +20,64 @@ namespace WebAppWare.Repositories
 			IProductRepo productRepo,
 			IWebHostEnvironment webHostEnvironment
 			)
-        {
+		{
 			_dbContext = dbContext;
 			_productRepo = productRepo;
 			_webHostEnvironment = webHostEnvironment;
 		}
 
-        public async Task Create(ProductModel product)
+		public async Task Create(ProductModel product)
 		{
-			int? id = null;
+			int? imageId = null;
 
 			if (product.ImageFile != null)
 			{
-				var localPath = CreateLocalPath(product);
-
-				var image = new Image()
-				{
-					Name = $"{product.ImageFile.Name}",
-					Path = localPath,
-					AbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, localPath)
-				};
-
-				using var stream = new FileStream(image.AbsolutePath, FileMode.Create);
-				await product.ImageFile.CopyToAsync(stream);
-
-				await _dbContext.Images.AddAsync(image);
-				await _dbContext.SaveChangesAsync();
-
-				id = image.Id;
+				imageId = await CreateImage(product);
 			}
-			
-			await _productRepo.Add(product, id);
+
+			await _productRepo.Add(product, imageId);
+		}
+
+		public async Task Update(ProductModel product)
+		{
+			int? imageId = null;
+			var temp = product.ImageFile;
+
+			if (product.ImageFile != null)
+			{
+				imageId = await CreateImage(product);
+				product.ImageId = imageId;
+			}
+
+			await _productRepo.Update(product);
+		}
+
+		public async Task<int> CreateImage(ProductModel product)
+		{
+			var localPath = CreateLocalPath(product);
+
+			var image = new Image()
+			{
+				Name = $"{product.ImageFile.Name}",
+				Path = localPath,
+				AbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, localPath)
+			};
+
+			using var stream = new FileStream(image.AbsolutePath, FileMode.Create);
+			await product.ImageFile.CopyToAsync(stream);
+
+			await _dbContext.Images.AddAsync(image);
+			await _dbContext.SaveChangesAsync();
+
+			int id = image.Id;
+
+			return id;
 		}
 
 		public async Task<string> GetLogoPath()
 		{
-				var path = (await _dbContext.Images.FirstOrDefaultAsync(x => x.Id == 1)).Path;
-				return path;			
+			var path = (await _dbContext.Images.FirstOrDefaultAsync(x => x.Id == 1)).Path;
+			return path;
 		}
 
 		private string CreateLocalPath(BaseImageModel? model)
@@ -69,6 +90,6 @@ namespace WebAppWare.Repositories
 			return fileName;
 		}
 
-		
+
 	}
 }

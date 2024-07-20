@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
+	[Authorize(Roles = "warehouse,admin")]
 	public class WarehouseController : Controller
 	{
 		private readonly IWarehouseRepo _warehouseRepo;
@@ -59,7 +61,7 @@ namespace WebAppWare.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-				return RedirectToAction(nameof(Create));
+				return View(nameof(Create));
             }
 			else
 			{
@@ -69,7 +71,7 @@ namespace WebAppWare.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                return RedirectToAction(nameof(Edit));
+				return View(nameof(Edit), model);
             }
 		}
 

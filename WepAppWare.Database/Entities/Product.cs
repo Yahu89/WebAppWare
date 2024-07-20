@@ -6,8 +6,6 @@ namespace WebAppWare.Database.Entities;
 
 public partial class Product : BaseEntity
 {
-    //public int Id { get; set; }
-
     public string ItemCode { get; set; } = null!;
 
     public string Description { get; set; } = null!;

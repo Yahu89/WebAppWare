@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
+    [Authorize(Roles = "purchase,admin")]
     public class SupplierController : Controller
     {
         private readonly ISupplierRepo _supplierRepo;
@@ -45,7 +47,6 @@ namespace WebAppWare.Controllers
             }   
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Upsert(SupplierModel model)
         {
@@ -54,16 +55,16 @@ namespace WebAppWare.Controllers
                 if (model.Id == 0)
                 {
                     await _supplierRepo.Create(model);
-                }
+					return RedirectToAction(nameof(Index));
+				}
                 else
                 {
                     await _supplierRepo.Update(model);
-                }
-
-                return RedirectToAction(nameof(Index));
+					return RedirectToAction(nameof(Index));
+				}             
             }
 
-            return RedirectToAction(nameof(Create));
+            return View(nameof(Create));
         }
 
         public async Task<IActionResult> Delete(int id)

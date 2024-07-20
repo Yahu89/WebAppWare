@@ -13,12 +13,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using WebAppWare.Middleware;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using WebAppWare.Models.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
 builder.Services.AddDbContext<WarehouseBaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(WarehouseBaseContext))));
-//builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<WarehouseBaseContext>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 		.AddEntityFrameworkStores<WarehouseBaseContext>()
 		.AddDefaultTokenProviders();
@@ -38,9 +38,7 @@ builder.Services.AddTransient<IOrderRepo, OrderRepo>();
 builder.Services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<IUserAuthentication, UserAuthentication>();
-//builder.Services.AddTransient<ErrorHandling>();
-//builder.Services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-//builder.Services.AddSingleton<ITempDataDictionaryFactory, TempDataDictionaryFactory>();
+builder.Services.AddAutoMapper(typeof(WarehouseMappingProfile));
 
 
 

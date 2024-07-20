@@ -24,8 +24,6 @@ public class MovementRepo : IMovementRepo
 		Document = x.Document,
 		MovementType = (MovementType)x.MovementType,
 		CreationDate = x.CreationDate,
-		//WarehouseId = x.WarehouseId,
-		//Warehouse = x.Warehouse
 	};
 
 	private Expression<Func<WarehouseMovementModel, WarehouseMovement>> MapToEntity = x => new WarehouseMovement()
@@ -34,8 +32,6 @@ public class MovementRepo : IMovementRepo
 		Document = x.Document,
 		MovementType = (int)x.MovementType,
 		CreationDate = x.CreationDate,
-		//WarehouseId = x.WarehouseId,
-		//Warehouse = x.Warehouse
 	};
 
 	public MovementRepo(WarehouseBaseContext dbContext, IProductFlowRepo productFlowRepo)

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
 namespace WebAppWare.Controllers
 {
+	[Authorize(Roles = "admin")]
 	public class ProductController : Controller
 	{
 		private readonly IProductRepo _productRepo;
@@ -74,18 +76,19 @@ namespace WebAppWare.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Edit(ProductModel product)
 		{
+			var temp = product.ImageId;
+
 			if (ModelState.IsValid)
 			{
 				try
 				{
-					await _productRepo.Update(product);
+					await _imageRepo.Update(product);
 					return RedirectToAction(nameof(Index));
 				}
 				catch (Exception ex)
 				{
 					return Json(ex.ToString());
-				}
-				
+				}		
 			}
 
 			return View();

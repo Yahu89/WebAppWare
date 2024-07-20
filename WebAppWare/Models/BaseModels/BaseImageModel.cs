@@ -2,7 +2,8 @@
 {
 	public class BaseImageModel : BaseModel
 	{
-		public IFormFile? ImageFile { get; set; }
+        public int? ImageId { get; set; }
+        public IFormFile? ImageFile { get; set; }
 		public string? ImagePath { get; set; }
 	}
 }
