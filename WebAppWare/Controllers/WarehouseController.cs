@@ -58,7 +58,7 @@ namespace WebAppWare.Controllers
                 if (ModelState.IsValid)
                 {
                     await _warehouseRepo.Add(model);
-                    return RedirectToAction(nameof(Index));
+                    return View(nameof(Index));
                 }
 
 				return View(nameof(Create));
@@ -68,7 +68,7 @@ namespace WebAppWare.Controllers
                 if (ModelState.IsValid)
                 {
                     await _warehouseRepo.Update(model);
-                    return RedirectToAction(nameof(Index));
+                    return View(nameof(Index));
                 }
 
 				return View(nameof(Edit), model);

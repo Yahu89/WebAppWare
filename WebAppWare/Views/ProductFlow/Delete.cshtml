@@ -8,25 +8,25 @@
 		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Id" />
 
 		<label class="ms-2 pb-2" asp-for="@Model.ProductItemCode"></label>
-		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.ProductItemCode" />
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Product.ItemCode" />
 
 		<label class="ms-2" asp-for="@Model.MovementType"></label>
-		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.MovementType" />
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Movement.MovementType" />
 
 		<label class="ms-2" asp-for="@Model.MovementId"></label>
-		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.MovementId" />
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Movement.Id" />
 
 		<label class="ms-2" asp-for="@Model.Warehouse"></label>
-		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Warehouse" />
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Warehouse.Name" />
 
 		<label class="ms-2" asp-for="@Model.Quantity"></label>
 		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Quantity" />
 
 		<label class="ms-2" asp-for="@Model.Supplier"></label>
-		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Supplier" />
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Supplier.Name" />
 
 		<label class="ms-2" asp-for="@Model.CreationDate"></label>
-		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.CreationDate" />
+		<input class="form-control border-0 shadow mb-2" disabled asp-for="@Model.Movement.CreationDate" />
 
 		<button type="submit" class="btn btn-danger form-control mb-2">Usuń</button>
 		<a class="btn btn-secondary" asp-controller="ProductFlow" asp-action="Index">Wróć do listy</a>

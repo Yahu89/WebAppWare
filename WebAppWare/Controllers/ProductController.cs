@@ -76,7 +76,7 @@ namespace WebAppWare.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Edit(ProductModel product)
 		{
-			var temp = product.ImageId;
+			//var temp = product.ImageId;
 
 			if (ModelState.IsValid)
 			{

@@ -55,12 +55,12 @@ namespace WebAppWare.Controllers
                 if (model.Id == 0)
                 {
                     await _supplierRepo.Create(model);
-					return RedirectToAction(nameof(Index));
+					return View(nameof(Index));
 				}
                 else
                 {
                     await _supplierRepo.Update(model);
-					return RedirectToAction(nameof(Index));
+					return View(nameof(Index));
 				}             
             }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,34 +17,37 @@ namespace WebAppWare.Repositories;
 public class ProductFlowRepo : IProductFlowRepo
 {
     private readonly WarehouseBaseContext _dbContext;
-	//private readonly IMovementRepo _movementRepo;
+    private readonly IMapper _mapper;
 
-	private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
-    {
-        Id = x.Id,
-        MovementId = x.WarehouseMovementId,
-        MovementType = (MovementType)x.WarehouseMovement.MovementType,
-        ProductItemCode = x.Product.ItemCode,
-        Quantity = x.Quantity,
-        Supplier = x.Supplier.Name,
-        CreationDate = x.WarehouseMovement.CreationDate,
-        ProductId = x.ProductId,
-        SupplierId = x.Supplier.Id,
-        DocumentNumber = x.WarehouseMovement.Document,
-		Warehouse = x.Warehouse.Name,
-		WarehouseId = x.Warehouse.Id,
-		//WarehouseToId = ,
-		//WarehouseToIdName = x.Warehouse.N
-	};
+    //private readonly IMovementRepo _movementRepo;
 
-	private Expression<Func<ProductsFlow, ProductFlowSearchModel>> MapToSearchModel = x => new ProductFlowSearchModel()
-	{
+ //   private Expression<Func<ProductsFlow, ProductFlowModel>> MapToModel = x => new ProductFlowModel()
+ //   {
+ //       Id = x.Id,
+ //       MovementId = x.WarehouseMovementId,
+ //       MovementType = (MovementType)x.WarehouseMovement.MovementType,
+ //       ProductItemCode = x.Product.ItemCode,
+ //       Quantity = x.Quantity,
+ //       //Supplier = x.Supplier.Name,
+ //       CreationDate = x.WarehouseMovement.CreationDate,
+ //       ProductId = x.ProductId,
+ //       SupplierId = x.Supplier.Id,
+ //       DocumentNumber = x.WarehouseMovement.Document,
+	//	//Warehouse = x.Warehouse.Name,
+	//	WarehouseId = x.Warehouse.Id,
+	//	//WarehouseToId = ,
+	//	//WarehouseToIdName = x.Warehouse.N
+	//};
 
-	};
+	//private Expression<Func<ProductsFlow, ProductFlowSearchModel>> MapToSearchModel = x => new ProductFlowSearchModel()
+	//{
 
-    public ProductFlowRepo(WarehouseBaseContext dbContext)
+	//};
+
+    public ProductFlowRepo(WarehouseBaseContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
+        _mapper = mapper;
     }
 
 	public async Task CreateRange(IEnumerable<ProductFlowModel> model, int id)
@@ -89,49 +93,70 @@ public class ProductFlowRepo : IProductFlowRepo
         await _dbContext.SaveChangesAsync();
 	}
 
-	public List<ProductFlowModel> FromCollectionToProductFlowModel(IFormCollection collection, int moveId)
-	{
-		var itemCodes = collection["items"];
-		var suppliers = collection["suppliers"];
-		var quantities = collection["quantity"];
-		var warehouse = collection["WarehouseId"];
+	//public List<ProductFlowModel> FromCollectionToProductFlowModel(IFormCollection collection, int moveId)
+	//{
+	//	var itemCodes = collection["items"];
+	//	var suppliers = collection["suppliers"];
+	//	var quantities = collection["quantity"];
+	//	var warehouse = collection["WarehouseId"];
 
-		List<ProductFlowModel> list = new List<ProductFlowModel>();
+	//	List<ProductFlowModel> list = new List<ProductFlowModel>();
 
-		for (int i = 0; i < itemCodes.Count(); i++)
-		{
-            if (string.IsNullOrWhiteSpace(quantities[i]) || !int.TryParse(quantities[i], out _) || !int.TryParse(warehouse, out _))
-            {
-                throw new FormatException("Data is wrong...");
-            }
+	//	for (int i = 0; i < itemCodes.Count(); i++)
+	//	{
+ //           if (string.IsNullOrWhiteSpace(quantities[i]) || !int.TryParse(quantities[i], out _) || !int.TryParse(warehouse, out _))
+ //           {
+ //               throw new FormatException("Data is wrong...");
+ //           }
 
-			list.Add(new ProductFlowModel());
-			list[i].ProductId = int.Parse(itemCodes[i]);
-			list[i].SupplierId = int.Parse(suppliers[i]);
-			list[i].Quantity = int.Parse(quantities[i]);
-			list[i].MovementId = moveId;
-		}
+	//		list.Add(new ProductFlowModel());
+	//		list[i].ProductId = int.Parse(itemCodes[i]);
+	//		list[i].SupplierId = int.Parse(suppliers[i]);
+	//		list[i].Quantity = int.Parse(quantities[i]);
+	//		list[i].MovementId = moveId;
+	//	}
 
-        return list;
-	}
+ //       return list;
+	//}
 
 	public async Task<List<ProductFlowModel>> GetAll()
     {
-        var result = await _dbContext.ProductsFlows.Select(MapToModel)
-                                            .OrderByDescending(x => x.Id)
-                                            .ToListAsync();
+		//var result = await _dbContext.ProductsFlows.Select(MapToModel)
+		//									.OrderByDescending(x => x.Id)
+		//									.ToListAsync();
+
+		var entities = await _dbContext.ProductsFlows
+										.Include(x => x.WarehouseMovement)
+										.Include(x => x.Product)
+										.Include(x => x.Supplier)
+										.Include(x => x.Warehouse)
+										.OrderByDescending(x => x.WarehouseMovement.CreationDate)
+										.ToListAsync();
+
+		var result = _mapper.Map<List<ProductFlowModel>>(entities);
 
         return result;
     }
 
 	public async Task<IEnumerable<ProductFlowModel>> GetAllCumulative(int prodId, int wareId)
 	{
-		var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
-                                    .Where(x => x.ProductId == prodId && x.WarehouseId == wareId)
-                                    .OrderBy(x => x.Id)
-                                    .ToListAsync();
+		//var prodFlowWithCumulative = await _dbContext.ProductsFlows.Select(MapToModel)
+  //                                  .Where(x => x.ProductId == prodId && x.WarehouseId == wareId)
+  //                                  .OrderBy(x => x.Id)
+  //                                  .ToListAsync();
 
-        for (int i = 0; i < prodFlowWithCumulative.Count; i++)
+		var entities = await _dbContext.ProductsFlows
+										.Include(x => x.WarehouseMovement)
+										.Include(x => x.Product)
+										.Include(x => x.Supplier)
+										.Include(x => x.Warehouse)
+										.Where(x => x.ProductId == prodId && x.WarehouseId == wareId)
+										.OrderBy(x => x.Id)
+										.ToListAsync();
+
+		var prodFlowWithCumulative = _mapper.Map<List<ProductFlowModel>>(entities);
+
+		for (int i = 0; i < prodFlowWithCumulative.Count; i++)
         {
             if (i == 0)
             {
@@ -148,18 +173,39 @@ public class ProductFlowRepo : IProductFlowRepo
 
 	public async Task<ProductFlowModel> GetById(int id)
 	{
-		var productFlow = await _dbContext.ProductsFlows.Select(MapToModel)
-                                                        .FirstOrDefaultAsync(x => x.Id == id);
-        return productFlow;
+        //var productFlow = await _dbContext.ProductsFlows.Select(MapToModel)
+        //                                                      .FirstOrDefaultAsync(x => x.Id == id);
+
+		//var temp = _dbContext.ProductsFlows
+
+        var entity = await _dbContext.ProductsFlows
+										.Include(x => x.WarehouseMovement)
+										.Include(x => x.Product)
+										.Include(x => x.Supplier)
+										.Include(x => x.Warehouse)
+										.FirstOrDefaultAsync(x => x.Id == id);
+
+        var result = _mapper.Map<ProductFlowModel>(entity);
+
+        return result;
 	}
 
 	public async Task<IEnumerable<ProductFlowModel>> GetBySearch(string warehouse, string itemCode, string supplier)
 	{
         string[] content = new string[] { warehouse, itemCode, supplier };
 
-        var result = await _dbContext.ProductsFlows.Select(MapToModel).ToListAsync();
+		//var result = await _dbContext.ProductsFlows.Select(MapToModel).ToListAsync();
 
-        for (int i = 0; i < content.Length; i++)
+		var entities = await _dbContext.ProductsFlows
+										.Include(x => x.WarehouseMovement)
+										.Include(x => x.Product)
+										.Include(x => x.Supplier)
+										.Include(x => x.Warehouse)
+										.ToListAsync();
+
+		var result = _mapper.Map<List<ProductFlowModel>>(entities);
+
+		for (int i = 0; i < content.Length; i++)
         {
             if (!string.IsNullOrEmpty(content[i]))
             {
@@ -167,7 +213,7 @@ public class ProductFlowRepo : IProductFlowRepo
                 {
 					case 0:
 						{
-							result = result.Where(x => x.Warehouse.Contains(content[i])).ToList();
+							result = result.Where(x => x.WarehouseName.Contains(content[i])).ToList();
 							break;
 						}
 
@@ -179,8 +225,8 @@ public class ProductFlowRepo : IProductFlowRepo
 
 					case 2:
 						{
-							result = result.Where(x => !string.IsNullOrEmpty(x.Supplier))
-                                            .Where(x => x.Supplier.Contains(content[i])).ToList();
+							result = result.Where(x => !string.IsNullOrEmpty(x.SupplierName))
+                                            .Where(x => x.SupplierName.Contains(content[i])).ToList();
 							break;
 						}
 				}
@@ -211,8 +257,19 @@ public class ProductFlowRepo : IProductFlowRepo
 
 	public async Task<List<ProductFlowModel>> GetProductFlowsByMoveId(int id)
 	{
-		var result = await _dbContext.ProductsFlows.Select(MapToModel).Where(x => x.MovementId == id).ToListAsync();
-        return result;
+		//var result = await _dbContext.ProductsFlows.Select(MapToModel).Where(x => x.MovementId == id).ToListAsync();
+
+		var entities = await _dbContext.ProductsFlows
+										.Include(x => x.WarehouseMovement)
+										.Include(x => x.Product)
+										.Include(x => x.Supplier)
+										.Include(x => x.Warehouse)
+										.Where(x => x.WarehouseMovement.Id == id)
+										.ToListAsync();
+
+		var result = _mapper.Map<List<ProductFlowModel>>(entities);
+
+		return result;
 	}
 
 	public async Task<bool> IsReadyToDeleteItemRecordsForAllMoveTypes(int id)

@@ -13,7 +13,7 @@ public interface IProductFlowRepo
 	Task DeleteById(int id);
     Task DeleteRange(IEnumerable<ProductFlowModel> model);
     Task<bool> IsReadyToDeleteProductFlow(int id);
-    List<ProductFlowModel> FromCollectionToProductFlowModel(IFormCollection collection, int moveId);
+    //List<ProductFlowModel> FromCollectionToProductFlowModel(IFormCollection collection, int moveId);
     Task<int> GetCurrentQtyPerItemAndWarehouse(int item, int warehouseId);
     Task<bool> IsReadyToDeleteItemRecordsForAllMoveTypes(int id);
 }

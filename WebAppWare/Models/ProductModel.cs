@@ -8,10 +8,7 @@ namespace WebAppWare.Models
 {
 	public class ProductModel : BaseImageModel
 	{
-		[Required(ErrorMessage = "Pole Indeks jest wymagane")]
-		public string? ItemCode { get; set; }
-
-		[Required(ErrorMessage = "Pole Opis jest wymagane")]
-		public string? Description { get; set; }
+		public string ItemCode { get; set; }
+		public string Description { get; set; }
     }
 }

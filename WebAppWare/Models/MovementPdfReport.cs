@@ -10,29 +10,26 @@ namespace WebAppWare.Models;
 
 public class MovementPdfReport
 {
-    int _totalColumn = 4;
-    Document _document;
-    Font _fontStyle;
-    PdfPTable _table = new PdfPTable(4);
-    PdfPCell _cell;
-    MemoryStream _stream = new MemoryStream();
-    List<ProductFlowModel> _productFlows = new List<ProductFlowModel>();
-    string _movementNumber;
-	DateTime _creationDate;
+    private int _totalColumn = 4;
+    private Document _document;
+    private Font _fontStyle;
+    private PdfPTable _table = new PdfPTable(4);
+    private PdfPCell _cell;
+    private MemoryStream _stream = new MemoryStream();
+    private List<ProductFlowModel> _productFlows = new List<ProductFlowModel>();
+    private string _movementNumber;
+	private DateTime _creationDate;
 
-	private readonly IImageRepository _imageRepository;
-	public MovementPdfReport(IImageRepository imageRepository)
+	public MovementPdfReport(List<ProductFlowModel> model)
+	{
+		_productFlows = model;
+	}
+    public byte[] PrepareReport() 
     {
-		_imageRepository = imageRepository;
-    }
+		_movementNumber = _productFlows.FirstOrDefault().Movement.Document;
+		_creationDate = _productFlows.FirstOrDefault().Movement.CreationDate;
 
-    public byte[] PrepareReport(List<ProductFlowModel> model)
-    {
-        _productFlows = model;
-		_movementNumber = _productFlows.FirstOrDefault().DocumentNumber;
-		_creationDate = _productFlows[0].CreationDate;
-
-        _document = new Document(PageSize.A4, 0f, 0f, 0f, 0f);
+		_document = new Document(PageSize.A4, 0f, 0f, 0f, 0f);
         _document.SetPageSize(PageSize.A4);
         _document.SetMargins(20f, 20f, 20f, 20f);
         _table.WidthPercentage = 100;
@@ -72,7 +69,6 @@ public class MovementPdfReport
         iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(imageBytes);
 		img.ScaleAbsolute(150f, 50f);
 		img.SetAbsolutePosition(420, 780);
-		//img.SpacingAfter = 20;
 		_document.Add(img);
 
 		_fontStyle = FontFactory.GetFont("Tahoma", 12f, 1);
@@ -141,7 +137,7 @@ public class MovementPdfReport
 			_cell.BackgroundColor = BaseColor.WHITE;
             _table.AddCell(_cell);
 
-			_cell = new PdfPCell(new Phrase(item.Warehouse, _fontStyle));
+			_cell = new PdfPCell(new Phrase(item.WarehouseName, _fontStyle));
 			_cell.HorizontalAlignment = Element.ALIGN_CENTER;
 			_cell.VerticalAlignment = Element.ALIGN_MIDDLE;
 			_cell.BackgroundColor = BaseColor.WHITE;

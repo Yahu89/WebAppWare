@@ -6,7 +6,7 @@
 	<form method="post" class="row" asp-controller="Warehouse" asp-action="Upsert">
 		<label class="ms-2 pb-2" asp-for="Name" >Nazwa magazynu:</label>
 		<input class="form-control border-0 shadow mb-2" asp-for="Name"/>
-		<span class="text-bg-danger" asp-validation-for="Name"></span>
+		<span class="text-danger" asp-validation-for="Name"></span>
 
 		<label class="ms-2" asp-for="IsActive">Czy aktywny?</label>
 		<input class="ms-2 mb-2" asp-for="IsActive" />

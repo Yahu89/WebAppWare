@@ -94,7 +94,7 @@ public class WarehouseRepo : IWarehouseRepo
 		{
 			foreach (var ware in allWarehouses)
 			{
-				var currentRecord = singleRecord.Where(x => x.Warehouse == ware.Name)
+				var currentRecord = singleRecord.Where(x => x.WarehouseName == ware.Name)
 											.Where(x => x.ProductItemCode == item.ItemCode)
 											.ToList();
 
@@ -103,7 +103,7 @@ public class WarehouseRepo : IWarehouseRepo
 				var newItem = new ProductFlowModel()
 				{
 					ProductItemCode = item.ItemCode,
-					Warehouse = ware.Name,
+					WarehouseName = ware.Name,
 					Cumulative = sum
 				};
 

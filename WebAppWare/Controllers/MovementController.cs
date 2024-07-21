@@ -94,7 +94,7 @@ namespace WebAppWare.Controllers
 		{
 			var movement = await _movementRepo.GetById(id);
 			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
-			string warehouse = productFlows.FirstOrDefault(x => x.MovementId == id).Warehouse;
+			string warehouse = productFlows.FirstOrDefault(x => x.MovementId == id).WarehouseName;
 			string? warehouseTo = productFlows.FirstOrDefault(x => x.MovementId == id).WarehouseToIdName;
 
 			ProductFlowMovementModel obj = new ProductFlowMovementModel()
@@ -165,8 +165,8 @@ namespace WebAppWare.Controllers
 			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
 			var productFlowsOut = productFlows.Where(x => x.Quantity < 0).ToList();
 			var productFlowsIn = productFlows.Where(x => x.Quantity > 0).ToList();
-			string warehouse = productFlowsOut.FirstOrDefault().Warehouse;
-			string warehouseTo = productFlowsIn.FirstOrDefault(x => x.Quantity > 0).Warehouse;
+			string warehouse = productFlowsOut.FirstOrDefault().WarehouseName;
+			string warehouseTo = productFlowsIn.FirstOrDefault(x => x.Quantity > 0).WarehouseName;
 
 			ProductFlowMovementModel obj = new ProductFlowMovementModel()
 			{
@@ -197,8 +197,8 @@ namespace WebAppWare.Controllers
 		{
 			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
 
-			MovementPdfReport report = new MovementPdfReport(_imageRepository);
-			byte[] bytes = report.PrepareReport(productFlows);
+			MovementPdfReport report = new MovementPdfReport(productFlows);
+			byte[] bytes = report.PrepareReport();
 
 			return File(bytes, "application/pdf");
 		}

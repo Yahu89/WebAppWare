@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Identity;
 using WebAppWare.Middleware;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using WebAppWare.Models.MappingProfiles;
+using WebAppWare.Models.Validation;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +41,16 @@ builder.Services.AddTransient<IOrderRepo, OrderRepo>();
 builder.Services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<IUserAuthentication, UserAuthentication>();
-builder.Services.AddAutoMapper(typeof(WarehouseMappingProfile));
+builder.Services.AddAutoMapper(typeof(ProductFlowMappingProfile));
+builder.Services.AddValidatorsFromAssemblyContaining<ProductModelValidator>()
+							.AddFluentValidationAutoValidation()
+							.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<SupplierModelValidator>()
+							.AddFluentValidationAutoValidation()
+							.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<WarehouseModelValidator>()
+							.AddFluentValidationAutoValidation()
+							.AddFluentValidationClientsideAdapters();
 
 
 
