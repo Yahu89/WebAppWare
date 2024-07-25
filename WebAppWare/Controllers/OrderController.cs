@@ -58,6 +58,8 @@ namespace WebAppWare.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Create(OrderModel model)
 		{
+			int re = 3;
+
 			try
 			{
 				await _orderRepo.ValidateModel(model);
@@ -123,7 +125,11 @@ namespace WebAppWare.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Edit(int id)
 		{
+			var orderItems = await _orderDetailsRepo.GetByOrderId(id);
+
 			var model = await _orderRepo.GetById(id);
+
+			model.OrderDetails = orderItems;
 
 			await SetComboboxValueWhenEdit(model);
 
@@ -134,6 +140,8 @@ namespace WebAppWare.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Edit(OrderModel model)
 		{
+			var orderItems = model.OrderDetails;
+
 			try
 			{
 				await _orderRepo.ValidateModel(model);
@@ -172,7 +180,7 @@ namespace WebAppWare.Controllers
 			});
 			model.StatusList = EnumExtensions.ToSelectList<OrderStatus>(
 					translate: x => x.DisplayName(),
-					selected: x => x == model.Status
+					selected: null //x => x == model.Status
 				);
 		}
 

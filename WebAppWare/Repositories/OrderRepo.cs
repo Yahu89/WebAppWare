@@ -24,7 +24,7 @@ public class OrderRepo : IOrderRepo
 		CreationDate = x.CreationDate,
 		Status = x.Status,
 		StatusName = x.Status.DisplayName(),
-		Remarks = x.Remarks,
+		Remarks = x.Remarks,		
 	};
 
 	private Expression<Func<OrderModel, Order>> MapToEntity = x => new Order()
@@ -37,9 +37,9 @@ public class OrderRepo : IOrderRepo
 		Remarks = x.Remarks
 	};
 	public OrderRepo(
-		WarehouseBaseContext dbContext,
-		IOrderDetailsRepo orderDetailsRepo
-		)
+					WarehouseBaseContext dbContext,
+					IOrderDetailsRepo orderDetailsRepo
+					)
     {
         _dbContext = dbContext;
 		_orderDetailsRepo = orderDetailsRepo;
@@ -94,10 +94,9 @@ public class OrderRepo : IOrderRepo
 	public async Task<OrderModel> GetById(int id)
 	{
 		var order = await _dbContext.Orders
-			//.AsNoTracking()
-			//.Include(x => x.OrderItems)
-			.Select(MapToModel)
-			
+			.AsNoTracking()
+			.Include(x => x.OrderItems)
+			.Select(MapToModel)		
 			.FirstOrDefaultAsync(x => x.Id == id);
 
 		if (order == null)

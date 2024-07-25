@@ -4,7 +4,7 @@
 
 <h4 class="pb-2">Przepływ produktów we wszystkich magazynach</h4>
 
-<form method="post" class="row" asp-controller="ProductFlow" asp-action="Index">
+<form method="post" class="row" asp-controller="ProductFlow" asp-action="Search">
 <div class="container">
 	<div class="row">
 		<div class="col-md-2">
@@ -134,7 +134,7 @@
 			@if (Model.CurrentPage > 1)
 			{
 				<li class="page-item">
-					<a class="page-link" href="/ProductFlow/Index?currentPage=@(Model.CurrentPage-1)&SearchWarehouse=@Model.SearchWarehouse&SearchItemCode=@Model.SearchItemCode&SearchSupplier=@Model.SearchSupplier" tabindex="-1">Poprzednia</a>
+					<a class="page-link" href="/ProductFlow/Search?currentPage=@(Model.CurrentPage-1)&SearchWarehouse=@Model.SearchWarehouse&SearchItemCode=@Model.SearchItemCode&SearchSupplier=@Model.SearchSupplier" tabindex="-1">Poprzednia</a>
 				</li>
 			}
 			else
@@ -149,19 +149,19 @@
 				@if (i == Model.CurrentPage)
 				{
 					<li class="page-item active">
-						<a class="page-link" href="/ProductFlow/Index?currentPage=@i&warehouse=@Model.SearchWarehouse&itemCode=@Model.SearchItemCode&supplier=@Model.SearchSupplier"> <span class="sr-only">@i</span></a>
+						<a class="page-link" href="/ProductFlow/Search?currentPage=@i&warehouse=@Model.SearchWarehouse&itemCode=@Model.SearchItemCode&supplier=@Model.SearchSupplier"> <span class="sr-only">@i</span></a>
 					</li>
 				}
 				else
 				{
-					<li class="page-item"><a class="page-link" href="/ProductFlow/Index?currentPage=@i&warehouse=@Model.SearchWarehouse&itemCode=@Model.SearchItemCode&supplier=@Model.SearchSupplier">@i</a></li>
+					<li class="page-item"><a class="page-link" href="/ProductFlow/Search?currentPage=@i&warehouse=@Model.SearchWarehouse&itemCode=@Model.SearchItemCode&supplier=@Model.SearchSupplier">@i</a></li>
 				}
 			}
 
 			@if (Model.CurrentPage < Model.TotalPages)
 			{
 				<li class="page-item">
-					<a class="page-link" href="/ProductFlow/Index?currentPage=@(Model.CurrentPage+1)&warehouse=@Model.SearchWarehouse&itemCode=@Model.SearchItemCode&supplier=@Model.SearchSupplier">Następna</a>
+					<a class="page-link" href="/ProductFlow/Search?currentPage=@(Model.CurrentPage+1)&warehouse=@Model.SearchWarehouse&itemCode=@Model.SearchItemCode&supplier=@Model.SearchSupplier">Następna</a>
 				</li>
 			}
 			else

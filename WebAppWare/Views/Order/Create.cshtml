@@ -23,7 +23,7 @@
 	</div>
 
 	<div class="col-2">
-		<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
+		<label class="ms-2 pb-2">Status:</label>
 		<select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.Status">
 			<option disabled selected>-- Wybierz status --</option>
 		</select>
@@ -58,9 +58,6 @@
 				<td>
 					@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", toggle = "item-property" })
 				</td>
-				@* <td>
-					@Html.DropDownList("suppliers", Model.Suppliers, new { @class = "form-select border-0 shadow mb-2", toggle = "item-property" })
-				</td> *@
 				<td>
 					<input toggle="item-property" name="items-property" class="form-control border-0 shadow mb-2" type="text" />
 				</td>
@@ -72,9 +69,9 @@
 
 	<a class="btn btn-secondary" asp-controller="Order" asp-action="Index">Wróć do listy</a>
 
-</form>
+</form> 
 
-@section Scripts
+ @section Scripts
 {
 	<script>
 		// () => {} to jest arrow function / anonimowa funckja / lambda expression
@@ -123,7 +120,7 @@
 					document: '',
 					supplierId: 0,
 					creationDate: '',
-					statusId: '',
+					//status: 0,
 					remarks: '',
 					orderDetails: []
 				};
@@ -137,8 +134,8 @@
 				console.log('creationDate', $('#CreationDate').val());
 				form.creationDate = $('#CreationDate').val();
 
-				console.log('status', $('#Status').val());
-				form.statusId = $('#Status').val();
+				// console.log('status', $('#Status').val());
+				// form.status = $('#Status').val();
 
 				console.log('remarks', $('#Remarks').val());
 				form.remarks = $('#Remarks').val();
@@ -174,7 +171,7 @@
 					console.log(this);
 
 					const properties = $(this).find('[toggle="item-property"]');
-					console.log('properties:');
+					console.log(properties);
 
 					const item = {};
 
@@ -188,6 +185,7 @@
 							item.productId = $(element).val();
 						}
 
+						console.log('Status: ' + form.status);
 						// if (i === 1) {
 						// 	item.supplierId = $(this).val();
 						// }

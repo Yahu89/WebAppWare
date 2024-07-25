@@ -1,5 +1,8 @@
 ﻿@model ProductFlowMovementModel
 
+@{
+	var items = Model.ProductFlowModels.ToArray();
+}
 
 <h4 class="pb-2">Dodawanie MM</h4>
 
@@ -9,6 +12,7 @@
 		<label class="ms-2 pb-2" asp-for="@Model.Document">Nr dokumentu:</label>
 		<input id="Document" class="form-control border-0 shadow mb-4" value="@Model.Document" asp-for="@Model.Document" />
 		<span class="text-danger" asp-validation-for="@Model.Document"></span>
+		<h7 class="text-danger mb-1" id="DocumentWarn"></h7>
 	</div>
 
 	<div class="col-2">
@@ -16,6 +20,7 @@
 		<select id="WarehouseId" class="form-select border-0 shadow mb-4" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseId">
 			<option disabled selected>-- Wybierz magazyn --</option>
 		</select>
+		<h7 class="text-danger mb-1" id="OutputWarehouseWarn"></h7>
 	</div>
 
 	<div class="col-2">
@@ -23,6 +28,7 @@
 		<select id="WarehouseToId" class="form-select border-0 shadow mb-4" asp-items="@Model.Warehouses" asp-for="@Model.WarehouseToId">
 			<option disabled selected>-- Wybierz magazyn --</option>
 		</select>
+		<h7 class="text-danger mb-1" id="InputWarehouseWarn"></h7>
 	</div>
 
 	<div class="col-2">
@@ -55,7 +61,7 @@
 			</tr>
 		</tbody>
 	</table>
-
+	<h7 class="text-danger mb-2" id="DuplicateWarn"></h7>
 	<a class="btn btn-secondary" asp-controller="Movement" asp-action="Index">Wróć do listy</a>
 
 </form>
@@ -99,10 +105,18 @@
 			// });
 
 			let isCorrectData;
+			let documentValidationWarn = $('#DocumentWarn');
+			let warehouseOutValidationWarn = $('#OutputWarehouseWarn');
+			let warehouseInValidationWarn = $('#InputWarehouseWarn');
+			let duplicateValidationWarn = $('#DuplicateWarn');
 
 			const onSubmit = () => {
 
 				isCorrectData = true;
+				documentValidationWarn.text('');
+				warehouseOutValidationWarn.text('');
+				warehouseInValidationWarn.text('');
+				duplicateValidationWarn.text('');
 
 				const form = {
 					document: '',
@@ -114,22 +128,36 @@
 
 				console.log('document', $('#Document').val());
 				form.document = $('#Document').val();
+				form.warehouseId = $('#WarehouseId').val();
+				form.warehouseToId = $('#WarehouseToId').val();
+
+				console.log('warehouseId: ' + form.warehouseId, 'warehouseToId: ' + form.warehouseToId);
 
 				if (form.document.length == 0) {
-					$('#Document').val('Niepoprawne dane');
-					//form.document.val('Niepoprawne dane');
+					documentValidationWarn.text('Niepoprawne dane');
+					isCorrectData = false;
+				}
+
+				if (!form.warehouseId) {
+					warehouseOutValidationWarn.text('Wybierz magazyn');
+					isCorrectData = false;
+				}
+
+				if (!form.warehouseToId) {
+					warehouseInValidationWarn.text('Wybierz magazyn');
 					isCorrectData = false;
 				}
 
 				//console.log('WarehouseId', $('#WarehouseId').val());
-				form.warehouseId = $('#WarehouseId').val();
+				// form.warehouseId = $('#WarehouseId').val();
 
-				form.warehouseToId = $('#WarehouseToId').val();
+				// form.warehouseToId = $('#WarehouseToId').val();
 
 				const items = $('tr[name="item"]');
 				// console.log(items);
 
 				const elements = [];
+				let itemArray = [];
 
 				$.each(items, function () {
 					// elementy listy
@@ -147,6 +175,7 @@
 					$.each(properties, function (index, element) {
 						if (i === 0) {
 							item.productId = $(element).val();
+							itemArray.push(item.productId);
 						}
 
 						// if (i === 1) {
@@ -161,7 +190,7 @@
 							if (isNaN(c)) {
 								//console.log('TRUE');
 								isCorrectData = false;
-								$(element).val('Niepoprawne dane');
+								$(element).val('Uzupełnij ilość');
 							}
 						}
 
@@ -169,7 +198,14 @@
 					});
 
 					elements.push(item);
-				})
+				});
+
+				let itemUnique = new Set(itemArray);
+
+				if (itemArray.length != itemUnique.size) {
+					duplicateValidationWarn.text('Usuń duplikaty produktów')
+					isCorrectData = false;
+				}
 
 				console.log('FINAL:');
 				console.log(elements);

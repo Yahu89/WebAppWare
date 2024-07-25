@@ -14,4 +14,5 @@ public class ProductFlowMovementModel
     public string WarehouseTo { get; set; }
     public int WarehouseToId { get; set; }
     public string Document { get; set; }
+    public string SupplierName { get; set; }
 }

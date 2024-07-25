@@ -213,20 +213,20 @@ public class ProductFlowRepo : IProductFlowRepo
                 {
 					case 0:
 						{
-							result = result.Where(x => x.WarehouseName.Contains(content[i])).ToList();
+							result = result.Where(x => x.Warehouse.Name.Contains(content[i])).ToList();
 							break;
 						}
 
 					case 1:
 						{
-							result = result.Where(x => x.ProductItemCode.Contains(content[i])).ToList();
+							result = result.Where(x => x.Product.ItemCode.Contains(content[i])).ToList();
 							break;
 						}
 
 					case 2:
 						{
-							result = result.Where(x => !string.IsNullOrEmpty(x.SupplierName))
-                                            .Where(x => x.SupplierName.Contains(content[i])).ToList();
+							result = result.Where(x => !string.IsNullOrEmpty(x.Supplier.Name))
+                                            .Where(x => x.Supplier.Name.Contains(content[i])).ToList();
 							break;
 						}
 				}

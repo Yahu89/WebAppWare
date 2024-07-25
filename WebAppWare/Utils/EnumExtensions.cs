@@ -25,7 +25,7 @@ namespace WebAppWare.Utils
 
 		// to metoda, ktora konwertuje dany enum na kolekcje obiektow SelectListItem, gdzie Key to bedzie liczba z enum, a Value to bedzie tego co przekazemy
 		public static IEnumerable<SelectListItem> ToSelectList<T>(
-			Func<T, string> translate,
+			Func<T, string?> translate,
 			Func<T, bool>? selected = null
 		)
 		{

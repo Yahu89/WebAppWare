@@ -92,33 +92,42 @@ namespace WebAppWare.Controllers
 
 		public async Task<IActionResult> Delete(int id)
 		{
+			ProductFlowMovementModel obj = new ProductFlowMovementModel();
+
 			var movement = await _movementRepo.GetById(id);
-			var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
-			string warehouse = productFlows.FirstOrDefault(x => x.MovementId == id).WarehouseName;
-			string? warehouseTo = productFlows.FirstOrDefault(x => x.MovementId == id).WarehouseToIdName;
+			//var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
+			obj.ProductFlowModels = await _productFlowRepo.GetProductFlowsByMoveId(id);
+			string warehouse = obj.ProductFlowModels.FirstOrDefault(x => x.Movement.Id == id).WarehouseName;
+			//string? warehouseTo = obj.ProductFlowModels.FirstOrDefault(x => x.Movement.Id == id).WarehouseToIdName;
+			string supplierName = obj.ProductFlowModels.FirstOrDefault().Supplier.Name;
 
-			ProductFlowMovementModel obj = new ProductFlowMovementModel()
-			{
-				Document = movement.Document,
-				Warehouse = warehouse,
-				WarehouseTo = warehouseTo
-			};
+			obj.Document = movement.Document;
+			obj.Warehouse = warehouse;
+			//obj.WarehouseTo = warehouseTo;
+			obj.SupplierName = supplierName;
 
-			obj.ProductFlowModels = productFlows.Select(x => new ProductFlowModel()
-			{
-				Id = x.Id,
-				Warehouse = x.Warehouse,
-				ProductId = x.ProductId,
-				ProductItemCode = x.ProductItemCode,
-				SupplierId = x.SupplierId,
-				Supplier = x.Supplier,
-				WarehouseId = x.WarehouseId,
-				MovementId = movement.Id,
-				Quantity = x.Quantity,
-				DocumentNumber = x.DocumentNumber,
-				WarehouseToId = x.WarehouseToId,
-				WarehouseToIdName = warehouseTo
-			}).ToList();
+			//ProductFlowMovementModel obj = new ProductFlowMovementModel()
+			//{
+			//	Document = movement.Document,
+			//	Warehouse = warehouse,
+			//	WarehouseTo = warehouseTo
+			//};
+
+			//obj.ProductFlowModels = productFlows.Select(x => new ProductFlowModel()
+			//{
+			//	Id = x.Id,
+			//	Warehouse = x.Warehouse,
+			//	ProductId = x.ProductId,
+			//	ProductItemCode = x.ProductItemCode,
+			//	SupplierId = x.SupplierId,
+			//	Supplier = x.Supplier,
+			//	WarehouseId = x.WarehouseId,
+			//	MovementId = movement.Id,
+			//	Quantity = x.Quantity,
+			//	DocumentNumber = x.DocumentNumber,
+			//	WarehouseToId = x.WarehouseToId,
+			//	WarehouseToIdName = warehouseTo
+			//}).ToList();
 
 			return View(obj);
 		}
@@ -249,25 +258,25 @@ namespace WebAppWare.Controllers
 			return Json(model);
 		}
 
-		public List<ProductFlowModel> FormToProductFlowModelList(Form model, int movementId)
-		{
-			string doc = model.Document;
-			int wareId = model.WarehouseId;
+		//public List<ProductFlowModel> FormToProductFlowModelList(Form model, int movementId)
+		//{
+		//	string doc = model.Document;
+		//	int wareId = model.WarehouseId;
 
-			var result = (List<ProductFlowModel>)model.ProductFlowModels.Select(x => new ProductFlowModel()
-			{
-				ProductId = x.ProductId,
-				SupplierId = x.SupplierId,
-				WarehouseId = wareId,
-				DocumentNumber = doc,
-				Quantity = x.Quantity,
-				MovementType = MovementType.PZ,
-				MovementId = movementId,
-				CreationDate = DateTime.Now
-			});
+		//	var result = (List<ProductFlowModel>)model.ProductFlowModels.Select(x => new ProductFlowModel()
+		//	{
+		//		ProductId = x.ProductId,
+		//		SupplierId = x.SupplierId,
+		//		WarehouseId = wareId,
+		//		DocumentNumber = doc,
+		//		Quantity = x.Quantity,
+		//		MovementType = MovementType.PZ,
+		//		MovementId = movementId,
+		//		CreationDate = DateTime.Now
+		//	});
 
-			return result;
-		}
+		//	return result;
+		//}
 
 	}
 }

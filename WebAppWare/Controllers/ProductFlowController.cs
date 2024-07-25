@@ -18,16 +18,20 @@ namespace WebAppWare.Controllers
         }
         public async Task<IActionResult> Index(ProductFlowModel model)
         {
-			IEnumerable<ProductFlowModel> results = new List<ProductFlowModel>();
+			var results = new List<ProductFlowModel>();
 
 			try
 			{
-				results = await _productFlowRepo.GetBySearch(model.SearchWarehouse, model.SearchItemCode, model.SearchSupplier);
+				results = (await _productFlowRepo.GetBySearch(model.SearchWarehouse, model.SearchItemCode, model.SearchSupplier)).ToList();
 			}
 			catch (Exception ex)
 			{
 				return Json(ex.Message.ToString());
 			}
+
+			//model.SearchItemCode = results.FirstOrDefault().SearchItemCode;
+			//model.SearchSupplier = results.FirstOrDefault().SearchSupplier;
+			//model.SearchWarehouse = results.FirstOrDefault().SearchWarehouse;
 
 			int totalRecords = results.Count();
 			int recordsPerPage = 5;
@@ -90,25 +94,25 @@ namespace WebAppWare.Controllers
             return View(pairProductFlows);
         }
 
-   //     public async Task<IActionResult> Search(ProductFlowModel model)
-   //     {     
-			//IEnumerable<ProductFlowModel> results = new List<ProductFlowModel>();
+		public async Task<IActionResult> Search(ProductFlowModel model)
+		{
+			IEnumerable<ProductFlowModel> results = new List<ProductFlowModel>();
 
-			//try
-			//{
-			//	results = await _productFlowRepo.GetBySearch(model.SearchWarehouse, model.SearchItemCode, model.SearchSupplier);
-			//}
-			//catch (Exception ex)
-			//{
-			//	return Json(ex.Message.ToString());
-			//}
+			try
+			{
+				results = await _productFlowRepo.GetBySearch(model.SearchWarehouse, model.SearchItemCode, model.SearchSupplier);
+			}
+			catch (Exception ex)
+			{
+				return Json(ex.Message.ToString());
+			}
 
-   //         int totalRecords = results.Count();
-   //         int recordsPerPage = 5;
-   //         model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));
+			int totalRecords = results.Count();
+			int recordsPerPage = 5;
+			model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));
 
-   //         model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage).Take(recordsPerPage);
-   //         return View(model);
-   //     }
-    }
+			model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage).Take(recordsPerPage);
+			return View(model);
+		}
+	}
 }

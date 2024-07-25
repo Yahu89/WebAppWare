@@ -53,7 +53,7 @@ else
 			<input id="submitButton" type="button" class="btn btn-info" value="Zatwierdź zmiany" />
 		</div>
 
-		<input id="OrderId" class="form-control border-0 shadow mb-2" type="text" asp-for="@Model.Id" />
+		@* <input id="OrderId" class="form-control border-0 shadow mb-2" type="text" asp-for="@Model.Id" /> *@
 	}
 	else
 	{
@@ -91,10 +91,15 @@ else
 		<tbody id="parentTable">
 			@if (Model.IsEdit)
 			{
+				
 				@foreach (var item in Model.OrderDetails)
 				{
+					
+					
 					<tr name="item">
+						
 						<td>
+							<input hidden id="OrderItemId" toggle="item-property" asp-for="@item.Id" value="@item.Id"></input>
 							<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@item.Items" toggle="item-property">
 								@* <option selected>@item.ProductItemCode</option> *@
 							</select>
@@ -109,6 +114,7 @@ else
 			{
 				<tr name="item">
 					<td>
+						<input hidden id="OrderItemId" toggle="item-property" value="0"></input>
 						<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@Model.Products" toggle="item-property">
 							@* <option selected>@item.ProductItemCode</option> *@
 						</select>
@@ -135,6 +141,7 @@ else
 				let row = `
 								<tr name="item">
 								<td>
+									<input hidden id="OrderItemId" toggle="item-property" name="items-property" type="text" value="0" />
 									@Html.DropDownList("items", Model.Products, new { @class = "form-select border-0 shadow mb-2", @toggle = "item-property" })
 								</td>
 								<td>
@@ -167,7 +174,7 @@ else
 
 			const select = $('#Status');
 			console.log(select.data('default'));
-			$('#Status').val(select.data('default'));
+			//$('#Status').val(select.data('default'));
 
 			$('#submitButton').click((e) => {
 				//e.preventDefault();
@@ -234,7 +241,7 @@ else
 					console.log(this);
 
 					const properties = $(this).find('[toggle="item-property"]');
-					console.log('properties:');
+					console.log('properties: ');
 
 					const item = {};
 
@@ -244,7 +251,12 @@ else
 
 					$.each(properties, function (index, element) {
 
+						//item.orderItemId = $(this).val();
 						if (i === 0) {
+							item.Id = $(this).val();
+						}
+
+						if (i === 1) {
 							item.productId = $(element).val();
 						}
 
@@ -252,7 +264,7 @@ else
 						// 	item.supplierId = $(this).val();
 						// }
 
-						if (i === 1) {
+						if (i === 2) {
 							item.quantity = $(this).val();
 							let c = parseInt(item.quantity);
 
@@ -263,6 +275,8 @@ else
 								$(element).val('Niepoprawne dane');
 							}
 						}
+
+						
 
 						i++;
 					});
