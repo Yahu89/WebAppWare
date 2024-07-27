@@ -68,7 +68,7 @@ namespace WebAppWare.Controllers
                 if (ModelState.IsValid)
                 {
                     await _warehouseRepo.Update(model);
-                    return View(nameof(Index));
+                    return RedirectToAction(nameof(Index));
                 }
 
 				return View(nameof(Edit), model);

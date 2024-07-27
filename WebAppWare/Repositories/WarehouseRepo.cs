@@ -94,7 +94,7 @@ public class WarehouseRepo : IWarehouseRepo
 		{
 			foreach (var ware in allWarehouses)
 			{
-				var currentRecord = singleRecord.Where(x => x.WarehouseName == ware.Name)
+				var currentRecord = singleRecord.Where(x => x.Warehouse.Name == ware.Name)
 											.Where(x => x.ProductItemCode == item.ItemCode)
 											.ToList();
 
