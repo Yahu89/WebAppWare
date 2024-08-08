@@ -9,6 +9,12 @@ using WebAppWare.Utils;
 
 namespace WebAppWare.Repositories;
 
+// singleton
+// builder
+// factory
+// lock
+
+
 public class OrderRepo : IOrderRepo
 {
 	private readonly WarehouseBaseContext _dbContext;
@@ -115,6 +121,7 @@ public class OrderRepo : IOrderRepo
 		{
 			//TODO: napisz odpowiedni komunikat
 			throw new Exception("Nieprawidłowe dane");
+			//throw new ValidateException("Nieprawidłowe dane");
 		}
 
 		if (!_orderDetailsRepo.IsDataCorrect(model.OrderDetails))
@@ -125,7 +132,11 @@ public class OrderRepo : IOrderRepo
 
 	public async Task<string> SetOrderNumber(DateTime date)
 	{
-		var recordsPerDate = await _dbContext.Orders.Select(MapToModel).Where(x => x.CreationDate.Date == date).ToListAsync();
+		var recordsPerDate = await _dbContext.Orders
+			.Select(MapToModel)
+			.Where(x => x.CreationDate.Date == date)
+			.ToListAsync();
+
 		string counter = (recordsPerDate.Count + 1).ToString();
 
 		if (counter.Length == 1)

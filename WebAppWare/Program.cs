@@ -42,6 +42,7 @@ builder.Services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<IUserAuthentication, UserAuthentication>();
 builder.Services.AddAutoMapper(typeof(ProductFlowMappingProfile));
+builder.Services.AddScoped<ErrorHandling>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductModelValidator>()
 							.AddFluentValidationAutoValidation()
 							.AddFluentValidationClientsideAdapters();
@@ -60,12 +61,13 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Home/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	app.UseHsts();
+    //app.UseExceptionHandler("/Home/Error");
+    app.UseMiddleware<ErrorHandling>();
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
-//app.UseMiddleware<ErrorHandling>();
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

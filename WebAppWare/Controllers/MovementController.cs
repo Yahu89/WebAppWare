@@ -44,6 +44,7 @@ namespace WebAppWare.Controllers
 			try
 			{
 				var movements = await _movementRepo.GetAll();
+
 				return View(movements);
 			}
 			catch ( Exception ex )
@@ -95,44 +96,18 @@ namespace WebAppWare.Controllers
 			ProductFlowMovementModel obj = new ProductFlowMovementModel();
 
 			var movement = await _movementRepo.GetById(id);
-			//var productFlows = await _productFlowRepo.GetProductFlowsByMoveId(id);
 			obj.ProductFlowModels = await _productFlowRepo.GetProductFlowsByMoveId(id);
 			string warehouse = obj.ProductFlowModels.FirstOrDefault(x => x.Movement.Id == id).WarehouseName;
-			//string? warehouseTo = obj.ProductFlowModels.FirstOrDefault(x => x.Movement.Id == id).WarehouseToIdName;
 			string supplierName = obj.ProductFlowModels.FirstOrDefault().Supplier.Name;
 
 			obj.Document = movement.Document;
 			obj.Warehouse = warehouse;
-			//obj.WarehouseTo = warehouseTo;
 			obj.SupplierName = supplierName;
-
-			//ProductFlowMovementModel obj = new ProductFlowMovementModel()
-			//{
-			//	Document = movement.Document,
-			//	Warehouse = warehouse,
-			//	WarehouseTo = warehouseTo
-			//};
-
-			//obj.ProductFlowModels = productFlows.Select(x => new ProductFlowModel()
-			//{
-			//	Id = x.Id,
-			//	Warehouse = x.Warehouse,
-			//	ProductId = x.ProductId,
-			//	ProductItemCode = x.ProductItemCode,
-			//	SupplierId = x.SupplierId,
-			//	Supplier = x.Supplier,
-			//	WarehouseId = x.WarehouseId,
-			//	MovementId = movement.Id,
-			//	Quantity = x.Quantity,
-			//	DocumentNumber = x.DocumentNumber,
-			//	WarehouseToId = x.WarehouseToId,
-			//	WarehouseToIdName = warehouseTo
-			//}).ToList();
 
 			return View(obj);
 		}
 
-		[HttpPost]
+		//[HttpPost]
 		public async Task<IActionResult> DeletePost(int id)
 		{
 			var movement = await _movementRepo.GetById(id);
@@ -175,7 +150,7 @@ namespace WebAppWare.Controllers
 			var productFlowsOut = productFlows.Where(x => x.Quantity < 0).ToList();
 			var productFlowsIn = productFlows.Where(x => x.Quantity > 0).ToList();
 			string warehouse = productFlowsOut.FirstOrDefault().WarehouseName;
-			string warehouseTo = productFlowsIn.FirstOrDefault(x => x.Quantity > 0).WarehouseName;
+			string warehouseTo = productFlowsIn.FirstOrDefault(x => x.Quantity > 0).Warehouse.Name;
 
 			ProductFlowMovementModel obj = new ProductFlowMovementModel()
 			{
@@ -212,7 +187,7 @@ namespace WebAppWare.Controllers
 			return File(bytes, "application/pdf");
 		}
 
-		[HttpPost]
+		//[HttpPost]
 		public async Task<IActionResult> CreateWarehouseMovement(WarehouseMovementModel model)
 		{
 			try
@@ -227,36 +202,36 @@ namespace WebAppWare.Controllers
 			}
 		}
 
-		public async Task<IActionResult> AddProductFlows() // for test only
-		{
-			ProductsFlow model = new ProductsFlow()
-			{
-				ProductId = 15,
-				SupplierId = 1,
-				WarehouseId = 1,
-				Quantity = 20,
-				WarehouseMovementId = 1
-			};
+		//public async Task<IActionResult> AddProductFlows() // for test only
+		//{
+		//	ProductsFlow model = new ProductsFlow()
+		//	{
+		//		ProductId = 15,
+		//		SupplierId = 1,
+		//		WarehouseId = 1,
+		//		Quantity = 20,
+		//		WarehouseMovementId = 1
+		//	};
 
-			_db.ProductsFlows.Add(model);
-			await _db.SaveChangesAsync();
+		//	_db.ProductsFlows.Add(model);
+		//	await _db.SaveChangesAsync();
 
-			return Json(model);
-		}
+		//	return Json(model);
+		//}
 
-		public async Task<IActionResult> AddMovement() // for test only
-		{
-			WarehouseMovement model = new WarehouseMovement()
-			{
-				Document = "PZ03052401",
-				CreationDate = DateTime.Now,
-				MovementType = 1,
-			};
+		//public async Task<IActionResult> AddMovement() // for test only
+		//{
+		//	WarehouseMovement model = new WarehouseMovement()
+		//	{
+		//		Document = "PZ03052401",
+		//		CreationDate = DateTime.Now,
+		//		MovementType = 1,
+		//	};
 
-			_db.WarehouseMovements.Add(model);
-			await _db.SaveChangesAsync();
-			return Json(model);
-		}
+		//	_db.WarehouseMovements.Add(model);
+		//	await _db.SaveChangesAsync();
+		//	return Json(model);
+		//}
 
 		//public List<ProductFlowModel> FormToProductFlowModelList(Form model, int movementId)
 		//{

@@ -22,26 +22,24 @@ namespace WebAppWare.Controllers
 
 			try
 			{
-				results = (await _productFlowRepo.GetBySearch(model.SearchWarehouse, model.SearchItemCode, model.SearchSupplier)).ToList();
+				results = (await _productFlowRepo.GetBySearch(model.SearchWarehouse, model.SearchItemCode, model.SearchSupplier))
+												.ToList();
 			}
 			catch (Exception ex)
 			{
 				return Json(ex.Message.ToString());
 			}
 
-			//model.SearchItemCode = results.FirstOrDefault().SearchItemCode;
-			//model.SearchSupplier = results.FirstOrDefault().SearchSupplier;
-			//model.SearchWarehouse = results.FirstOrDefault().SearchWarehouse;
-
 			int totalRecords = results.Count();
 			int recordsPerPage = 5;
 			model.TotalPages = (int)(Math.Ceiling(totalRecords / (double)recordsPerPage));
 
-			model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage).Take(recordsPerPage);
+			model.ProductsFlow = results.Skip((model.CurrentPage - 1) * recordsPerPage)
+										.Take(recordsPerPage);
 			return View(model);
 		}
 
-		[HttpGet]
+		//[HttpGet]
 		public async Task<IActionResult> Delete(int id)
         {
 			try
@@ -55,7 +53,7 @@ namespace WebAppWare.Controllers
 			}  
         }
 
-        [HttpPost]
+        //[HttpPost]
         public async Task<IActionResult> DeletePost(int id)
         {
 			if (await _productFlowRepo.IsReadyToDeleteItemRecordsForAllMoveTypes(id))
@@ -68,31 +66,31 @@ namespace WebAppWare.Controllers
 			}
 		}
 
-		public async Task<IActionResult> DeleteMmM(int id)
-        {
-			ProductFlowModel productFlow = new ProductFlowModel();
-			int moveId;
+		//public async Task<IActionResult> DeleteMmM(int id)
+  //      {
+		//	ProductFlowModel productFlow = new ProductFlowModel();
+		//	int moveId;
 
-			try
-			{
-				productFlow = await _productFlowRepo.GetById(id);
-				moveId = productFlow.MovementId;
-			}
-			catch(Exception ex)
-			{
-				return Json(ex.ToString());
-			}
+		//	try
+		//	{
+		//		productFlow = await _productFlowRepo.GetById(id);
+		//		moveId = productFlow.MovementId;
+		//	}
+		//	catch(Exception ex)
+		//	{
+		//		return Json(ex.ToString());
+		//	}
          
-            int? productId = productFlow.ProductId;
-            var movement = await _movementRepo.GetById(moveId);
-            string docNumber = movement.Document;
+  //          int? productId = productFlow.ProductId;
+  //          var movement = await _movementRepo.GetById(moveId);
+  //          string docNumber = movement.Document;
 
-            var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
-            var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();
-            pairProductFlows.ForEach(x => x.DocumentNumber = docNumber);
+  //          var productFlowsByMoveId = await _productFlowRepo.GetProductFlowsByMoveId(moveId);
+  //          var pairProductFlows = productFlowsByMoveId.Where(x => x.ProductId == productId).ToList();
+  //          pairProductFlows.ForEach(x => x.DocumentNumber = docNumber);
 
-            return View(pairProductFlows);
-        }
+  //          return View(pairProductFlows);
+  //      }
 
 		public async Task<IActionResult> Search(ProductFlowModel model)
 		{

@@ -27,13 +27,13 @@ namespace WebAppWare.Controllers
             }
         }
 
-        [HttpGet]
+        //[HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        [HttpGet]
+        //[HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -47,7 +47,7 @@ namespace WebAppWare.Controllers
             }   
         }
 
-        [HttpPost]
+        //[HttpPost]
         public async Task<IActionResult> Upsert(SupplierModel model)
         {
             if (ModelState.IsValid)
@@ -80,7 +80,7 @@ namespace WebAppWare.Controllers
             }         
         }
 
-        [HttpPost]
+        //[HttpPost]
         public async Task<IActionResult> Delete(SupplierModel supplier)
         {
             try

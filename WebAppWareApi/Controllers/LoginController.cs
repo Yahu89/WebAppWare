@@ -30,7 +30,7 @@ namespace WebAppWareApi.Controllers
 		}
 
 		[HttpPost]
-		[Route("api/logout")]
+		[Route("logout")]
 		public async Task<ActionResult> Logout()
 		{
 			await _userAuthentication.Logout();

@@ -26,6 +26,11 @@ namespace WebAppWare.Repositories
 			_webHostEnvironment = webHostEnvironment;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="product"></param>
+		/// <returns></returns>
 		public async Task Create(ProductModel product)
 		{
 			int? imageId = null;

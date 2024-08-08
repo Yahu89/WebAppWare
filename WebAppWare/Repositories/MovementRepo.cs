@@ -276,31 +276,31 @@ public class MovementRepo : IMovementRepo
 		return true;
 	}
 
-	public WarehouseMovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type)
-	{
-		var document = collection["Document"];
+	//public WarehouseMovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type)
+	//{
+	//	var document = collection["Document"];
 
-		WarehouseMovementModel movement = new WarehouseMovementModel()
-		{
-			Document = document,
-			CreationDate = DateTime.Now,
-			MovementType = type
-		};
+	//	WarehouseMovementModel movement = new WarehouseMovementModel()
+	//	{
+	//		Document = document,
+	//		CreationDate = DateTime.Now,
+	//		MovementType = type
+	//	};
 
-		return movement;
-	}
+	//	return movement;
+	//}
 
-	public async Task<WarehouseMovementModel> FromPzFormToMovementModel(Form model, MovementType type)
-	{
-		string document = model.Document;
+	//public async Task<WarehouseMovementModel> FromPzFormToMovementModel(Form model, MovementType type)
+	//{
+	//	string document = model.Document;
 
-		WarehouseMovementModel movement = new WarehouseMovementModel()
-		{
-			Document = document,
-			CreationDate = DateTime.Now,
-			MovementType = type
-		};
+	//	WarehouseMovementModel movement = new WarehouseMovementModel()
+	//	{
+	//		Document = document,
+	//		CreationDate = DateTime.Now,
+	//		MovementType = type
+	//	};
 
-		return movement;
-	}
+	//	return movement;
+	//}
 }

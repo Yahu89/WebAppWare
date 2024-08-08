@@ -43,7 +43,6 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 
 	public async Task CreateRange(IEnumerable<OrderDetailsModel> model, int orderId)
 	{
-
 		var results = model.Select(MapToEntity.Compile()).ToList();
 		results.ForEach(x => x.OrderId = orderId);
 		_dbContext.OrderItems.AddRange(results);

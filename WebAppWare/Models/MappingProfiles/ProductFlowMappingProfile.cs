@@ -29,7 +29,7 @@ public class ProductFlowMappingProfile : Profile
                 .ForMember(x => x.Warehouse, opt => opt.MapFrom(src => new Warehouse()
                 {
                     Id = src.Warehouse.Id,
-                    Name = src.Warehouse.Name
+                    Name = src.Warehouse.Name                   
                 }));
     }
 }

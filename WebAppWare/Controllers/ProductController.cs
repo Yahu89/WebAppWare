@@ -41,7 +41,7 @@ namespace WebAppWare.Controllers
 			return View();
 		}
 
-		[HttpPost]
+		//[HttpPost]
 		public async Task<IActionResult> Create(ProductModel product)
 		{
 			if (ModelState.IsValid)
@@ -73,11 +73,9 @@ namespace WebAppWare.Controllers
 			}
 		}
 
-		[HttpPost]
+		//[HttpPost]
 		public async Task<IActionResult> Edit(ProductModel product)
 		{
-			//var temp = product.ImageId;
-
 			if (ModelState.IsValid)
 			{
 				try
@@ -107,7 +105,7 @@ namespace WebAppWare.Controllers
 			}		
 		}
 
-		[HttpPost]
+		//[HttpPost]
 		public async Task<IActionResult> Delete(ProductModel product)
 		{
 			try

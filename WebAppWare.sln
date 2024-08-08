@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppWare", "WebAppWare\We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppWare.Database", "WepAppWare.Database\WebAppWare.Database.csproj", "{78869F01-725B-4368-91BE-BFE45F6FAE1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppWareApi", "WebAppWareApi\WebAppWareApi.csproj", "{AF8318EE-DCEF-48D0-B411-BFD07825462B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppWare.Api", "WebAppWareApi\WebAppWare.Api.csproj", "{AF8318EE-DCEF-48D0-B411-BFD07825462B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
