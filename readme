@@ -1,0 +1,29 @@
+PL:
+-> prosta aplikacja webowa do zarządzania magazynem (WMS)
+-> projekt ASP.NET MVC + Web API
+-> frontend okrojony do minimum (+ dynamiczne formularze (jQuery))
+-> baza danych oparta o MS SQL utworzona przy użyciu EF Core podejściem code first
+-> aplikacja umożliwia operacje CRUD w zakresie towarów, dostawców i magazynów
+-> aplikacja posiada moduł zamówień do dostawców (niepowiązany z magazynem)
+-> aplikacja ma możliwość dodawania trzech rodzajów ruchów magazynowych (przyjęcie, wydanie i przesunięcie) z zachowaniem logiki biznesowej (tj. nie można wydać więcej towaru niż jest aktualnie w magazynie)
+-> aplikacja umożliwia generowanie plików pdf (zamówienia i ruchy magazynowe)
+-> aplikacja wymaga zalogowania na odpowiednią rolę (purchase, warehouse i admin), by móc dokonywać operacji, widoczność dla niezalogowanego - tylko strona startowa
+-> ADMIN - login: admin, hasło: Admin01_
+-> PURCHASE - login: purchaseUser, hasło: Purchase01_
+-> WAREHOUSE - login: warehouseUser, hasło: Warehouse01_
+-> Web API dla podstawowych operacji - modyfikacje wymagają zalogowania na odpowiednią rolę przy użyciu JWT
+
+ENG:
+-> simple web application for warehouse management (WMS)
+-> ASP.NET MVC + Web API project
+-> forntend reduced as much as possible (+ dynamic form made by jQuery)
+-> MS SQL database made by EF Core with code first approach
+-> CRUD operations for product items, suppliers and warehouses
+-> app has order module (not connected with warehouses)
+-> it's possible to add three types of warehouse movements (receipts, releases and stock transfer) with business logic kept (it's not possible to release an item when is lack on the stock)
+-> it's possible to pdf generate (orders and warehouse movements)
+-> it's mandatory to log in on proper role to do operations (purchase, warehouse and admin), anonymous user can see home page only
+-> ADMIN - login: admin, password: Admin01_
+-> PURCHASE - login: purchaseUser, password: Purchase01_
+-> WAREHOUSE - login: warehouseUser, password: Warehouse01_
+-> Web API for basic operations - for do the changes it's necessery to login by JWT
