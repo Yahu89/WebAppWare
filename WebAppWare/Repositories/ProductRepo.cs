@@ -41,7 +41,6 @@ public class ProductRepo : IProductRepo
 	{
 		var entity = MapToEntity.Compile().Invoke(model);
 
-		// jesli podano imageId to uzupelniamy
 		if (imageId.HasValue)
 			entity.ImageId = imageId;
 
@@ -86,12 +85,6 @@ public class ProductRepo : IProductRepo
 	public async Task Update(ProductModel model)
 	{
 		var tempId = model.ImageId;
-		//int? imageId = null;
-
-		//if (model.ImageFile != null)
-		//{
-		//	//imageId = await _imageRepository.CreateImage(model);
-		//}
 
 		var entity = MapToEntity.Compile().Invoke(model);
 		entity.ImageId = model.ImageId;

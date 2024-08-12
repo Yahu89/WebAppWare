@@ -9,12 +9,6 @@ using WebAppWare.Utils;
 
 namespace WebAppWare.Repositories;
 
-// singleton
-// builder
-// factory
-// lock
-
-
 public class OrderRepo : IOrderRepo
 {
 	private readonly WarehouseBaseContext _dbContext;
@@ -53,18 +47,11 @@ public class OrderRepo : IOrderRepo
 
 	public async Task<int> Create(OrderModel model)
 	{
-		// jesli wyslesz poprawnie SupplierId to powinno juz dzialac
-
 		var entity = MapToEntity.Compile().Invoke(model);
 
 		_dbContext.Orders.Add(entity);
 
 		await _dbContext.SaveChangesAsync();
-
-		//var eachFieldFulfilled = model.OrderDetails.Where(x => x.ProductId != 0 && x.Quantity > 0).ToList();
-		//eachFieldFulfilled.ForEach(x => x.OrderId = id);
-
-		//await _orderDetailsRepo.CreateRange(model.OrderDetails);
 
 		return entity.Id;
 	}
@@ -79,12 +66,9 @@ public class OrderRepo : IOrderRepo
 	public async Task Edit(OrderModel model)
 	{
 		var order = MapToEntity.Compile().Invoke(model);
-		//var orderItems = order.OrderItems.ToList();
 		_dbContext.Orders.Update(order);
 
 		await _dbContext.SaveChangesAsync();
-
-		//await _orderDetailsRepo.EditRange(model.OrderDetails, model.Id);
 	}
 
 	public async Task<IEnumerable<OrderModel>> GetAll()
@@ -119,14 +103,12 @@ public class OrderRepo : IOrderRepo
 	{
 		if (model.SupplierId == 0 || string.IsNullOrEmpty(model.Document))
 		{
-			//TODO: napisz odpowiedni komunikat
 			throw new Exception("Nieprawidłowe dane");
-			//throw new ValidateException("Nieprawidłowe dane");
 		}
 
 		if (!_orderDetailsRepo.IsDataCorrect(model.OrderDetails))
 		{
-			throw new Exception("");
+			throw new Exception("Nieprawidłowe dane");
 		}
 	}
 

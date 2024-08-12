@@ -92,7 +92,6 @@
 			}
 
 			$('#submitButton').click((e) => {
-				//e.preventDefault();
 
 				onSubmit();
 			});
@@ -100,10 +99,6 @@
 			$('#addRowButton').click(() => {
 				addRecord();
 			});
-
-			// $('#removeButton').click((tr) => {
-			// 	removeRecord(this);
-			// });
 
 			let isCorrectData;
 			let documentValidationWarn = $('#DocumentWarn');
@@ -121,13 +116,10 @@
 					document: '',
 					warehouseId: 0,
 					productFlowModels: [],
-					movementType: 2 // tutaj ustawiamy, ze to PZ
+					movementType: 2 
 				};
 
-				console.log('document', $('#Document').val());
 				form.document = $('#Document').val();
-
-				console.log('WarehouseId', $('#WarehouseId').val());
 				form.warehouseId = $('#WarehouseId').val();
 
 				if (form.document.length == 0) {
@@ -142,23 +134,14 @@
 
 
 				const items = $('tr[name="item"]');
-				// console.log(items);
-
 				const elements = [];
 				let itemArray = [];
 
 				$.each(items, function () {
-					// elementy listy
-					console.log(this);
 
 					const properties = $(this).find('[toggle="item-property"]');
-					console.log('properties:');
-
 					const item = {};
-
-					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
 					let i = 0;
-					// let isCorrectData = true;
 
 					$.each(properties, function (index, element) {
 						if (i === 0) {
@@ -173,9 +156,7 @@
 							item.quantity = $(this).val();
 							let c = parseInt(item.quantity);
 
-							//console.log(c);
 							if (isNaN(c)) {
-								//console.log('TRUE');
 								isCorrectData = false;
 								$(element).val('Uzupełnij ilość');
 							}
@@ -194,33 +175,21 @@
 					isCorrectData = false;
 				}
 
-				console.log('FINAL:');
-				console.log(elements);
-
 				form.productFlowModels = elements;
 
-				console.log('FORM:');
-				console.log(form);
-
 				const data = $('#form');
-				console.log(data.data('url'));
-
 			
 				if (isCorrectData) {
-
-					console.log('isCorrectData:', isCorrectData);
 
 					$.ajax({
 						url: data.data('url'),
 						method: 'POST',
 						data: form,
 						success: function (response) {
-							console.log('zwrocono dane:');
-							console.log(response);
 							window.location.href = response.redirectToUrl;
 						},
 						error: function (error) {
-							console.log(error.error);
+
 						}
 					});
 				}
@@ -232,7 +201,6 @@
 
 			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
 		}
-
 
 		</script>
 	}

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Api.Dto;
 using WebAppWare.Api.Middleware;
@@ -36,8 +35,6 @@ public class WarehouseRepository : IWarehouseRepository
             throw new NoContentException();
         }
 
-        //var results = _mapper.Map<IEnumerable<WarehouseDto>>(entities);
-
         return entities;
     }
 
@@ -50,7 +47,6 @@ public class WarehouseRepository : IWarehouseRepository
             throw new NoContentException();
         }
 
-        //var result = _mapper.Map<WarehouseDto>(entity);
         return entity;
     }
 

@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Primitives;
-using System.Collections;
 using WebAppWare.Database;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace WebAppWare.Controllers
 {
@@ -107,7 +104,7 @@ namespace WebAppWare.Controllers
 			return View(obj);
 		}
 
-		//[HttpPost]
+		[HttpPost]
 		public async Task<IActionResult> DeletePost(int id)
 		{
 			var movement = await _movementRepo.GetById(id);
@@ -187,7 +184,7 @@ namespace WebAppWare.Controllers
 			return File(bytes, "application/pdf");
 		}
 
-		//[HttpPost]
+		[HttpPost]
 		public async Task<IActionResult> CreateWarehouseMovement(WarehouseMovementModel model)
 		{
 			try
@@ -201,57 +198,5 @@ namespace WebAppWare.Controllers
 				return Json(new { redirectToUrl = Url.Action("Error", "Movement") });
 			}
 		}
-
-		//public async Task<IActionResult> AddProductFlows() // for test only
-		//{
-		//	ProductsFlow model = new ProductsFlow()
-		//	{
-		//		ProductId = 15,
-		//		SupplierId = 1,
-		//		WarehouseId = 1,
-		//		Quantity = 20,
-		//		WarehouseMovementId = 1
-		//	};
-
-		//	_db.ProductsFlows.Add(model);
-		//	await _db.SaveChangesAsync();
-
-		//	return Json(model);
-		//}
-
-		//public async Task<IActionResult> AddMovement() // for test only
-		//{
-		//	WarehouseMovement model = new WarehouseMovement()
-		//	{
-		//		Document = "PZ03052401",
-		//		CreationDate = DateTime.Now,
-		//		MovementType = 1,
-		//	};
-
-		//	_db.WarehouseMovements.Add(model);
-		//	await _db.SaveChangesAsync();
-		//	return Json(model);
-		//}
-
-		//public List<ProductFlowModel> FormToProductFlowModelList(Form model, int movementId)
-		//{
-		//	string doc = model.Document;
-		//	int wareId = model.WarehouseId;
-
-		//	var result = (List<ProductFlowModel>)model.ProductFlowModels.Select(x => new ProductFlowModel()
-		//	{
-		//		ProductId = x.ProductId,
-		//		SupplierId = x.SupplierId,
-		//		WarehouseId = wareId,
-		//		DocumentNumber = doc,
-		//		Quantity = x.Quantity,
-		//		MovementType = MovementType.PZ,
-		//		MovementId = movementId,
-		//		CreationDate = DateTime.Now
-		//	});
-
-		//	return result;
-		//}
-
 	}
 }

@@ -63,7 +63,6 @@ public class MovementPdfReport
 
 		WebClient wc = new WebClient();
 		
-		//imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\Images\dev-hobby-logo2442555683.jpg");
 		imageBytes = wc.DownloadData(@"C:\Users\Yahu\source\repos\WebAppWare\WebAppWare\wwwroot\images\test-image.jpg");
 
         iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(imageBytes);

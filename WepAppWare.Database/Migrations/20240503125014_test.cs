@@ -27,22 +27,11 @@ namespace WepAppWare.Database.Migrations
                     Document = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MovementType = table.Column<int>(type: "int", nullable: false),
-                    //WarehouseId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WarehouseMovements", x => x.Id);
-                    //table.ForeignKey(
-                    //    name: "FK_WarehouseMovements_Warehouses_WarehouseId",
-                    //    column: x => x.WarehouseId,
-                    //    principalTable: "Warehouses",
-                    //    principalColumn: "Id");
                 });
-
-            //migrationBuilder.CreateIndex(
-            //    name: "IX_WarehouseMovements_WarehouseId",
-            //    table: "WarehouseMovements",
-            //    column: "WarehouseId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductsFlows_WarehouseMovements_WarehouseMovementId",

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
@@ -27,13 +26,13 @@ namespace WebAppWare.Controllers
             }
         }
 
-        //[HttpGet]
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        //[HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -47,7 +46,7 @@ namespace WebAppWare.Controllers
             }   
         }
 
-        //[HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Upsert(SupplierModel model)
         {
             if (ModelState.IsValid)
@@ -67,6 +66,7 @@ namespace WebAppWare.Controllers
             return View(nameof(Create));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -80,7 +80,7 @@ namespace WebAppWare.Controllers
             }         
         }
 
-        //[HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> Delete(SupplierModel supplier)
         {
             try

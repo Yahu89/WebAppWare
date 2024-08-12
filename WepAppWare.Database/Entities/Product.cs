@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using WepAppWare.Database.Entities.Base;
 
 namespace WebAppWare.Database.Entities;

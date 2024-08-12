@@ -18,6 +18,4 @@ public interface IMovementRepo
 	Task<bool> IsQtyEnoughToCreateWz(WarehouseMovementModel model);
 	List<ProductFlowModel> GetProductFlowsFromForm(ProductFlowMovementModel model);
 	Task<bool> IsPossibleToDeletePzWz(int id);
-	//WarehouseMovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type);
-	//Task<WarehouseMovementModel> FromPzFormToMovementModel(Form model, MovementType type);
 }

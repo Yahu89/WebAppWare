@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database;
 using WebAppWare.Database.Entities;
@@ -15,7 +15,6 @@ namespace WepAppWare.Database
 		public WarehouseDbInitializer(WarehouseBaseContext dbContext)
 		{
 			_dbContext = dbContext;
-			//_userAuthenticationService = userAuthenticationService;
 		}
 
 		public async Task SeedData()
@@ -148,10 +147,6 @@ namespace WepAppWare.Database
 			await _dbContext.SaveChangesAsync();
 
 			var wareTemp = new WarehouseMovement();
-			//var prodFlow = new ProductsFlow();
-
-			//prodFlow.WarehouseMovement = wareTemp;
-
 
 			var warehouseMovement = new WarehouseMovement()
 			{
@@ -163,7 +158,6 @@ namespace WepAppWare.Database
 			{
 				WarehouseMovement = warehouseMovement,
 				ProductId = 1,
-				//WarehouseId = 1,
 				SupplierId = 1,
 				Quantity = 100,
 			};
@@ -172,7 +166,6 @@ namespace WepAppWare.Database
 			{
 				WarehouseMovement = warehouseMovement,
 				ProductId = 2,
-				//WarehouseId = 1,
 				SupplierId = 2,
 				Quantity = 200,
 			};
@@ -183,58 +176,5 @@ namespace WepAppWare.Database
 
 			await _dbContext.SaveChangesAsync();
 		}
-
-		//public async Task<bool> IsNeededToSetUsersOrRoles()
-		//{
-		//	//_userManager = new UserManager<IdentityUser>();
-		//	var users = await _userManager.Users.ToListAsync();
-
-		//	if (users == null)
-		//	{
-		//		return true;
-		//	}
-
-		//	var roles = await _roleManager.Roles.ToListAsync();
-
-		//	if (roles == null)
-		//	{
-		//		return true;
-		//	}
-
-		//	return false;
-		//}
-
-		//public async Task CreateUsersAndRoles()
-		//{
-		//	var admin = new IdentityUser()
-		//	{
-		//		SecurityStamp = Guid.NewGuid().ToString(),
-		//		UserName = "admin"
-		//	};
-
-		//	var purchaseUser = new IdentityUser()
-		//	{
-		//		SecurityStamp = Guid.NewGuid().ToString(),
-		//		UserName = "purchaseUser"
-		//	};
-
-		//	var warehouseUser = new IdentityUser()
-		//	{
-		//		SecurityStamp = Guid.NewGuid().ToString(),
-		//		UserName = "warehouseUser"
-		//	};
-
-		//	await _userManager.CreateAsync(admin, "admin01");
-		//	await _userManager.CreateAsync(purchaseUser, "purchase01");
-		//	await _userManager.CreateAsync(warehouseUser, "warehouse01");
-
-		//	await _roleManager.CreateAsync(new IdentityRole("admin"));
-		//	await _roleManager.CreateAsync(new IdentityRole("purchase"));
-		//	await _roleManager.CreateAsync(new IdentityRole("warehouse"));
-
-		//	await _userManager.AddToRoleAsync(admin, "admin");
-		//	await _userManager.AddToRoleAsync(purchaseUser, "purchase");
-		//	await _userManager.AddToRoleAsync(warehouseUser, "warehouse");
-		//}
 	}
 }

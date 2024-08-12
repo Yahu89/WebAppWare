@@ -11,7 +11,6 @@ using Microsoft.AspNetCore;
 using WepAppWare.Database;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
-using WebAppWare.Middleware;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using WebAppWare.Models.MappingProfiles;
 using WebAppWare.Models.Validation;
@@ -42,7 +41,6 @@ builder.Services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
 builder.Services.AddTransient<IImageRepository, ImageRepository>();
 builder.Services.AddTransient<IUserAuthentication, UserAuthentication>();
 builder.Services.AddAutoMapper(typeof(ProductFlowMappingProfile));
-builder.Services.AddScoped<ErrorHandling>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductModelValidator>()
 							.AddFluentValidationAutoValidation()
 							.AddFluentValidationClientsideAdapters();
@@ -61,8 +59,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    //app.UseExceptionHandler("/Home/Error");
-    app.UseMiddleware<ErrorHandling>();
+	//app.UseExceptionHandler("/Home/Error");
+	app.UseMiddleware<ProductFlowMappingProfile>();
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -80,9 +78,6 @@ app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
-
 var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<WarehouseBaseContext>();
 var dbIntializer = new WarehouseDbInitializer(dbContext);
@@ -91,3 +86,5 @@ var dbIntializer = new WarehouseDbInitializer(dbContext);
 await dbIntializer.SeedData();
 
 app.Run();
+
+public partial class Program { }

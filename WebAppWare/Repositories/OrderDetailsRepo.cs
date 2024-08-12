@@ -24,7 +24,6 @@ public class OrderDetailsRepo : IOrderDetailsRepo
 		CreationDate = x.Order.CreationDate,
 		ProductId = x.ProductId,
 		ProductItemCode = x.Product.ItemCode,
-		//Status = x.Order.Status,
 		Remarks = x.Order.Remarks,
 		Quantity = x.Quantity
 	};

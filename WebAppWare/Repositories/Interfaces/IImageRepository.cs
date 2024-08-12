@@ -9,6 +9,5 @@ namespace WebAppWare.Repositories.Interfaces
 		Task<int> CreateImage(ProductModel product);
 		Task Update(ProductModel product);
 		Task<string> GetLogoPath();
-
 	}
 }

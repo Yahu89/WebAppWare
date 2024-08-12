@@ -20,6 +20,7 @@ public class WarehouseController : Controller
     }
 
     [HttpPost("create")]
+    [Authorize(Roles = "warehouse")]
     public async Task<IActionResult> Create([FromBody]WarehouseDto dto)
     {
         if (ModelState.IsValid)
@@ -49,7 +50,7 @@ public class WarehouseController : Controller
 
     [HttpPut]
     [Route("update/{id}")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "warehouse")]
     public async Task<IActionResult> Update([FromRoute]int id, [FromBody]WarehouseDto dto)
     {
         if (ModelState.IsValid)
@@ -63,6 +64,7 @@ public class WarehouseController : Controller
 
     [HttpDelete]
     [Route("delete/{id}")]
+    [Authorize(Roles = "warehouse")]
     public async Task<IActionResult> Delete(int id)
     {
         await _warehouseRepository.Delete(id);

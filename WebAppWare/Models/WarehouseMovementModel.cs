@@ -18,6 +18,5 @@ public class WarehouseMovementModel
 	public IEnumerable<SelectListItem> Products { get; set; }
 	public IEnumerable<SelectListItem> Suppliers { get; set; }
 	public IEnumerable<SelectListItem> Warehouses { get; set; }
-
 	public IEnumerable<ProductFlowModel> ProductFlowModels { get; set; } = new HashSet<ProductFlowModel>();
 }

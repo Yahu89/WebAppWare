@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Api.Dto;
 using WebAppWare.Api.Middleware;
 using WebAppWare.Api.Repositories;
-using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
@@ -38,6 +37,7 @@ public class ProductController : Controller
     }
 
     [HttpPost] // to fix
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Create([FromBody]ProductCreateDto model, [FromBody]IFormFile? file)
     {
         int? imageId = null;

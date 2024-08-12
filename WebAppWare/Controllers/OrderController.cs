@@ -1,14 +1,10 @@
-﻿using HarfBuzzSharp;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WebAppWare.Database.Entities;
 using WebAppWare.Database.Entities.Enums;
 using WebAppWare.Models;
-using WebAppWare.Repositories;
 using WebAppWare.Repositories.Interfaces;
 using WebAppWare.Utils;
-using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Controllers
 {
@@ -30,7 +26,7 @@ namespace WebAppWare.Controllers
             _orderDetailsRepo = orderDetailsRepo;
         }
 
-        //[HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             try
@@ -75,7 +71,7 @@ namespace WebAppWare.Controllers
             }
         }
 
-        //[HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Remove(int id)
         {
             try
@@ -86,28 +82,15 @@ namespace WebAppWare.Controllers
             }
             catch (NullReferenceException ex)
             {
-                // logowanie bledow
-                Console.WriteLine(ex.ToString());
-
-
-                // TODO: wyswietl komunikat na stronie z bledem!
-                // tutaj kiedys wyswietlimy komunikat "Brak zamowienia o id: XXXX"
-
-                return Json(new { redirectToUrl = Url.Action(nameof(Index), ex.Message) });
+                throw new NullReferenceException(ex.Message);
             }
             catch (Exception ex)
             {
-                // logowanie bledow
-                Console.WriteLine(ex.ToString());
-
-                // TODO: wyswietl komunikat na stronie z bledem!
-                // tutaj kiedys wyswietlimy komunikat "Cos poszlo nie tak :("
-
-                return Json(new { redirectToUrl = Url.Action(nameof(Index), "Something went wrong...") });
+                throw new Exception(ex.Message);
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> Remove(OrderModel model)
         {
             try
@@ -144,7 +127,6 @@ namespace WebAppWare.Controllers
             try
             {
                 await _orderRepo.ValidateModel(model);
-
                 await _orderRepo.Edit(model);
                 await _orderDetailsRepo.EditRange(model.OrderDetails, model.Id);
 
@@ -180,7 +162,7 @@ namespace WebAppWare.Controllers
             model.StatusList = EnumExtensions.ToSelectList<OrderStatus>(
                     value: x => x,
                     translate: x => x.DisplayName(),
-                    selected: null //x => x == model.Status
+                    selected: null
                 );
         }
 

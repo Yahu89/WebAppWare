@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Api.Dto;
 using WebAppWare.Api.Repositories;
@@ -27,6 +28,7 @@ public class OrderController : Controller
 
     [HttpPost]
     [Route("create")]
+    [Authorize(Roles = "purchase")]
     public async Task<IActionResult> Create([FromBody]OrderCreateDto dto)
     {
         if (ModelState.IsValid)
@@ -40,6 +42,7 @@ public class OrderController : Controller
 
     [HttpDelete]
     [Route("delete/{id}")]
+    [Authorize(Roles = "purchase")]
     public async Task<IActionResult> Delete([FromRoute]int id)
     {
         var order = await _orderRepository.GetById(id);

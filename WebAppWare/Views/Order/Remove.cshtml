@@ -12,9 +12,6 @@
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.SupplierName">Dostawca:</label>
-		@* <select id="SupplierId" class="form-select border-0 shadow mb-4" asp-items="@Model.Suppliers" asp-for="@Model.SupplierId">
-			<option disabled selected>-- Wybierz dostawcę --</option>
-		</select> *@
 		<input id="SupplierId" disabled class="form-control border-0 shadow mb-4" value="@Model.SupplierName" asp-for="@Model.SupplierName" />
 	</div>
 
@@ -25,10 +22,6 @@
 
 	<div class="col-2">
 		<label class="ms-2 pb-2" asp-for="@Model.Status">Status:</label>
-		@* <select id="Status" class="form-select border-0 shadow mb-2" asp-items="@Model.StatusList" asp-for="@Model.Status">
-			<option disabled selected>-- Wybierz status --</option>
-		</select> *@
-		@* <span class="text-danger" asp-validation-for="@Model.Status"></span> *@
 		<input id="Status" disabled class="form-control border-0 shadow mb-4" value="@Model.Status" asp-for="@Model.Status" />
 	</div>
 
@@ -49,9 +42,6 @@
 		<th>
 			Ilość
 		</th>
-@* 		<th>
-			<input id="addRowButton" type="button" class="btn btn-success" value="Dodaj kolejny" />
-		</th> *@
 		</thead>
 
 		<tbody id="parentTable">

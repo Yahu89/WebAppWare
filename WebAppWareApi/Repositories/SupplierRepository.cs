@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebAppWare.Api.Dto;
 using WebAppWare.Api.Middleware;
 using WebAppWare.Database;
 using WebAppWare.Database.Entities;

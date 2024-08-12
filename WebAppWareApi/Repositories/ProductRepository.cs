@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Api.Dto;
 using WebAppWare.Api.Middleware;
 using WebAppWare.Database;
 using WebAppWare.Database.Entities;
-using WebAppWare.Models;
-using WebAppWare.Models.BaseModels;
 
 namespace WebAppWare.Api.Repositories;
 
@@ -34,8 +31,6 @@ public class ProductRepository : IProductRepository
         {
             throw new NoContentException();
         }
-
-        //var result = _mapper.Map<Product>(entity);
 
         return entity;
     }

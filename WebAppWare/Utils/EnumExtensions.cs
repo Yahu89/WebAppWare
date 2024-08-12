@@ -7,8 +7,6 @@ namespace WebAppWare.Utils
 {
 	public static class EnumExtensions
 	{
-		// method extension?
-		// czyli rozszerzenie klasy/obietu przez stworzenie metody
 		public static string? DisplayName(this Enum value)
 		{
 			if (value == null)
@@ -24,7 +22,6 @@ namespace WebAppWare.Utils
 				: value.ToString();
 		}
 
-		// to metoda, ktora konwertuje dany enum na kolekcje obiektow SelectListItem, gdzie Key to bedzie liczba z enum, a Value to bedzie tego co przekazemy
 		public static IEnumerable<SelectListItem> ToSelectList<T>(
 			Func<T, object> value,
 			Func<T, string?> translate,

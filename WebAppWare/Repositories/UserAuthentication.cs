@@ -12,8 +12,7 @@ public class UserAuthentication : IUserAuthentication
 	private readonly SignInManager<IdentityUser> _signInManager;
 	private readonly UserManager<IdentityUser> _userManager;
 	private readonly RoleManager<IdentityRole> _roleManager;
-
-	public UserAuthentication(SignInManager<IdentityUser> signInManager, 
+    public UserAuthentication(SignInManager<IdentityUser> signInManager, 
 								UserManager<IdentityUser> userManager,
 								RoleManager<IdentityRole> roleManager)
     {
@@ -21,8 +20,7 @@ public class UserAuthentication : IUserAuthentication
 		_userManager = userManager;
 		_roleManager = roleManager;
     }
-
-	public async Task<bool> Login(LoginModelDto model)
+    public async Task<bool> Login(LoginModelDto model)
 	{
 		var user = await _userManager.FindByNameAsync(model.UserName);
 

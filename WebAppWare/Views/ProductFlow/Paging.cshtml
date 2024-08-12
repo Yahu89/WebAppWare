@@ -1,9 +1,6 @@
-﻿@* @model List<ProductFlowModel> *@
-@model PaginationResult
+﻿@model PaginationResult
 
 <h4 class="pb-2">Przepływ produktów we wszystkich magazynach</h4>
-
-
 
 <div class="col-9 row">
 
@@ -98,7 +95,6 @@ Wyświetl na stronie:
 {
 	for (int i = 1; i <= Model.PagesQuantity; i++)
 	{
-		@* <button class="btn btn-link">@i</button> *@
 		<a class="btn btn-link" value="@i" asp-route-obj="@Model.CurrentPageNumber" asp-controller="ProductFlow" asp-action="Paging">@i</a>
 	}
 }

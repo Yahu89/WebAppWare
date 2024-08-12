@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAppWare.Api.Dto;
 using WebAppWare.Api.Repositories;
@@ -36,6 +37,7 @@ namespace WebAppWare.Api.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create([FromBody]SupplierDto dto)
         {
             if (ModelState.IsValid)
@@ -49,6 +51,7 @@ namespace WebAppWare.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Update([FromRoute]int id, [FromBody]SupplierDto dto)
         {
             var entity = await _supplierRepository.GetById(id);
@@ -66,6 +69,7 @@ namespace WebAppWare.Api.Controllers
         }
 
         [HttpDelete("delete/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete([FromRoute]int id)
         {
             await _supplierRepository.Delete(id);

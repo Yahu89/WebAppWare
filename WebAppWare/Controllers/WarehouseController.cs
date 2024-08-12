@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Repositories.Interfaces;
 
@@ -15,7 +14,7 @@ namespace WebAppWare.Controllers
 			_warehouseRepo = warehouseRepo;
         }
 
-		//[HttpGet]
+		[HttpGet]
         public async Task<ActionResult> Index()
 		{
 			try
@@ -35,7 +34,7 @@ namespace WebAppWare.Controllers
 		}
 
 
-		//[HttpGet]
+		[HttpGet]
 		public async Task<IActionResult> Edit(int id)
 		{
 			try
@@ -50,7 +49,7 @@ namespace WebAppWare.Controllers
 		}
 
 
-		//[HttpPost]
+		[HttpPost]
 		public async Task<IActionResult> Upsert(WarehouseModel model)
 		{
 			if (model.Id == 0)
@@ -75,7 +74,7 @@ namespace WebAppWare.Controllers
             }
 		}
 
-		//[HttpGet]
+		[HttpGet]
 		public async Task<IActionResult> Delete(int id)
 		{
 			try
@@ -89,7 +88,7 @@ namespace WebAppWare.Controllers
 			}			
 		}
 
-		//[HttpPost]
+		[HttpDelete]
 		public async Task<IActionResult> Delete(WarehouseModel model)
 		{
 			try
@@ -103,7 +102,7 @@ namespace WebAppWare.Controllers
 			}			
 		}
 
-		//[HttpGet]
+		[HttpGet]
 		public async Task<IActionResult> TotalAmount()
 		{
 			try

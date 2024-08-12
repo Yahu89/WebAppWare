@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using WebAppWare.Database.Entities.Enums;
 using WepAppWare.Database.Entities.Base;
 

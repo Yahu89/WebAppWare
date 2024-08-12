@@ -92,7 +92,6 @@
 			}
 
 			$('#submitButton').click((e) => {
-				//e.preventDefault();
 
 				onSubmit();
 			});
@@ -117,16 +116,11 @@
 					document: '',
 					warehouseId: 0,
 					productFlowModels: [],
-					movementType: 1 // tutaj ustawiamy, ze to PZ
+					movementType: 1 
 				};
 
-				console.log('document', $('#Document').val());
 				form.document = $('#Document').val();
-
-				//console.log('WarehouseId', $('#WarehouseId').val());
 				form.warehouseId = $('#WarehouseId').val();
-
-				console.log('warehouseId: ' + form.warehouseId);
 
 				if (form.document.length == 0) {
 					documentValidationWarn.text('Niepoprawne dane');
@@ -139,22 +133,13 @@
 				}
 
 				const items = $('tr[name="item"]');
-				// console.log(items);
-
 				const elements = [];
-
 				let itemArray = [];
 
 				$.each(items, function () {
-					// elementy listy
-					console.log(this);
 
 					const properties = $(this).find('[toggle="item-property"]');
-					console.log('properties:');
-
 					const item = {};
-
-					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
 					let i = 0;
 					
 					$.each(properties, function (index, element) {
@@ -171,9 +156,7 @@
 							item.quantity = $(this).val();
 							let c = parseInt(item.quantity);
 
-							//console.log(c);
 							if (isNaN(c)) {
-								//console.log('TRUE');
 								isCorrectData = false;
 								$(element).val('Uzupełnij ilość');
 							}
@@ -192,19 +175,9 @@
 					isCorrectData = false;
 				}
 
-				// console.log('Porównanie: ' + itemArray.length, itemUnique.size);
-
-				console.log('FINAL:');
-				console.log(elements);
-
 				form.productFlowModels = elements;
 
-				console.log('FORM:');
-				console.log(form);
-
 				const data = $('#form');
-				console.log(data.data('url'));
-
 			
 				if (isCorrectData) {
 
@@ -215,12 +188,10 @@
 						method: 'POST',
 						data: form,
 						success: function (response) {
-							console.log('zwrocono dane:');
-							console.log(response);
 							window.location.href = response.redirectToUrl;
 						},
 						error: function (error) {
-							console.log(error.error);
+
 						}
 					});
 				}

@@ -61,12 +61,6 @@ public class OrderPdfReport
 		par1.SpacingAfter = 20;
 		_document.Add(par1);
 
-		//Paragraph supplierData = new Paragraph($"{_orderDetails.SupplierName} \n{_orderDetails.OrderDetails[0].SupplierEmail}", _fontStyle);
-		//supplierData.Alignment = Element.ALIGN_MIDDLE;
-		//supplierData.SpacingAfter = 20;
-
-		
-
 		byte[] imageBytes;
 
 		WebClient wc = new WebClient();
@@ -75,16 +69,7 @@ public class OrderPdfReport
 		Image img = Image.GetInstance(imageBytes);
 		img.ScaleAbsolute(150f, 50f);
 		img.SetAbsolutePosition(420, 780);
-		//img.SpacingAfter = 20;
 		_document.Add(img);
-
-		//PdfPCell cell2 = new PdfPCell();
-		//cell2.AddElement(supplierData);
-		//cell2.HorizontalAlignment = Element.ALIGN_MIDDLE;
-		//PdfPTable table = new PdfPTable(1);
-		//table.AddCell(cell2);
-		//table.CompleteRow();
-		//_document.Add(cell2);
 
 		_fontStyle = FontFactory.GetFont("Tahoma", 12f, 1);
 		_cell = new PdfPCell(new Phrase($"Data utworzenia: {_creationDate.ToShortDateString()}", _fontStyle));
@@ -133,13 +118,6 @@ public class OrderPdfReport
 		_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
 		_table.AddCell(_cell);
 
-		//_fontStyle = FontFactory.GetFont("Tahoma", 10f, 1);
-		//_cell = new PdfPCell(new Phrase("Item Code", _fontStyle));
-		//_cell.HorizontalAlignment = Element.ALIGN_CENTER;
-		//_cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-		//_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
-		//_table.AddCell(_cell);
-
 		_fontStyle = FontFactory.GetFont("Tahoma", 10f, 1);
 		_cell = new PdfPCell(new Phrase("Quantity", _fontStyle));
 		_cell.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -147,8 +125,6 @@ public class OrderPdfReport
 		_cell.BackgroundColor = BaseColor.LIGHT_GRAY;
 		_table.AddCell(_cell);
 		_table.CompleteRow();
-
-
 
 		_fontStyle = FontFactory.GetFont("Tahoma", 10f, 1);
 
@@ -168,12 +144,6 @@ public class OrderPdfReport
 			_cell.BackgroundColor = BaseColor.WHITE;
 			_table.AddCell(_cell);
 
-			//_cell = new PdfPCell(new Phrase(item.ProductItemCode, _fontStyle));
-			//_cell.HorizontalAlignment = Element.ALIGN_CENTER;
-			//_cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-			//_cell.BackgroundColor = BaseColor.WHITE;
-			//_table.AddCell(_cell);
-
 			_cell = new PdfPCell(new Phrase(item.Quantity.ToString(), _fontStyle));
 			_cell.HorizontalAlignment = Element.ALIGN_CENTER;
 			_cell.VerticalAlignment = Element.ALIGN_MIDDLE;
@@ -181,13 +151,5 @@ public class OrderPdfReport
 			_table.AddCell(_cell);
 			_table.CompleteRow();
 		}
-
-		//PdfPCell remarksCell = new PdfPCell(new Phrase($"Uwagi do zamówienia: \n\n{_orderDetails.Remarks}", _fontStyle));
-		//remarksCell.HorizontalAlignment = Element.ALIGN_LEFT;
-		//remarksCell.Border = 0;
-		//PdfPTable remarksTable = new PdfPTable(1);
-		//remarksTable.AddCell(remarksCell);
-		//remarksTable.CompleteRow();
-		//_document.Add(remarksTable);
 	}
 }

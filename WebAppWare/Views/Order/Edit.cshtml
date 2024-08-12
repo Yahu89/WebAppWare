@@ -9,12 +9,6 @@ else
 	<h4 class="pb-2">Dodawanie zamówienia</h4>
 }
 
-@{
-	//var jsonModel = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
-}
-
-@* <input id="currentSupplier" hidden asp-for="@Model.SupplierEmail"/> *@
-
 <form id="form" class="row" data-url="@(Model.IsEdit ? Url.Action("Edit") : Url.Action("Create"))">
 
 	<div class="col-2">
@@ -25,12 +19,6 @@ else
 
 	<div class="col-2">
 		<label class="ms-2 pb-2">Dostawca:</label>
-		@* <input id="SupplierId" class="form-control border-0 shadow mb-4" asp-for="@Model.SupplierName" /> *@
-		@* @if (!Model.IsEdit)
-		{
-			<select id="SupplierId" class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.SupplierId">
-			</select>
-		} *@
 
 		<select id="SupplierId" class="form-select border-0 shadow mb-2" asp-items="@Model.Suppliers" asp-for="@Model.SupplierId">
 		</select>
@@ -52,8 +40,6 @@ else
 		<div class="col-2">
 			<input id="submitButton" type="button" class="btn btn-info" value="Zatwierdź zmiany" />
 		</div>
-
-		@* <input id="OrderId" class="form-control border-0 shadow mb-2" type="text" asp-for="@Model.Id" /> *@
 	}
 	else
 	{
@@ -69,8 +55,6 @@ else
 		<label class="ms-2 pb-2" asp-for="@Model.Remarks">Uwagi do zamówienia:</label>
 		<textarea id="Remarks" class="form-control border-0 shadow mb-5" value="@Model.Remarks" asp-for="@Model.Remarks"></textarea>
 	</div>
-
-	@* <input id="OrderId" hidden class="form-control border-0 shadow mb-2" type="text" name="OrderId" value="@Model.Id" asp-for="@Model.Id" /> *@
 
 	<table id="table" class="table table-bordered table-striped" style="width: 100%">
 		<thead>
@@ -101,7 +85,6 @@ else
 						<td>
 							<input hidden id="OrderItemId" toggle="item-property" asp-for="@item.Id" value="@item.Id"></input>
 							<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@item.Items" toggle="item-property">
-								@* <option selected>@item.ProductItemCode</option> *@
 							</select>
 						</td>
 						<td>
@@ -116,7 +99,6 @@ else
 					<td>
 						<input hidden id="OrderItemId" toggle="item-property" value="0"></input>
 						<select id="itemCode" class="form-select border-0 shadow mb-4" asp-items="@Model.Products" toggle="item-property">
-							@* <option selected>@item.ProductItemCode</option> *@
 						</select>
 					</td>
 					<td>
@@ -153,8 +135,6 @@ else
 								</tr>
 									`;
 
-				console.log('row', row);
-
 				$('#table tr:last').after(row);
 			}
 
@@ -162,22 +142,10 @@ else
 				addRecord();
 			});
 
-			// let supplierValue = $('#currentSupplier').val();
-
-			// if (supplierValue != null)
-			// {
-			// 	$('#supplierId').val() = supplierValue;
-			// }
-
-
-			
-
 			const select = $('#Status');
-			console.log(select.data('default'));
-			//$('#Status').val(select.data('default'));
 
 			$('#submitButton').click((e) => {
-				//e.preventDefault();
+
 				$('#Warning').text('');
 				onSubmit();
 			});
@@ -198,22 +166,11 @@ else
 					orderId: 0
 				};
 
-				console.log('document', $('#Document').val());
 				form.document = $('#Document').val();
-
-				console.log('SupplierId', $('#SupplierId').val());
 				form.supplierId = $('#SupplierId').val();
-
-				console.log('creationDate', $('#CreationDate').val());
 				form.creationDate = $('#CreationDate').val();
-
-				console.log('status', $('#Status').val());
 				form.statusId = $('#Status').val();
-
-				console.log('remarks', $('#Remarks').val());
 				form.remarks = $('#Remarks').val();
-
-				console.log('orderId', $('#OrderId').val());
 				form.orderId = $('#OrderId').val();
 
 				if (form.document.length == 0) {
@@ -232,26 +189,16 @@ else
 				}
 
 				const items = $('tr[name="item"]');
-				// console.log(items);
-
 				const elements = [];
 
 				$.each(items, function () {
-					// elementy listy
-					console.log(this);
 
 					const properties = $(this).find('[toggle="item-property"]');
-					console.log('properties: ');
-
 					const item = {};
-
-					// wiem, ze pierwszy element to product, 2 to supplier i 3 to quantity
 					let i = 0;
-					// let isCorrectData = true;
 
 					$.each(properties, function (index, element) {
 
-						//item.orderItemId = $(this).val();
 						if (i === 0) {
 							item.Id = $(this).val();
 						}
@@ -260,56 +207,38 @@ else
 							item.productId = $(element).val();
 						}
 
-						// if (i === 1) {
-						// 	item.supplierId = $(this).val();
-						// }
-
 						if (i === 2) {
 							item.quantity = $(this).val();
 							let c = parseInt(item.quantity);
 
-							//console.log(c);
 							if (isNaN(c) && c <= 0) {
-								//console.log('TRUE');
+
 								isCorrectData = false;
 								$(element).val('Niepoprawne dane');
 							}
 						}
-
-						
-
+		
 						i++;
 					});
 
 					elements.push(item);
 				});
 
-				console.log('FINAL:');
-				console.log(elements);
-
 				form.orderDetails = elements;
 
-				console.log('FORM:');
-				console.log(form);
-
 				const data = $('#form');
-				console.log(data.data('url'));
 
 				if (isCorrectData) {
-
-					console.log('isCorrectData:', isCorrectData);
 
 					$.ajax({
 						url: data.data('url'),
 						method: 'POST',
 						data: form,
 						success: function (response) {
-							console.log('zwrocono dane:');
-							console.log(response);
 							window.location.href = response.redirectToUrl;
 						},
 						error: function (error) {
-							console.log(error.error);
+
 						}
 
 					});
@@ -321,8 +250,6 @@ else
 
 			document.getElementById("parentTable").removeChild(tr.parentNode.parentNode);
 		}
-
-
 
 	</script>
 }

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using WebAppWare.Api.Dto;
 using WebAppWare.Api.Middleware;
 using WebAppWare.Database;
@@ -106,23 +104,4 @@ public class OrderRepository : IOrderRepository
         _dbContext.Orders.Remove(order);
         await _dbContext.SaveChangesAsync();
     }
-
-    //private int GetSupplierIdByName(string supplierName)
-    //{
-    //    if (string.IsNullOrWhiteSpace(supplierName))
-    //    {
-    //        return 0;
-    //    }
-
-    //    var supplier = _dbContext.Suppliers.FirstOrDefault(x => x.Equals(supplierName));
-
-    //    if (supplier is null)
-    //    {
-    //        return 0;
-    //    }
-
-    //    return supplier.Id;
-    //}
-
-
 }

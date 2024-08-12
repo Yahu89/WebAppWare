@@ -25,7 +25,6 @@ public class ProductFlowModel
     
     // Additionals
     public int Cumulative { get; set; }
-    //public int? WarehouseToId { get; set; }
     public string? WarehouseToIdName { get; set; }
 
     // For searching feature

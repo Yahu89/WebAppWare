@@ -42,7 +42,6 @@ public class MovementRepo : IMovementRepo
 
 	public async Task Create(WarehouseMovementModel model)
 	{
-		// tutaj mapujemy tylko DOKUMENT, bez elementow
 		var movement = MapToEntity.Compile().Invoke(model);
 
 		if (string.IsNullOrEmpty(movement.Document) || model.WarehouseId == 0)
@@ -105,7 +104,6 @@ public class MovementRepo : IMovementRepo
 
 			if (await IsQtyEnoughToCreateWz(model))
 			{		
-				//model.WarehouseToId = model.WarehouseToId;
 				model.WarehouseId = model.WarehouseId;
 				_dbContext.WarehouseMovements.Add(movement);
 				await _dbContext.SaveChangesAsync();
@@ -152,8 +150,6 @@ public class MovementRepo : IMovementRepo
 
 		return lastMove;
 	}
-
-
 
 	public async Task<bool> IsDocumentNameUnique(string inputName)
 	{
@@ -205,7 +201,10 @@ public class MovementRepo : IMovementRepo
 
 	public async Task<string> SetMovementNumber(DateTime date, MovementType movementType)
 	{
-		var recordsPerDate = await _dbContext.WarehouseMovements.Select(MapToModel).Where(x => x.CreationDate.Date == date).ToListAsync();
+		var recordsPerDate = await _dbContext.WarehouseMovements.Select(MapToModel)
+																.Where(x => x.CreationDate.Date == date)
+																.ToListAsync();
+
 		string counter = (recordsPerDate.Count + 1).ToString();
 
 		if (counter.Length == 1)
@@ -213,7 +212,9 @@ public class MovementRepo : IMovementRepo
 			counter = "0" + counter;
 		}
 
-		string docNumber = movementType.ToString() + date.Day.ToString("00") + date.Month.ToString("00") + date.Year.ToString().Substring(2) + counter;
+		string docNumber = movementType.ToString() + date.Day.ToString("00") 
+						+ date.Month.ToString("00") + date.Year.ToString().Substring(2) + counter;
+
 		return docNumber;
 	}
 
@@ -275,32 +276,4 @@ public class MovementRepo : IMovementRepo
 
 		return true;
 	}
-
-	//public WarehouseMovementModel FromCollectionToMovementModel(IFormCollection collection, MovementType type)
-	//{
-	//	var document = collection["Document"];
-
-	//	WarehouseMovementModel movement = new WarehouseMovementModel()
-	//	{
-	//		Document = document,
-	//		CreationDate = DateTime.Now,
-	//		MovementType = type
-	//	};
-
-	//	return movement;
-	//}
-
-	//public async Task<WarehouseMovementModel> FromPzFormToMovementModel(Form model, MovementType type)
-	//{
-	//	string document = model.Document;
-
-	//	WarehouseMovementModel movement = new WarehouseMovementModel()
-	//	{
-	//		Document = document,
-	//		CreationDate = DateTime.Now,
-	//		MovementType = type
-	//	};
-
-	//	return movement;
-	//}
 }
