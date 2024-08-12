@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿
 using Microsoft.EntityFrameworkCore;
 using WebAppWare.Database;
 using WebAppWare.Database.Entities;
 using WebAppWare.Models;
 using WebAppWare.Models.BaseModels;
 using WebAppWare.Repositories.Interfaces;
-using WepAppWare.Database.Entities;
 
 namespace WebAppWare.Repositories
 {

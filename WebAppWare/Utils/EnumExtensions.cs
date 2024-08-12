@@ -1,7 +1,6 @@
-﻿using static QuestPDF.Helpers.Colors;
+﻿
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
 
 namespace WebAppWare.Utils
 {
